@@ -1,2 +1,2 @@
 # isr-lite
-A Lite Deployable Image Super Resolution App
+A Lite Deployable Raw2Gold App
