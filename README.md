@@ -38,3 +38,7 @@ The links used to understand the theory and implementation.
 **Docstring**
 - [The Sphinx docstring format](https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html)
 - [Python Application Layouts: A Reference](https://realpython.com/python-application-layouts/)
+
+**Pytorch**
+- [Super(model) in init](https://discuss.pytorch.org/t/super-model-in-init/97426)
+- [Supercharge Your Classes With Python super()](https://realpython.com/python-super/)
