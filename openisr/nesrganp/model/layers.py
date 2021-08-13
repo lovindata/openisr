@@ -13,6 +13,8 @@ class GaussianNoise(nn.Module):
             x_scale = self.stddev * x
             x = torch.normal(mean=x, std=x_scale)
         return x
+    
+    # YOU ARE HERE!!!! TRYING TO FIGURE WHY NORMAL GENERATOR IS NOT WORKING ON GOOGLE COLAB
 
 class ResidualDenseBlock(nn.Module):
 
