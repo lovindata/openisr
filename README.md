@@ -13,7 +13,7 @@ The links used to understand the theory and implementation.
 - [Super Resolution, Going from 3x to 8x Resolution in OpenCV](https://bleedai.com/super-resolution-going-from-3x-to-8x-resolution-in-opencv/)
 - [Deep Learning based Super Resolution with OpenCV](https://towardsdatascience.com/deep-learning-based-super-resolution-with-opencv-4fd736678066)
 
-**ESRGAN+**
+**nESRGAN+**
 - [Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network](https://arxiv.org/pdf/1609.04802.pdf)
 - [SRGAN Paper Explained](https://medium.com/@ramyahrgowda/srgan-paper-explained-3d2d575d09ff#:~:text=SRGAN%20which%20is%20a%20GAN,to%20changes%20in%20pixel%20space.)
 - [Super Resolution GAN (SRGAN)](https://www.geeksforgeeks.org/super-resolution-gan-srgan/)
