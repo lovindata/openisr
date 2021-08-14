@@ -19,4 +19,4 @@ class Generator(nn.Module):
         )
 
     def forward(self, x):
-        return self.model(x)
+        return self.model(x) # 3 -> 3
