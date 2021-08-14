@@ -15,6 +15,7 @@ class GaussianNoise(nn.Module):
         return x
     
     # YOU ARE HERE!!!! TRYING TO FIGURE WHY NORMAL GENERATOR IS NOT WORKING ON GOOGLE COLAB
+    # commit test
 
 class ResidualDenseBlock(nn.Module):
 
