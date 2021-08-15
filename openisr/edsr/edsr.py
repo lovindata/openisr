@@ -11,7 +11,7 @@ class Edsr:
 
     def __init__(self, model_path: str):
         """
-        The constructor to load the edsr model.
+        The constructor to load the EDSR model.
 
         :param model_path: The model weights path
         """
@@ -22,12 +22,13 @@ class Edsr:
 
     def predict(self, in_image_path: str) -> np.ndarray:
         """
-        Predict with the edsr model.
+        Predict with the EDSR model.
 
         :param in_image_path: The input image path
-        :return: An RVB array result of the model
+        :return: An RGB np.float32 np.ndarray result
         """
-
-        img = cv2.imread(in_image_path, cv2.IMREAD_COLOR) # Read as BVR
-        output = self.model.upsample(img) # Predicted as BVR
-        return output[:, :, [2, 1, 0]] # Return the result in RVB
+        
+        img = cv2.imread(in_image_path, cv2.IMREAD_COLOR) # Read as BGR
+        output = self.model.upsample(img) # Predicted as BGR
+        output = cv2.cvtColor(output, cv2.COLOR_BGR2RGB) # BGR -> RGB
+        return np.asarray(output, dtype=np.float32) # np.uint8 -> np.float32
