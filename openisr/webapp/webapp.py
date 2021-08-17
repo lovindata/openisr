@@ -1,14 +1,15 @@
 from flask import Flask, render_template, request
-#from models import MobileNet
 import os
-from math import floor
+#from edsr.edsr import Edsr
+#from nesrganp.nesrganp import NErganp
 
 app = Flask(__name__)
-
 app.config['UPLOAD_FOLDER'] = 'uploads'
 
-#model = MobileNet()
-
+def merger(out_edsr, out_nerganp):
+    output = (out_edsr + out_nerganp) / 2
+    output = None
+    None
 
 @app.route('/')
 def index():
@@ -24,12 +25,9 @@ def about():
 def success():
     if request.method == 'POST':
         f = request.files['file']
-        saveLocation = f.filename
+        saveLocation = 'tmp/' + f.filename
         f.save(saveLocation)
-        inference, confidence = None #model.infer(saveLocation)
-        # make a percentage with 2 decimal points
-        confidence = floor(confidence * 10000) / 100
-        # delete file after making an inference
+        inference, confidence = None, None
         os.remove(saveLocation)
         # respond with the inference
         return render_template('inference.html', name=inference, confidence=confidence)
