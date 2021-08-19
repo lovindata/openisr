@@ -1,36 +1,63 @@
-from flask import Flask, render_template, request
 import os
-#from edsr.edsr import Edsr
-#from nesrganp.nesrganp import NErganp
+from flask import Flask, render_template, request, send_from_directory
+from werkzeug.utils import secure_filename
+import cv2
+
+from edsr.edsr import Edsr
+from nesrganp.nesrganp import NErganp
+
+
+UPLOAD_FOLDER = os.path.join('webapp', 'tmp')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-def merger(out_edsr, out_nerganp):
+edsr = Edsr(os.path.join('edsr', 'ressources', 'EDSR_x4.pb'))
+nesrganp = NErganp(os.path.join('nesrganp', 'ressources', 'nESRGANplus.pth'))
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def merge_save(out_edsr, out_nerganp, out_filename):
     output = (out_edsr + out_nerganp) / 2
-    output = None
-    None
+    output = cv2.cvtColor(output, cv2.COLOR_RGB2BGR)
+    cv2.imwrite(os.path.join(UPLOAD_FOLDER,out_filename), output)
+
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
-
 @app.route('/about')
 def about():
     return render_template('about.html')
 
-
 @app.route('/infer', methods=['POST'])
 def success():
     if request.method == 'POST':
-        f = request.files['file']
-        saveLocation = 'tmp/' + f.filename
-        f.save(saveLocation)
-        inference, confidence = None, None
-        os.remove(saveLocation)
-        # respond with the inference
-        return render_template('inference.html', name=inference, confidence=confidence)
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            return render_template('index.html')
+        # If the user does not select a file, the browser submits an
+        # empty file without a filename.
+        file = request.files['file']
+        if file.filename == '':
+            return render_template('index.html')
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            savePath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(savePath)
+            out_filename = f"openisr-{filename}"
+            merge_save(edsr.predict(savePath), nesrganp.predict(savePath), out_filename)
+            return render_template('inference.html', out_filename=out_filename)
+
+@app.route('/download/<path:filename>', methods=['GET', 'POST'])
+def download(filename):
+    # Returning file from appended path
+    return send_from_directory(directory=app.config['UPLOAD_FOLDER'], filename=filename)
 
 
 if __name__ == '__main__':

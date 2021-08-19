@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import torch
-from model.models import Generator
+from nesrganp.model.models import Generator
 
 class NErganp:
     """

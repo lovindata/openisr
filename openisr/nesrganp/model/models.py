@@ -1,5 +1,5 @@
 import torch.nn as nn
-from model.layers import ResidualDenseBlocks
+from nesrganp.model.layers import ResidualDenseBlocks
 
 class Generator(nn.Module):
     def __init__(self):
