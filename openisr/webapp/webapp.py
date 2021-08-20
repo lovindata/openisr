@@ -54,10 +54,20 @@ def success():
             merge_save(edsr.predict(savePath), nesrganp.predict(savePath), out_filename)
             return render_template('inference.html', out_filename=out_filename)
 
-@app.route('/download/<path:filename>', methods=['GET', 'POST'])
+@app.route('/download_my_image/<filename>', methods=['GET'])
 def download(filename):
     # Returning file from appended path
-    return send_from_directory(directory=app.config['UPLOAD_FOLDER'], filename=filename)
+    print("TROLOLOLOL")
+    print(filename)
+    print(app.config['UPLOAD_FOLDER'])
+    print(os.listdir())
+    print(os.listdir(app.config['UPLOAD_FOLDER']))
+    uploads = os.path.join('D:\prog\proj\openisr\openisr\openisr', app.config['UPLOAD_FOLDER'])
+    print(uploads) # SEND_FROM_DIRECTORY DO NOT UNDERSTAND THE RELATIVE PATH !
+    # I WAAAAAANNA CRY 1H30 FOR DEBUGGING ! ERROR 404 NOT BECAUSE HE COULD NOT FIND THE ROUTE
+    # IT'S BECAUSE OF SEND_FROM_DIRECTORY FROM THE START !
+    # GG ERROR 404 THE BEST EXPLICIT LOG GG GG GG
+    return send_from_directory(directory=uploads, filename=filename, as_attachment=True)
 
 
 if __name__ == '__main__':
