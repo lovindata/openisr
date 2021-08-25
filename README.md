@@ -1,6 +1,24 @@
-# OpenISR
+# OpenISR (Work still in progress...)
 
 🚀🔥 OpenISR is an image super resolution local web app ready for docker deployment. It is powered by OpenCV & PyTorch and has the purpose to upscale your images without losing quality!
+
+
+# Some results
+
+The results below are from the POC step on different kind of images.
+
+Input | Forced Enlargement | OpenISR Enlargement
+:-:|:-:|:-:
+![](docs/lumine2.png) | ![](docs/lumine2_lr.png) | ![](docs/lumine2_merged.png)
+
+Input | Forced Enlargement | OpenISR Enlargement
+:-:|:-:|:-:
+![](docs/pika.png) | ![](docs/pika_lr.png) | ![](docs/pika_merged.png)
+
+Input | Forced Enlargement | OpenISR Enlargement
+:-:|:-:|:-:
+![](docs/yiren.png) | ![](docs/yiren_lr.png) | ![](docs/yiren_merged.png)
+
 
 # References
 
@@ -26,6 +44,7 @@ The links used to understand the theory and implementation.
 - [Keras Conv2D and Convolutional Layers](https://www.pyimagesearch.com/2018/12/31/keras-conv2d-and-convolutional-layers/)
 - [Pixel Shuffle Layer](https://nico-curti.github.io/NumPyNet/NumPyNet/layers/pixelshuffle_layer.html#:~:text=Pixel%20Shuffle%20layer%20is%20one,a%20single%20low%2Dresolution%20one.)
 - [Understanding 2D Dilated Convolution Operation with Examples in Numpy and Tensorflow with Interactive Code](https://towardsdatascience.com/understanding-2d-dilated-convolution-operation-with-examples-in-numpy-and-tensorflow-with-d376b3972b25)
+
 
 # Other References
 
