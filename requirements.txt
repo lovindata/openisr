@@ -1,4 +1,9 @@
 http://download.pytorch.org/whl/cpu/torch-1.7.1%2Bcpu-cp37-cp37m-win_amd64.whl
 opencv-contrib-python-headless==4.4.0.46
+fastapi==0.68.0
+uvicorn==0.15.0
+Jinja2==3.0.1
+aiofiles==0.7.0
+python-multipart==0.0.5
 Flask==1.1.2
 requests==2.25.1

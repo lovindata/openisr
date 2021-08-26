@@ -50,6 +50,7 @@ The links used to understand the theory and implementation.
 
 **Installation**
 - [Build and Install OpenCV With CUDA (GPU) Support on Windows 10](https://haroonshakeel.medium.com/build-opencv-4-4-0-with-cuda-gpu-support-on-windows-10-without-tears-aa85d470bcd0)
+- [How to Fix ModuleNotFoundError and ImportError](https://towardsdatascience.com/how-to-fix-modulenotfounderror-and-importerror-248ce5b69b1c)
 
 **Ops**
 - [How to change the location of docker images & containers when using Docker Desktop on WSL2 with Windows 10 Home?](https://stackoverflow.com/questions/62441307/how-can-i-change-the-location-of-docker-images-when-using-docker-desktop-on-wsl2)
@@ -61,3 +62,9 @@ The links used to understand the theory and implementation.
 **Pytorch**
 - [Super(model) in init](https://discuss.pytorch.org/t/super-model-in-init/97426)
 - [Supercharge Your Classes With Python super()](https://realpython.com/python-super/)
+
+**FastAPI**
+- [Request Files - FastAPI](https://fastapi.tiangolo.com/tutorial/request-files/)
+- [How to Save Uploaded Files in FastAPI](https://levelup.gitconnected.com/how-to-save-uploaded-files-in-fastapi-90786851f1d3)
+- [[QUESTION] Is this the correct way to save an uploaded file](https://github.com/tiangolo/fastapi/issues/426)
+- [Templates](https://fastapi.tiangolo.com/advanced/templates/)
