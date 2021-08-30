@@ -20,6 +20,16 @@ Input | Forced Enlargement | OpenISR Enlargement
 ![](docs/yiren.png) | ![](docs/yiren_lr.png) | ![](docs/yiren_merged.png)
 
 
+How the "MVP" looks like at the moment.
+
+![](docs/openisr-mvp.png)
+
+
+# Want to run or modify the application yourself ?
+
+- Comming soon! 😣
+
+
 # References
 
 The links used to understand the theory and implementation.

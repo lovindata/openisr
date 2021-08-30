@@ -1,4 +1,4 @@
-openisr/edsr/ressources/EDSR_x4.pb
-openisr/nesrganp/ressources/nESRGANplus.pth
+# openisr/edsr/ressources/EDSR_x4.pb
+# openisr/nesrganp/ressources/nESRGANplus.pth
 __pycache__
 openisr/webapp/tmp
