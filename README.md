@@ -5,7 +5,11 @@
 
 # Some results
 
-The results below are from the POC step on different kind of images.
+How the "MVP" will looks like.
+
+![](docs/openisr-mvp.png)
+
+Some results below on different kind of images.
 
 Input | Forced Enlargement | OpenISR Enlargement
 :-:|:-:|:-:
@@ -18,11 +22,6 @@ Input | Forced Enlargement | OpenISR Enlargement
 Input | Forced Enlargement | OpenISR Enlargement
 :-:|:-:|:-:
 ![](docs/yiren.png) | ![](docs/yiren_lr.png) | ![](docs/yiren_merged.png)
-
-
-How the "MVP" looks like at the moment.
-
-![](docs/openisr-mvp.png)
 
 
 # Want to run or modify the application yourself ?
