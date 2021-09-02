@@ -1,6 +1,6 @@
 import os
 
-from fastapi import FastAPI, File, UploadFile, Request
+from fastapi import FastAPI, File, Form, UploadFile, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -44,22 +44,23 @@ def index(request: Request):
 def about(request: Request):
     return templates.TemplateResponse("about.html", {'request': request})
 
-@app.post("/infer")
-def infer(request: Request, image: UploadFile = File(...)):
+@app.post("/infer", response_class=HTMLResponse)
+async def infer(request: Request, image: UploadFile = File(...)):
     if image.filename == '':
-        return templates.TemplateResponse("index.html")
+        return templates.TemplateResponse("index.html", {'request': request})
     if image.filename and allowed_file(image.filename):
         in_path = os.path.join(UPLOAD_FOLDER, image.filename)
         with open(in_path, 'wb') as file:
-            contents = image.read()
+            contents = await image.read()
             file.write(contents)
         
         out_path = os.path.join(UPLOAD_FOLDER, f'openisr-{image.filename}')
         process_save(in_path, out_path)
-        return templates.TemplateResponse("inference.html", {'request': request, 'dl_path': out_path})
+        return templates.TemplateResponse("inference.html", {'request': request, 'out_path': out_path})
 
-@app.get("/download_my_image/{dl_path}")
-def download(dl_path):
-    _, imagename = os.path.split(dl_path)
-    ext = dl_path.rsplit('.', 1)[1].lower() if '.' in dl_path else 'png'
-    return FileResponse(dl_path, media_type=f'image/{ext}', filename=imagename)
+@app.get("/download/{outpath}", response_class=FileResponse)
+def download(out_path: str):
+    print("YOLOYLRLRLALALRLAZRLALZR")
+    imagename = os.path.basename(out_path)
+    _, ext = os.path.splitext(imagename)
+    return FileResponse(out_path, media_type=f'image/{ext}', filename=imagename)
