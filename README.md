@@ -5,7 +5,7 @@
 
 # Some results
 
-How the "MVP" will looks like.
+How the application looks like at the moment.
 
 ![](docs/openisr-mvp.png)
 
@@ -36,9 +36,7 @@ The links used to understand the theory and implementation.
 **EDSR**
 - [Enhanced Deep Residual Networks for Single Image Super-Resolution](https://arxiv.org/pdf/1707.02921.pdf)
 - [Single image super-resolution with deep neural networks](https://krasserm.github.io/2019/09/04/super-resolution/)
-- [OpenCV Super Resolution with Deep Learning](https://www.pyimagesearch.com/2020/11/09/opencv-super-resolution-with-deep-learning/)
 - [Super Resolution, Going from 3x to 8x Resolution in OpenCV](https://bleedai.com/super-resolution-going-from-3x-to-8x-resolution-in-opencv/)
-- [Deep Learning based Super Resolution with OpenCV](https://towardsdatascience.com/deep-learning-based-super-resolution-with-opencv-4fd736678066)
 
 **nESRGAN+**
 - [Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network](https://arxiv.org/pdf/1609.04802.pdf)
