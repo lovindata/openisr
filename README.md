@@ -64,13 +64,9 @@ The links used to understand the theory and implementation.
 **Ops**
 - [How to change the location of docker images & containers when using Docker Desktop on WSL2 with Windows 10 Home?](https://stackoverflow.com/questions/62441307/how-can-i-change-the-location-of-docker-images-when-using-docker-desktop-on-wsl2)
 
-**Docstring**
+**Docstring & Project structure**
 - [The Sphinx docstring format](https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html)
 - [Python Application Layouts: A Reference](https://realpython.com/python-application-layouts/)
-
-**Pytorch**
-- [Super(model) in init](https://discuss.pytorch.org/t/super-model-in-init/97426)
-- [Supercharge Your Classes With Python super()](https://realpython.com/python-super/)
 
 **FastAPI**
 - [Request Files - FastAPI](https://fastapi.tiangolo.com/tutorial/request-files/)

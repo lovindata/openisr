@@ -1,6 +1,6 @@
 import os
 
-from fastapi import FastAPI, File, Form, UploadFile, Request
+from fastapi import FastAPI, File, UploadFile, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -12,17 +12,17 @@ from nesrganp.nesrganp import NErganp
 
 
 PROJECT_PATH = os.getcwd()
-STATIC_FOLDER = os.path.join(PROJECT_PATH, 'webapp', 'static')
-TEMPLATES_FOLDER = os.path.join(PROJECT_PATH, 'webapp', 'templates')
-UPLOAD_FOLDER = os.path.join(PROJECT_PATH, 'webapp', 'uploads')
+STATIC_FOLDER = os.path.join(PROJECT_PATH, 'webapp', 'resources', 'static')
+TEMPLATES_FOLDER = os.path.join(PROJECT_PATH, 'webapp', 'resources', 'templates')
+UPLOAD_FOLDER = os.path.join(PROJECT_PATH, 'webapp', 'resources', 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory=STATIC_FOLDER), name="static")
 templates = Jinja2Templates(directory=TEMPLATES_FOLDER)
 
-edsr = Edsr(os.path.join('edsr', 'ressources', 'EDSR_x4.pb'))
-nesrganp = NErganp(os.path.join('nesrganp', 'ressources', 'nESRGANplus.pth'))
+edsr = Edsr(os.path.join('edsr', 'resources', 'EDSR_x4.pb'))
+nesrganp = NErganp(os.path.join('nesrganp', 'resources', 'nESRGANplus.pth'))
 
 
 def allowed_file(filename):
@@ -54,13 +54,13 @@ async def infer(request: Request, image: UploadFile = File(...)):
             contents = await image.read()
             file.write(contents)
         
+        out_image_name = f'openisr-{image.filename}'
         out_path = os.path.join(UPLOAD_FOLDER, f'openisr-{image.filename}')
         process_save(in_path, out_path)
-        return templates.TemplateResponse("inference.html", {'request': request, 'out_path': out_path})
+        return templates.TemplateResponse("inference.html", {'request': request, 'out_image_name': out_image_name})
 
-@app.get("/download/{outpath}", response_class=FileResponse)
-def download(out_path: str):
-    print("YOLOYLRLRLALALRLAZRLALZR")
-    imagename = os.path.basename(out_path)
-    _, ext = os.path.splitext(imagename)
-    return FileResponse(out_path, media_type=f'image/{ext}', filename=imagename)
+@app.get("/download/{out_image_name}", response_class=FileResponse)
+def download(out_image_name: str):
+    out_path = os.path.join(UPLOAD_FOLDER, out_image_name)
+    _, ext = os.path.splitext(out_image_name)
+    return FileResponse(out_path, media_type=f'image/{ext}', filename=out_image_name)
