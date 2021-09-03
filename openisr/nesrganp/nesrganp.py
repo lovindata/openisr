@@ -29,7 +29,7 @@ class NErganp:
         Predict with the nESRGAN+ model.
 
         :param in_image_path: The input image path
-        :return: An RGB np.float32 np.ndarray with 0 <= coefficient_{i,j} <= 255.0
+        :return: An RGB np.float32 np.ndarray with 0 <= coefficient_{i,j,k} <= 255.0
         """
 
         img = cv2.imread(in_image_path, cv2.IMREAD_COLOR) # Read as BGR
