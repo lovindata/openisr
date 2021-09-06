@@ -20,15 +20,14 @@ class Edsr:
         self.model.readModel(model_path)
         self.model.setModel("edsr", 4)
 
-    def predict(self, in_image_path: str) -> np.ndarray:
+    def predict(self, in_img: np.ndarray) -> np.ndarray:
         """
         Predict with the EDSR model.
 
-        :param in_image_path: The input image path
-        :return: An RGB np.float32 np.ndarray with 0 <= coefficient_{i,j} <= 255.0
+        :param in_img: The input image in BVR with 0 <= coefficient_{i,j,k} (np.uint8) <= 255.0 
+        :return: An RGB np.float32 np.ndarray with 0 <= coefficient_{i,j,k} (np.uint8) <= 255.0
         """
         
-        img = cv2.imread(in_image_path, cv2.IMREAD_COLOR) # Read as BGR
-        output = self.model.upsample(img) # Predicted as BGR
-        output = cv2.cvtColor(output, cv2.COLOR_BGR2RGB) # BGR -> RGB
-        return np.asarray(output, dtype=np.float32) # np.uint8 -> np.float32
+        out_img = self.model.upsample(in_img) # Predicted as BGR
+        out_img = cv2.cvtColor(out_img, cv2.COLOR_BGR2RGB) # BGR -> RGB
+        return np.asarray(out_img, dtype=np.float32) # np.uint8 -> np.float32

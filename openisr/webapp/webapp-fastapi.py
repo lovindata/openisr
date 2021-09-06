@@ -30,7 +30,8 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def process_save(in_path, out_path):
-    out_edsr, out_nerganp = edsr.predict(in_path), nesrganp.predict(in_path)
+    in_img = cv2.imread(in_path, cv2.IMREAD_COLOR) # Read as BGR
+    out_edsr, out_nerganp = edsr.predict(in_img), nesrganp.predict(in_img)
     output = (out_edsr + out_nerganp) / 2
     output = cv2.cvtColor(output, cv2.COLOR_RGB2BGR)
     cv2.imwrite(os.path.join(out_path), output)
@@ -46,8 +47,6 @@ def about(request: Request):
 
 @app.post("/infer", response_class=HTMLResponse)
 async def infer(request: Request, image: UploadFile = File(...)):
-    if image.filename == '':
-        return templates.TemplateResponse("index.html", {'request': request})
     if image.filename and allowed_file(image.filename):
         in_path = os.path.join(UPLOAD_FOLDER, image.filename)
         with open(in_path, 'wb') as file:
@@ -58,6 +57,8 @@ async def infer(request: Request, image: UploadFile = File(...)):
         out_path = os.path.join(UPLOAD_FOLDER, f'openisr-{image.filename}')
         process_save(in_path, out_path)
         return templates.TemplateResponse("inference.html", {'request': request, 'out_image_name': out_image_name})
+    else:
+        return templates.TemplateResponse("index.html", {'request': request})
 
 @app.get("/download/{out_image_name}", response_class=FileResponse)
 def download(out_image_name: str):
