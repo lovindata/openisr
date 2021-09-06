@@ -52,6 +52,14 @@ The links used to understand the theory and implementation.
 - [Pixel Shuffle Layer](https://nico-curti.github.io/NumPyNet/NumPyNet/layers/pixelshuffle_layer.html#:~:text=Pixel%20Shuffle%20layer%20is%20one,a%20single%20low%2Dresolution%20one.)
 - [Understanding 2D Dilated Convolution Operation with Examples in Numpy and Tensorflow with Interactive Code](https://towardsdatascience.com/understanding-2d-dilated-convolution-operation-with-examples-in-numpy-and-tensorflow-with-d376b3972b25)
 
+**FastAPI**
+- [Request Files - FastAPI](https://fastapi.tiangolo.com/tutorial/request-files/)
+- [How to Save Uploaded Files in FastAPI](https://levelup.gitconnected.com/how-to-save-uploaded-files-in-fastapi-90786851f1d3)
+- [[QUESTION] Is this the correct way to save an uploaded file](https://github.com/tiangolo/fastapi/issues/426)
+- [Templates](https://fastapi.tiangolo.com/advanced/templates/)
+- [How to send a progress of operation in a FastAPI app?](https://www.py4u.net/discuss/186220)
+- [Asynchronous Tasks with FastAPI and Celery](https://testdriven.io/blog/fastapi-and-celery/)
+
 
 # Other References
 
@@ -65,9 +73,3 @@ The links used to understand the theory and implementation.
 **Docstring & Project structure**
 - [The Sphinx docstring format](https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html)
 - [Python Application Layouts: A Reference](https://realpython.com/python-application-layouts/)
-
-**FastAPI**
-- [Request Files - FastAPI](https://fastapi.tiangolo.com/tutorial/request-files/)
-- [How to Save Uploaded Files in FastAPI](https://levelup.gitconnected.com/how-to-save-uploaded-files-in-fastapi-90786851f1d3)
-- [[QUESTION] Is this the correct way to save an uploaded file](https://github.com/tiangolo/fastapi/issues/426)
-- [Templates](https://fastapi.tiangolo.com/advanced/templates/)
