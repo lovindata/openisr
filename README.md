@@ -28,6 +28,11 @@ Input | Forced Enlargement | OpenISR Enlargement
 
 - Comming soon! 😣
 
+- Drafts commands:
+    - `set PYTHONPATH=%PYTHONPATH%;.`
+    - `uvicorn tasksapp.fastapiapp:app --reload`
+    - `celery worker --app=worker.celery --loglevel=info --logfile=tasksapp/resources/logs/celery.log`
+    - `celery multi start w1 -A tasksapp.app -l INFO`
 
 # References
 

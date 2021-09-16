@@ -1,14 +1,20 @@
+import os
+
 from celery.result import AsyncResult
 from fastapi import Body, FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app import create_task
+from tasksapp.app import create_task
+
+PROJECT_PATH = os.getcwd()
+STATIC_FOLDER = os.path.join(PROJECT_PATH, 'tasksapp', 'resources', 'static')
+TEMPLATES_FOLDER = os.path.join(PROJECT_PATH, 'tasksapp', 'resources', 'templates')
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory=STATIC_FOLDER), name="static")
+templates = Jinja2Templates(directory=TEMPLATES_FOLDER)
 
 @app.get("/")
 def home(request: Request):
