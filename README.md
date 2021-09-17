@@ -78,3 +78,4 @@ The links used to understand the theory and implementation.
 **Docstring & Project structure**
 - [The Sphinx docstring format](https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html)
 - [Python Application Layouts: A Reference](https://realpython.com/python-application-layouts/)
+- [Appendix B: A Template Project Structure](https://www.cosmicpython.com/book/appendix_project_structure.html)
