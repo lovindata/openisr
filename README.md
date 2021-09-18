@@ -65,15 +65,15 @@ The links used to understand the theory and implementation.
 - [How to send a progress of operation in a FastAPI app?](https://www.py4u.net/discuss/186220)
 - [Asynchronous Tasks with FastAPI and Celery](https://testdriven.io/blog/fastapi-and-celery/)
 
+**Ops**
+- [How to change the location of docker images & containers when using Docker Desktop on WSL2 with Windows 10 Home?](https://stackoverflow.com/questions/62441307/how-can-i-change-the-location-of-docker-images-when-using-docker-desktop-on-wsl2)
+
 
 # Other References
 
 **Installation**
 - [Build and Install OpenCV With CUDA (GPU) Support on Windows 10](https://haroonshakeel.medium.com/build-opencv-4-4-0-with-cuda-gpu-support-on-windows-10-without-tears-aa85d470bcd0)
 - [How to Fix ModuleNotFoundError and ImportError](https://towardsdatascience.com/how-to-fix-modulenotfounderror-and-importerror-248ce5b69b1c)
-
-**Ops**
-- [How to change the location of docker images & containers when using Docker Desktop on WSL2 with Windows 10 Home?](https://stackoverflow.com/questions/62441307/how-can-i-change-the-location-of-docker-images-when-using-docker-desktop-on-wsl2)
 
 **Docstring & Project structure**
 - [The Sphinx docstring format](https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html)
