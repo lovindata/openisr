@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 services:
 
@@ -6,9 +6,9 @@ services:
     build: .
     ports:
       - 8004:8000
-    command: uvicorn tasksapp.webapp:app --host 0.0.0.0 --reload
+    command: python3 -m uvicorn tasksapp.webapp:app --host 0.0.0.0 --reload
     volumes:
-      - openisr:/usr/src/app
+      - ./openisr:/usr/src/app
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -17,9 +17,9 @@ services:
 
   tasksapp:
     build: .
-    #command: celery worker --app=worker.celery --loglevel=info --logfile=logs/celery.log
+    command: python3 -m celery -A tasksapp.app worker --loglevel=INFO
     volumes:
-      - openisr:/usr/src/app
+      - ./openisr:/usr/src/app
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -29,7 +29,3 @@ services:
 
   redis:
     image: redis:6.2.5-alpine
-
-
-volumes:
-  - openisr
