@@ -36,31 +36,52 @@ function getStatus(taskID, firstCall) {
     // Disp on the console the obtained result
     console.log(res)
 
+    // Prepare HTML view for the task status and result
+    var taskStatusView = res.task_status;
+    var taskResultView = res.task_result;
+    switch (taskStatusView) {
+      case 'SUCCESS':
+        taskStatusView = "✅" + taskStatusView;
+        taskResultView = '<a href="">🚀Download</a>';
+        break;
+      case 'PENDING':
+        taskStatusView = "▶" + taskStatusView;
+        taskResultView = '<div class="text-muted">🚀Download</div>';
+        break;
+      case 'FAILURE':
+        taskStatusView = "❌" + taskStatusView;
+        taskResultView = '<p class="text-muted">🚀Download</p>';
+        break;
+      default:
+        throw 'Unrecognized status task!';
+    }
+
     // Build a HTML table line using the result
     const html = `
-    <tr id=${taskID}>
+    <tr>
       <td>${taskID}</td>
-      <td>${res.task_status}</td>
-      <td>${res.task_result}</td>
+      <td>${taskStatusView}</td>
+      <td>${taskResultView}</td>
     </tr>`;
     if (firstCall === true) {
       // Get the HTML tag with the 'id=tasks'
       // 'insertRow' works with the tag specified as <tbody></tbody>
       // 'insertRow' prepares a line of <tbody></tbody> ready for modification
-      const newRow = document.getElementById('tasks').insertRow(0);
+      const newRow = document.getElementById('tasks').insertRow(-1);
+      newRow.id = taskID;
       // Apply the modification
       newRow.innerHTML = html;
     } else {
-      const existingRow = document.getElementById(`${taskID}`)
+      const existingRow = document.getElementById(`${taskID}`);
       // Apply the modification
       existingRow.innerHTML = html;
     }
 
-    // If the status is not equal to 'PENDING' do 
+    // If the status is not equal to 'PENDING' do
     const taskStatus = res.task_status;
     // Return will stop the function execution
     // Everything after will not be runned
-    if (taskStatus === 'SUCCESS' || taskStatus === 'FAILURE') return false; 
+    if (taskStatus === 'SUCCESS' || taskStatus === 'FAILURE') return false;
 
     // Run the recursively the function after 1 second
     // The setTimeout is an async function

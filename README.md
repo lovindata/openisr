@@ -33,6 +33,7 @@ Input | Forced Enlargement | OpenISR Enlargement
     - `uvicorn tasksapp.fastapiapp:app --reload`
     - `celery worker --app=worker.celery --loglevel=info --logfile=tasksapp/resources/logs/celery.log`
     - `celery multi start w1 -A tasksapp.app -l INFO`
+    - `docker-compose up -d --build`
 
 # References
 
