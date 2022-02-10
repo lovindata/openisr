@@ -1,6 +1,6 @@
 import os
 
-from fastapi import FastAPI, File, UploadFile, Request
+from fastapi import FastAPI, File, UploadFile, Request, BackgroundTasks
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -46,7 +46,7 @@ def about(request: Request):
     return templates.TemplateResponse("about.html", {'request': request})
 
 @app.post("/infer", response_class=HTMLResponse)
-async def infer(request: Request, image: UploadFile = File(...)):
+async def infer(request: Request, tasks: BackgroundTasks, image: UploadFile = File(...)):
     if image.filename and allowed_file(image.filename):
         in_path = os.path.join(UPLOAD_FOLDER, image.filename)
         with open(in_path, 'wb') as file:
@@ -55,7 +55,7 @@ async def infer(request: Request, image: UploadFile = File(...)):
         
         out_image_name = f'openisr-{image.filename}'
         out_path = os.path.join(UPLOAD_FOLDER, f'openisr-{image.filename}')
-        process_save(in_path, out_path)
+        tasks.add_task(process_save, in_path, out_path)
         return templates.TemplateResponse("inference.html", {'request': request, 'out_image_name': out_image_name})
     else:
         return templates.TemplateResponse("index.html", {'request': request})

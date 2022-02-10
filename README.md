@@ -1,32 +1,44 @@
-# OpenISR (Work still in progress...)
+# OpenISR (Work still in progress... 🛠️😤)
 
-🚀🔥 OpenISR is an image super resolution local web app ready for docker deployment. It is powered by OpenCV & PyTorch and has the purpose to upscale your images without losing quality!
+![](docs/stack_used.jpg)
+
+🚀🔥 OpenISR is an **image super resolution** lightweight SaaS web application. It is powered by [OpenCV](https://opencv.org/) & [PyTorch](https://pytorch.org/) and has the purpose to upscale your images without losing quality! It is also optimized for scalability and easily deployable thanks to [Celery](https://docs.celeryproject.org/en/stable/) & [Docker](https://www.docker.com/)!
 
 
-# Some results
+# Results
 
-How the application looks like at the moment.
+How the application looks like 😍.
 
-![](docs/openisr-mvp.png)
+![](docs/res_webpages/main.png)
 
-Some results below on different kind of images.
 
-Input | Forced Enlargement | OpenISR Enlargement
-:-:|:-:|:-:
-![](docs/lumine2.png) | ![](docs/lumine2_lr.png) | ![](docs/lumine2_merged.png)
-
-Input | Forced Enlargement | OpenISR Enlargement
-:-:|:-:|:-:
-![](docs/pika.png) | ![](docs/pika_lr.png) | ![](docs/pika_merged.png)
+Results below on different kind of images 🤯.
 
 Input | Forced Enlargement | OpenISR Enlargement
 :-:|:-:|:-:
-![](docs/yiren.png) | ![](docs/yiren_lr.png) | ![](docs/yiren_merged.png)
+![](docs/res_images/lumine2.png) | ![](docs/res_images/lumine2_lr.png) | ![](docs/res_images/lumine2_merged.png)
+
+Input | Forced Enlargement | OpenISR Enlargement
+:-:|:-:|:-:
+![](docs/res_images/pika.png) | ![](docs/res_images/pika_lr.png) | ![](docs/res_images/pika_merged.png)
+
+Input | Forced Enlargement | OpenISR Enlargement
+:-:|:-:|:-:
+![](docs/res_images/yiren.png) | ![](docs/res_images/yiren_lr.png) | ![](docs/res_images/yiren_merged.png)
 
 
-# Want to run or modify the application yourself ?
+# Want to contribute ?
 
 - Comming soon! 😣
+
+- Drafts commands:
+    - `set PYTHONPATH=%PYTHONPATH%;.`
+    - `uvicorn tasksapp.fastapiapp:app --reload`
+    - `celery worker --app=worker.celery --loglevel=info --logfile=tasksapp/resources/logs/celery.log`
+    - `celery multi start w1 -A tasksapp.app -l INFO`
+    - `docker-compose up -d --build`
+    - `D:`
+    - `cd D:\prog\proj\openisr\openisr`
 
 
 # References
@@ -52,6 +64,17 @@ The links used to understand the theory and implementation.
 - [Pixel Shuffle Layer](https://nico-curti.github.io/NumPyNet/NumPyNet/layers/pixelshuffle_layer.html#:~:text=Pixel%20Shuffle%20layer%20is%20one,a%20single%20low%2Dresolution%20one.)
 - [Understanding 2D Dilated Convolution Operation with Examples in Numpy and Tensorflow with Interactive Code](https://towardsdatascience.com/understanding-2d-dilated-convolution-operation-with-examples-in-numpy-and-tensorflow-with-d376b3972b25)
 
+**FastAPI**
+- [Request Files - FastAPI](https://fastapi.tiangolo.com/tutorial/request-files/)
+- [How to Save Uploaded Files in FastAPI](https://levelup.gitconnected.com/how-to-save-uploaded-files-in-fastapi-90786851f1d3)
+- [[QUESTION] Is this the correct way to save an uploaded file](https://github.com/tiangolo/fastapi/issues/426)
+- [Templates](https://fastapi.tiangolo.com/advanced/templates/)
+- [How to send a progress of operation in a FastAPI app?](https://www.py4u.net/discuss/186220)
+- [Asynchronous Tasks with FastAPI and Celery](https://testdriven.io/blog/fastapi-and-celery/)
+
+**Ops**
+- [How to change the location of docker images & containers when using Docker Desktop on WSL2 with Windows 10 Home?](https://stackoverflow.com/questions/62441307/how-can-i-change-the-location-of-docker-images-when-using-docker-desktop-on-wsl2)
+
 
 # Other References
 
@@ -59,15 +82,7 @@ The links used to understand the theory and implementation.
 - [Build and Install OpenCV With CUDA (GPU) Support on Windows 10](https://haroonshakeel.medium.com/build-opencv-4-4-0-with-cuda-gpu-support-on-windows-10-without-tears-aa85d470bcd0)
 - [How to Fix ModuleNotFoundError and ImportError](https://towardsdatascience.com/how-to-fix-modulenotfounderror-and-importerror-248ce5b69b1c)
 
-**Ops**
-- [How to change the location of docker images & containers when using Docker Desktop on WSL2 with Windows 10 Home?](https://stackoverflow.com/questions/62441307/how-can-i-change-the-location-of-docker-images-when-using-docker-desktop-on-wsl2)
-
 **Docstring & Project structure**
 - [The Sphinx docstring format](https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html)
 - [Python Application Layouts: A Reference](https://realpython.com/python-application-layouts/)
-
-**FastAPI**
-- [Request Files - FastAPI](https://fastapi.tiangolo.com/tutorial/request-files/)
-- [How to Save Uploaded Files in FastAPI](https://levelup.gitconnected.com/how-to-save-uploaded-files-in-fastapi-90786851f1d3)
-- [[QUESTION] Is this the correct way to save an uploaded file](https://github.com/tiangolo/fastapi/issues/426)
-- [Templates](https://fastapi.tiangolo.com/advanced/templates/)
+- [Appendix B: A Template Project Structure](https://www.cosmicpython.com/book/appendix_project_structure.html)
