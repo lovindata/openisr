@@ -1,30 +1,33 @@
-# OpenISR (Work still in progress...)
+# OpenISR (Work still in progress... 🛠️😤)
 
-🚀🔥 OpenISR is an image super resolution local web app ready for docker deployment. It is powered by OpenCV & PyTorch and has the purpose to upscale your images without losing quality!
+![](docs/stack_used.jpg)
+
+🚀🔥 OpenISR is an **image super resolution** lightweight SaaS web application. It is powered by [OpenCV](https://opencv.org/) & [PyTorch](https://pytorch.org/) and has the purpose to upscale your images without losing quality! It is also optimized for scalability and easily deployable thanks to [Celery](https://docs.celeryproject.org/en/stable/) & [Docker](https://www.docker.com/)!
 
 
-# Some results
+# Results
 
-How the application looks like at the moment.
+How the application looks like 😍.
 
-![](docs/openisr-mvp.png)
+![](docs/res_webpages/main.png)
 
-Some results below on different kind of images.
 
-Input | Forced Enlargement | OpenISR Enlargement
-:-:|:-:|:-:
-![](docs/lumine2.png) | ![](docs/lumine2_lr.png) | ![](docs/lumine2_merged.png)
-
-Input | Forced Enlargement | OpenISR Enlargement
-:-:|:-:|:-:
-![](docs/pika.png) | ![](docs/pika_lr.png) | ![](docs/pika_merged.png)
+Results below on different kind of images 🤯.
 
 Input | Forced Enlargement | OpenISR Enlargement
 :-:|:-:|:-:
-![](docs/yiren.png) | ![](docs/yiren_lr.png) | ![](docs/yiren_merged.png)
+![](docs/res_images/lumine2.png) | ![](docs/res_images/lumine2_lr.png) | ![](docs/res_images/lumine2_merged.png)
+
+Input | Forced Enlargement | OpenISR Enlargement
+:-:|:-:|:-:
+![](docs/res_images/pika.png) | ![](docs/res_images/pika_lr.png) | ![](docs/res_images/pika_merged.png)
+
+Input | Forced Enlargement | OpenISR Enlargement
+:-:|:-:|:-:
+![](docs/res_images/yiren.png) | ![](docs/res_images/yiren_lr.png) | ![](docs/res_images/yiren_merged.png)
 
 
-# Want to run or modify the application yourself ?
+# Want to contribute ?
 
 - Comming soon! 😣
 
@@ -34,6 +37,9 @@ Input | Forced Enlargement | OpenISR Enlargement
     - `celery worker --app=worker.celery --loglevel=info --logfile=tasksapp/resources/logs/celery.log`
     - `celery multi start w1 -A tasksapp.app -l INFO`
     - `docker-compose up -d --build`
+    - `D:`
+    - `cd D:\prog\proj\openisr\openisr`
+
 
 # References
 
