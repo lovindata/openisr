@@ -2,18 +2,23 @@ import cv2
 import numpy as np
 
 class Edsr:
-    """
-    This is a class containing the attributes & methods to work with the EDSR model.
+    r"""A class containing the attributes & methods to work with the EDSR model.
 
-    :param model: The EDSRx4 model
-    :type model: cv2.dnn_superres_DnnSuperResImpl, optional
+    Example::
+
+        import os
+        from edsr.edsr import Edsr
+        edsr = Edsr(os.path.join('edsr', 'resources', 'EDSR_x4.pb'))
+
+    :ivar model: The EDSRx4 model loaded.
+    :vartype model: cv2.dnn_superres_DnnSuperResImpl
     """
 
     def __init__(self, model_path: str):
-        """
-        The constructor to load the EDSR model.
+        r"""The constructor to load the EDSR model.
 
-        :param model_path: The model weights path
+        Args:
+            model_path (str): The model weights path.
         """
 
         self.model = cv2.dnn_superres.DnnSuperResImpl_create()
@@ -21,11 +26,19 @@ class Edsr:
         self.model.setModel("edsr", 4)
 
     def predict(self, in_img: np.ndarray) -> np.ndarray:
-        """
-        Predict with the EDSR model.
+        r"""Predict with the EDSR model.
 
-        :param in_img: The input image in BVR with 0 <= coefficient_{i,j,k} (np.uint8) <= 255.0 
-        :return: An RGB np.float32 np.ndarray with 0 <= coefficient_{i,j,k} (np.uint8) <= 255.0
+        Example::
+
+            edsr = Edsr(os.path.join('edsr', 'resources', 'EDSR_x4.pb'))
+            in_img = cv2.imread(in_path, cv2.IMREAD_COLOR)
+            out_edsr = edsr.predict(in_img)
+
+        Args:
+            in_img (np.ndarray): The input image in BGR with 0 <= coefficient_{i,j,k} (``np.uint8``) <= 255.0
+
+        Returns:
+            An RGB ``np.float32`` ``np.ndarray`` with 0 <= coefficient_{i,j,k} (``np.uint8``) <= 255.0
         """
         
         out_img = self.model.upsample(in_img) # Predicted as BGR
