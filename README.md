@@ -1,4 +1,4 @@
-# OpenISR (Work still in progress... 🛠️😤)
+# OpenISR - Upscale your images without losing quality with AI technology
 
 [![Generic badge](https://img.shields.io/badge/Python-3.7.11-blue.svg?style=plastic)](https://www.python.org/)
 
