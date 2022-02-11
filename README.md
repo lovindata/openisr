@@ -1,5 +1,7 @@
 # OpenISR (Work still in progress... 🛠️😤)
 
+[![Generic badge](https://img.shields.io/badge/Python-3.7.11-blue.svg?style=plastic)](https://www.python.org/)
+
 ![](docs/stack_used.jpg)
 
 🚀🔥 OpenISR is an **image super resolution** lightweight SaaS web application. It is powered by [OpenCV](https://opencv.org/) & [PyTorch](https://pytorch.org/) and has the purpose to upscale your images without losing quality! It is also optimized for scalability and easily deployable thanks to [Celery](https://docs.celeryproject.org/en/stable/) & [Docker](https://www.docker.com/)!
