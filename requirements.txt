@@ -7,3 +7,4 @@ aiofiles==0.7.0
 python-multipart==0.0.5
 celery==5.1.2
 redis==3.5.3
+pdoc3==0.10.0

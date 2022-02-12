@@ -4,19 +4,21 @@ import torch
 from nesrganp.model.models import Generator
 
 class NErganp:
-    """
-    This is a class containing the attributes & methods to work with the nESRGAN+ model.
+    """Class containing the attributes and methods to work with the nESRGAN+ generator model.
+    
+    Args:
+        model_path (str): The model weights path.
 
-    :param model: The nESRGAN+x4 model
-    :type model: Generator, optional
+    Attributes:
+        model (nesrganp.model.models.Generator): The nESRGAN+ generator model loaded.
+
+    Examples:
+        >>> import os
+        >>> from nesrganp.nesrganp import NEsrganp
+        >>> nesrganp = NErganp(os.path.join('nesrganp', 'resources', 'nESRGANplus.pth'))
     """
 
     def __init__(self, model_path: str):
-        """
-        The constructor to load the nESRGAN+ model.
-
-        :param model_path: The model weights path
-        """
 
         self.model = Generator()
         self.model.load_state_dict(torch.load(model_path), strict=True)
@@ -25,11 +27,18 @@ class NErganp:
             v.requires_grad = False
 
     def predict(self, in_img: np.ndarray) -> np.ndarray:
-        """
-        Predict with the nESRGAN+ model.
+        """Predict with the nESRGAN+ model.
 
-        :param in_img: The input image in BVR with 0 <= coefficient_{i,j,k} (np.uint8) <= 255.0 
-        :return: An RGB np.float32 np.ndarray with 0 <= coefficient_{i,j,k} (np.uint8) <= 255.0
+        Args:
+            in_img (np.ndarray): The input image in BGR with coefficients in (``np.uint8``) and between 0 and 255.
+
+        Returns:
+            An RGB ``np.ndarray`` with coefficients in (``np.float32``) and between 0 and 255.
+
+        Examples:
+            >>> edsr = Edsr(os.path.join('edsr', 'resources', 'EDSR_x4.pb'))
+            >>> in_img = cv2.imread(in_path, cv2.IMREAD_COLOR)
+            >>> out_nerganp = nesrganp.predict(in_img)
         """
 
         in_img = cv2.cvtColor(in_img, cv2.COLOR_BGR2RGB) / 255
