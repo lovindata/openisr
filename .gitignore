@@ -1,2 +1,5 @@
 __pycache__
 openisr/webapp/resources/uploads
+/dist
+*.egg*
+/html
