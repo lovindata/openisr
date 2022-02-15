@@ -3,6 +3,7 @@ import numpy as np
 import torch
 from nesrganp.model.models import Generator
 
+
 class NErganp:
     """Class containing the attributes and methods to work with the nESRGAN+ generator model.
     

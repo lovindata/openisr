@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+
 class Edsr:
     """Class containing the attributes and methods to work with the EDSR model.
 
