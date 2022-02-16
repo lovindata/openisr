@@ -3,7 +3,7 @@ import torch.nn as nn
 
 
 class GaussianNoise(nn.Module):
-    """Class containing the attributes and methods to work with the EDSR model.
+    """The Gaussian noise used when training.
 
     Attributes:
         gamma (float): The gamma related to the noise and defined in the nESRGAN+ paper.
@@ -13,7 +13,7 @@ class GaussianNoise(nn.Module):
         super(GaussianNoise, self).__init__()
         self.gamma = 0.1 # The gamma defined in the paper
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """The method to apply the GaussianNoise on `x`.
 
         Args:
@@ -70,7 +70,7 @@ class ResidualInResidualDenseBlock(nn.Module):
         )
         self.beta = 0.2
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """The method to apply the RRDB on `x` (64/64c).
 
         Args:
@@ -92,6 +92,9 @@ class ResidualInResidualDenseBlock(nn.Module):
 class ResidualDenseBlock(nn.Module):
     """The RDB advanced building block used in nESRGAN+.
 
+    Note:
+        Please see the original paper ESRGAN+ Fig.3 for more architecture details.
+
     Attributes:
         RDB1 (ResidualInResidualDenseBlock): RRDB 64/64c.
         RDB2 (ResidualInResidualDenseBlock): RRDB 64/64c.
@@ -108,7 +111,7 @@ class ResidualDenseBlock(nn.Module):
         self.noise = GaussianNoise()
         self.beta = 0.2
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """The method to apply the RDB on `x` (64/64c).
 
         Args:
@@ -124,11 +127,13 @@ class ResidualDenseBlock(nn.Module):
         return self.noise(out.mul(self.beta) + x)   # 64 -> 64 (Skip connection with a scaling factor)
     
 class ResidualDenseBlocks(nn.Module):
-    """The RRDB final building block used in nESRGAN+.
+    """The RDBs final building block used in nESRGAN+.
+
+    Note:
+        Please see the original SRGAN Fig.4, ESRGAN and ESRGAN+ papers for more architecture details.
 
     Attributes:
-        noise (GaussianNoise): The gaussian noise layer.
-        conv1x1 (Conv2d): The gaussian noise layer.
+        sub (Sequential): `B` RDB 64/64c blocks followed by a Conv2D 64/64c with bias.
     """
     
     def __init__(self):
@@ -138,5 +143,14 @@ class ResidualDenseBlocks(nn.Module):
             nn.Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
         )
     
-    def forward(self, x):
-        return x + self.sub(x) # 64 -> 64
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """The method to apply the RDBs on `x` (64/64c).
+
+        Args:
+            x (Tensor): The input tensor with 64c.
+
+        Returns:
+            Tensor: Output tensor 64c with the RDBs applied.
+        """
+        
+        return x + self.sub(x) # 64 -> 64 (Skip connection of the RDBs)

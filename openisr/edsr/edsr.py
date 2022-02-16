@@ -30,7 +30,7 @@ class Edsr:
             in_img (np.ndarray): The input image in BGR with coefficients in (``np.uint8``) and between 0 and 255.
 
         Returns:
-            An RGB ``np.ndarray`` with coefficients in (``np.float32``) and between 0 and 255.
+            np.ndarray: An RGB ``np.ndarray`` with coefficients in (``np.float32``) and between 0 and 255.
 
         Examples:
             >>> edsr = Edsr(os.path.join('edsr', 'resources', 'EDSR_x4.pb'))
