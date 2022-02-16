@@ -10,26 +10,48 @@ import cv2
 from edsr.edsr import Edsr
 from nesrganp.nesrganp import NErganp
 
-
+"""Global variables"""
+# Project global paths
 PROJECT_PATH = os.getcwd()
 STATIC_FOLDER = os.path.join(PROJECT_PATH, 'webapp', 'resources', 'static')
 TEMPLATES_FOLDER = os.path.join(PROJECT_PATH, 'webapp', 'resources', 'templates')
 UPLOAD_FOLDER = os.path.join(PROJECT_PATH, 'webapp', 'resources', 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
+# Initialize FastAPI main variable
 app = FastAPI()
 app.mount("/static", StaticFiles(directory=STATIC_FOLDER), name="static")
 templates = Jinja2Templates(directory=TEMPLATES_FOLDER)
 
+# Load the EDSR and nESRGAN+ models
 edsr = Edsr(os.path.join('edsr', 'resources', 'EDSR_x4.pb'))
 nesrganp = NErganp(os.path.join('nesrganp', 'resources', 'nESRGANplus.pth'))
 
 
-def allowed_file(filename):
+"""Global functions"""
+# File extension handler
+def allowed_file(filename: str) -> bool:
+    """File extension handler.
+
+    Args:
+        filename (str): The filename to check.
+
+    Returns:
+        bool: `true` if allowed file extension `false` otherwise.
+    """
+    
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def process_save(in_path, out_path):
+# To predict and write with EDSR and nESRGAN+ models
+def process_save(in_path: str, out_path: str):
+    """EDSR and nESRGAN+ combinaison predict on the image at `in_path` and write at the result image at `out_path`.
+
+    Args:
+        in_path (str): The input image path.
+        out_path (str): The output image path.
+    """
+    
     in_img = cv2.imread(in_path, cv2.IMREAD_COLOR) # Read as BGR
     out_edsr, out_nerganp = edsr.predict(in_img), nesrganp.predict(in_img)
     output = (out_edsr + out_nerganp) / 2
@@ -37,6 +59,7 @@ def process_save(in_path, out_path):
     cv2.imwrite(os.path.join(out_path), output)
 
 
+"""FastAPI routes"""
 @app.get('/', response_class=HTMLResponse)
 def index(request: Request):
     return templates.TemplateResponse("index.html", {'request': request})
