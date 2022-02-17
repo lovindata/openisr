@@ -23,8 +23,8 @@ class NErganp:
 
         self.model = Generator()
         self.model.load_state_dict(torch.load(model_path), strict=True)
-        self.model.eval()
-        for _, v in self.model.named_parameters():
+        self.model.eval()                                                   # Set all `training` Class variables to false.
+        for _, v in self.model.named_parameters():                          # Stop computing gradient for all Tensors.
             v.requires_grad = False
 
     def predict(self, in_img: np.ndarray) -> np.ndarray:
@@ -37,7 +37,7 @@ class NErganp:
             np.ndarray: An RGB ``np.ndarray`` with coefficients in (``np.float32``) and between 0 and 255.
 
         Examples:
-            >>> edsr = Edsr(os.path.join('edsr', 'resources', 'EDSR_x4.pb'))
+            >>> nesrganp = NErganp(os.path.join('nesrganp', 'resources', 'nESRGANplus.pth'))
             >>> in_img = cv2.imread(in_path, cv2.IMREAD_COLOR)
             >>> out_nerganp = nesrganp.predict(in_img)
         """

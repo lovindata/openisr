@@ -8,4 +8,20 @@
     <p class="mt-5"> <a href="/">Try again</a></p>
 </div>
 
+<div onload="getStatus(task_id, true);">
+    <h3>Task Status</h3>
+    <br>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Status</th>
+          <th>Result</th>
+        </tr>
+      </thead>
+      <tbody id="tasks"> <!-- Add row by main.js -->
+      </tbody>
+    </table>
+</div>
+
 {% endblock %}

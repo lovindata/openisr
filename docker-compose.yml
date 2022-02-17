@@ -6,7 +6,7 @@ services:
     build: .
     ports:
       - 8004:8000
-    command: python3 -m uvicorn tasksapp.webapp:app --host 0.0.0.0 --reload
+    command: python3 -m uvicorn webapp.app:app --host 0.0.0.0 --reload
     volumes:
       - ./openisr:/usr/src/app
     environment:
