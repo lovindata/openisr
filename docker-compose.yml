@@ -17,7 +17,7 @@ services:
 
   tasksapp1:
     build: .
-    command: python3 -m celery -A tasksapp.app worker --loglevel=INFO
+    command: python3 -m celery -A tasksapp.app worker --loglevel=INFO -E
     volumes:
       - ./openisr:/usr/src/app
     environment:
@@ -29,7 +29,7 @@ services:
 
   tasksapp2:
     build: .
-    command: python3 -m celery -A tasksapp.app worker --loglevel=INFO
+    command: python3 -m celery -A tasksapp.app worker --loglevel=INFO -E
     volumes:
       - ./openisr:/usr/src/app
     environment:

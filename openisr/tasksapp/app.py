@@ -44,7 +44,9 @@ def process_save(in_path: str, out_path: str):
     in_img = cv2.imread(in_path, cv2.IMREAD_COLOR)
     
     # Predict on both EDSR and nESRGAN+ then merge the results
+    print("DEBUG CODE : I will start predicting")
     out_edsr, out_nerganp = edsr.predict(in_img), nesrganp.predict(in_img)
+    print("DEBUG CODE : Prediction finished")
     output = (out_edsr + out_nerganp) / 2
     
     # Write as BVR result

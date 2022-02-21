@@ -82,7 +82,8 @@ async def infer(request: Request, image: UploadFile = File(...)) -> templates.Te
         with open(in_path, 'wb') as file:
             contents = await image.read()
             file.write(contents)
-        
+            print("DEBUG CODE infer", in_path)
+            
         # Async predict on the image saved
         out_image_name = f'openisr-{image.filename}'
         out_path = os.path.join(UPLOAD_FOLDER, f'openisr-{image.filename}')
