@@ -1,0 +1,8 @@
+python
+loguru
+fastapi
+uvicorn-standard
+sqlalchemy
+alembic
+pillow
+python-multipart
