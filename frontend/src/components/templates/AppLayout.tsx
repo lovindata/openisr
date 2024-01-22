@@ -9,7 +9,7 @@ export function AppLayout({ children }: Props) {
   return (
     <div className="md:flex md:flex-row">
       <NavBar />
-      <div>{children}</div>
+      <div className="h-full w-full">{children}</div>
     </div>
   );
 }
