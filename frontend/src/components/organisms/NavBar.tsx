@@ -1,3 +1,4 @@
+import { Link } from "../atoms/Link";
 import { SvgIcon } from "../atoms/SvgIcon";
 import { useNavigate } from "react-router-dom";
 
@@ -15,23 +16,15 @@ export default function NavBar() {
         onClick={() => navigate("/app")}
       />
       <div className="flex flex-col items-center max-md:flex-row max-md:space-x-3 md:space-y-3">
-        <a href={"/app"} target="_blank" rel="noopener noreferrer">
+        <Link href="/app">
           <SvgIcon type="donation" className="h-5 w-5" />
-        </a>
-        <a
-          href={"https://hub.docker.com/u/ilovedatajjia"}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        </Link>
+        <Link href="https://hub.docker.com/u/ilovedatajjia">
           <SvgIcon type="docker" className="h-5 w-5" />
-        </a>
-        <a
-          href={"https://github.com/iLoveDataJjia"}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        </Link>
+        <Link href="https://github.com/iLoveDataJjia">
           <SvgIcon type="github" className="h-5 w-5" />
-        </a>
+        </Link>
       </div>
     </nav>
   );

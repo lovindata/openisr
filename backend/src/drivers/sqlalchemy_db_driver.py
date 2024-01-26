@@ -2,14 +2,14 @@ import configparser
 from contextlib import contextmanager
 from typing import Generator
 
-from drivers.env_loader_driver import EnvLoaderDriver, env_laoder_driver_impl
+from drivers.os_env_loader_driver import OsEnvLoaderDriver, os_env_laoder_driver_impl
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from usecases.drivers.db_driver import DbDriver
 
 
 class SqlAlchemyDbDriver(DbDriver):
-    def __init__(self, env_loader_driver: EnvLoaderDriver) -> None:
+    def __init__(self, env_loader_driver: OsEnvLoaderDriver) -> None:
         self.env_loader_driver = env_loader_driver
 
     @contextmanager
@@ -25,4 +25,4 @@ class SqlAlchemyDbDriver(DbDriver):
         ...
 
 
-sqlalchemy_db_driver_impl = SqlAlchemyDbDriver(env_laoder_driver_impl)
+sqlalchemy_db_driver_impl = SqlAlchemyDbDriver(os_env_laoder_driver_impl)

@@ -9,5 +9,6 @@
   "isort.args": ["--profile", "black"],
   "python.analysis.typeCheckingMode": "basic",
   "python.analysis.autoImportCompletions": true,
+  "python.analysis.extraPaths": ["backend/src"],
   "python.analysis.diagnosticMode": "workspace"
 }

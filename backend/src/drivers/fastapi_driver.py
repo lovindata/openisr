@@ -1,6 +1,6 @@
 import uvicorn
 from adapters.controllers.images.images_ctrl import ImagesCtrl, images_ctrl_impl
-from drivers.env_loader_driver import EnvLoaderDriver, env_laoder_driver_impl
+from drivers.os_env_loader_driver import OsEnvLoaderDriver, os_env_laoder_driver_impl
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -11,7 +11,7 @@ class FastApiDriver:
     def __init__(
         self,
         images_ctrl: ImagesCtrl,
-        env_loader_driver: EnvLoaderDriver,
+        env_loader_driver: OsEnvLoaderDriver,
     ) -> None:
         self.images_ctrl = images_ctrl
         self.env_loader_driver = env_loader_driver
@@ -84,5 +84,5 @@ class FastApiDriver:
                 )
 
 
-fastapi_driver_impl = FastApiDriver(images_ctrl_impl, env_laoder_driver_impl)
-_ = None if env_laoder_driver_impl.prod_mode else fastapi_driver_impl.app
+fastapi_driver_impl = FastApiDriver(images_ctrl_impl, os_env_laoder_driver_impl)
+_ = None if os_env_laoder_driver_impl.prod_mode else fastapi_driver_impl.app
