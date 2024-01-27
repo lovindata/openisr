@@ -9,7 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 export default function Page() {
   const { backend } = useBackend();
   const { data: images } = useQuery({
-    queryKey: ["images"],
+    queryKey: ["/images"],
     queryFn: () =>
       backend
         .get<

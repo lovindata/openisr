@@ -34,10 +34,10 @@ export function ImagesSection({ images }: Props) {
         {images?.map((image) => (
           <ImageCard
             key={image.id}
+            id={image.id}
             src={image.src}
             name={image.name}
-            width={image.source.width}
-            height={image.source.height}
+            source={image.source}
           />
         ))}
       </div>
