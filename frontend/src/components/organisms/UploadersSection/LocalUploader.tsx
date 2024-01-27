@@ -3,12 +3,13 @@ import { paths } from "../../../services/backend/endpoints";
 import { BorderBox } from "../../atoms/BorderBox";
 import { SvgIcon } from "../../atoms/SvgIcon";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useDropzone } from "react-dropzone";
 
 export function LocalUploader() {
   const { backend } = useBackend();
   const queryClient = useQueryClient();
   const { mutate: uploadImages } = useMutation({
-    mutationFn: async (files: FileList) => {
+    mutationFn: async (files: File[]) => {
       const formData = new FormData();
       for (let i = 0; i < files.length; i++) formData.append("files", files[i]);
       return backend
@@ -20,21 +21,19 @@ export function LocalUploader() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/images"] }),
   });
 
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: { "images/*": [] },
+    onDrop: (acceptedFiles) => uploadImages(acceptedFiles),
+  });
+
   return (
-    <BorderBox dashed className="relative h-16 w-32">
-      <input
-        type="file"
-        title=""
-        accept="image/*"
-        multiple
-        className="absolute inset-0 opacity-0"
-        onChange={(event) =>
-          event.target.files && uploadImages(event.target.files)
-        }
-      />
-      <div className="m-auto flex h-full w-min items-center space-x-3">
-        <SvgIcon type="folder" className="h-8 w-8" />
-        <label>Local upload</label>
+    <BorderBox dashed className="h-16 w-32">
+      <div {...getRootProps()} className="h-full">
+        <input {...getInputProps()} />
+        <div className="mx-auto flex h-full w-min items-center space-x-3">
+          <SvgIcon type="folder" className="h-8 w-8" />
+          <label>Local upload</label>
+        </div>
       </div>
     </BorderBox>
   );

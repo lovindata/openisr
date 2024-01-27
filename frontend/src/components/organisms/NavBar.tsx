@@ -8,7 +8,7 @@ export default function NavBar() {
   return (
     <nav className="max-md:h-12 md:w-10">
       <div
-        className="fixed z-50 flex items-center justify-between border-white border-opacity-50
+        className="fixed flex items-center justify-between border-white border-opacity-50
         bg-black max-md:w-full max-md:flex-row max-md:border-b max-md:px-3 max-md:py-2 md:h-full md:flex-col md:border-r md:px-2 md:py-3"
       >
         <SvgIcon
