@@ -1,6 +1,6 @@
 export function HeroSection() {
   return (
-    <div className="w-72 md:space-y-3">
+    <section className="w-72 md:space-y-3">
       <h1 className="text-xl font-bold max-md:text-center">
         OpenISR - Manage your images with AI
       </h1>
@@ -8,6 +8,6 @@ export function HeroSection() {
         <p>© 2024 - Crafted by J.J.</p>
         <p>Open sourced under MIT License</p>
       </div>
-    </div>
+    </section>
   );
 }
