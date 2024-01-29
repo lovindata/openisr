@@ -1,5 +1,9 @@
 import uvicorn
-from adapters.controllers.images.images_ctrl import ImagesCtrl, images_ctrl_impl
+from adapters.controllers.images_ctrl.images_ctrl import ImagesCtrl, images_ctrl_impl
+from adapters.controllers.processes_ctrl.processes_ctrl import (
+    ProcessesCtrl,
+    processes_ctrl_impl,
+)
 from drivers.os_env_loader_driver import OsEnvLoaderDriver, os_env_laoder_driver_impl
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,15 +15,18 @@ class FastApiDriver:
     def __init__(
         self,
         images_ctrl: ImagesCtrl,
+        processes_ctrl: ProcessesCtrl,
         env_loader_driver: OsEnvLoaderDriver,
     ) -> None:
         self.images_ctrl = images_ctrl
+        self.processes_ctrl = processes_ctrl
         self.env_loader_driver = env_loader_driver
 
         self.app = FastAPI(title="OpenISR")
         self._set_allow_cors_if_dev()
         self._initalize_exception_handler()
         self.app.include_router(self.images_ctrl.router())
+        self.app.include_router(self.processes_ctrl.router())
 
     def run(self) -> None:
         if self.env_loader_driver.prod_mode:
@@ -84,5 +91,7 @@ class FastApiDriver:
                 )
 
 
-fastapi_driver_impl = FastApiDriver(images_ctrl_impl, os_env_laoder_driver_impl)
+fastapi_driver_impl = FastApiDriver(
+    images_ctrl_impl, processes_ctrl_impl, os_env_laoder_driver_impl
+)
 _ = None if os_env_laoder_driver_impl.prod_mode else fastapi_driver_impl.app

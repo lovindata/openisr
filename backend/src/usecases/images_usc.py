@@ -13,7 +13,7 @@ from usecases.drivers.env_loader_driver import EnvLoaderDriver
 from usecases.repositories.images_rep import ImagesRep
 
 
-class ImageUsc:
+class ImagesUsc:
     def __init__(
         self,
         env_loader_driver: EnvLoaderDriver,
@@ -65,6 +65,6 @@ class ImageUsc:
         return src
 
 
-image_usc_impl = ImageUsc(
+images_usc_impl = ImagesUsc(
     os_env_laoder_driver_impl, sqlalchemy_db_driver_impl, sqlalchemy_images_rep_impl
 )

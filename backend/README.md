@@ -14,7 +14,13 @@ Please install VSCode extensions:
 To install dependencies on a given `openisr` Python environnement, from `./backend` run the command:
 
 ```bash
-conda create --name openisr --channel=conda-forge --file ./requirements.txt
+conda env create --file environment.yml
+```
+
+To update this environment:
+
+```bash
+conda env update --file environment.yml --prune
 ```
 
 Using the newly created `openisr` Python environnement from `./backend`, run [main.py](.\src\main.py) (please adapt the paths):

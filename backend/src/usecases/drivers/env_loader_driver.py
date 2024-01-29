@@ -11,3 +11,8 @@ class EnvLoaderDriver(ABC):
     @abstractmethod
     def api_port(self) -> int:
         pass
+
+    @property
+    @abstractmethod
+    def process_timeout(self) -> int:
+        pass
