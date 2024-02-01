@@ -2,9 +2,9 @@ from datetime import datetime
 from typing import Literal, Optional
 
 from adapters.repositories.configs.base import Base
-from entities.process_ent.extension_val import ExtensionVal
+from entities.common.extension_val import ExtensionVal
+from entities.process_ent import ProcessEnt
 from entities.process_ent.image_size_val import ImageSizeVal
-from entities.process_ent.process_ent import ProcessEnt
 from entities.process_ent.status_val import StatusVal
 from helpers.exception_utils import BadRequestException
 from sqlalchemy import ForeignKey, func, select
@@ -96,6 +96,11 @@ class SqlAlchemyProcessesRep(ProcessesRep):
         session.add(row)
         session.flush()
         return row.to_ent()
+
+    def update(self, session: Session, ent: ProcessEnt) -> ProcessEnt:
+        row = self._get_or_raise_when_process_not_found(session, ent.id)
+        row.extension = ...
+        # TODO James - Continue dev here (needs an update method)
 
     def get_latest(self, session: Session, image_id: int) -> ProcessEnt:
         ...

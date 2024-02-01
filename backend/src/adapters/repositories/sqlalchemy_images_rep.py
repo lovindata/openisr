@@ -53,6 +53,12 @@ class SqlAlchemyImagesRep(ImagesRep):
         session.delete(row)
         return ent
 
+    def update(self, session: Session, ent: ImageEnt) -> ImageEnt:
+        row = self._get_or_raise_when_image_not_found(session, ent.id)
+        row.name = ent.name
+        row.data = row.data
+        return ent
+
     def _get_or_raise_when_image_not_found(self, session: Session, id: int) -> ImageRow:
         stmt = select(ImageRow).where(ImageRow.id == id)
         row = session.scalar(stmt)

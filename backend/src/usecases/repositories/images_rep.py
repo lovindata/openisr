@@ -21,3 +21,7 @@ class ImagesRep(ABC):
     @abstractmethod
     def delete(self, session: Session, id: int) -> ImageEnt:
         pass
+
+    @abstractmethod
+    def update(self, session: Session, ent: ImageEnt) -> ImageEnt:
+        pass

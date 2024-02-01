@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Literal
 
-from entities.process_ent.process_ent import ProcessEnt
+from entities.process_ent import ProcessEnt
 from sqlalchemy.orm import Session
 
 
@@ -17,6 +17,10 @@ class ProcessesRep(ABC):
         target_height: int,
         enable_ai: bool,
     ) -> ProcessEnt:
+        pass
+
+    @abstractmethod
+    def update(self, session: Session, ent: ProcessEnt) -> ProcessEnt:
         pass
 
     @abstractmethod

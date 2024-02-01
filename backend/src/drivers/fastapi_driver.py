@@ -1,9 +1,6 @@
 import uvicorn
-from adapters.controllers.images_ctrl.images_ctrl import ImagesCtrl, images_ctrl_impl
-from adapters.controllers.processes_ctrl.processes_ctrl import (
-    ProcessesCtrl,
-    processes_ctrl_impl,
-)
+from adapters.controllers.images_ctrl import ImagesCtrl, images_ctrl_impl
+from adapters.controllers.processes_ctrl import ProcessesCtrl, processes_ctrl_impl
 from drivers.os_env_loader_driver import OsEnvLoaderDriver, os_env_laoder_driver_impl
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware

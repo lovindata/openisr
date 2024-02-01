@@ -1,3 +1,4 @@
+from entities.common.extension_val import ExtensionVal
 from PIL.Image import Image
 
 
@@ -6,3 +7,8 @@ class ImageEnt:
         self.id = id
         self.name = name
         self.data = data
+
+    def update_data(self, data: Image, extension: ExtensionVal) -> "ImageEnt":
+        self.name = "".join(self.name.split(".")[:-1]) + f".{extension.value.lower()}"
+        self.data = data
+        return self

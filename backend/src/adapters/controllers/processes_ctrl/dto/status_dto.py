@@ -5,9 +5,6 @@ from pydantic import BaseModel
 
 
 class StatusDto(BaseModel):
-    started_at: datetime
-    ended: "SuccessfulDto | FailedDto | None"
-
     class SuccessfulDto(BaseModel):
         kind: Literal["successful"] = "successful"
         at: datetime
@@ -16,3 +13,6 @@ class StatusDto(BaseModel):
         kind: Literal["failed"] = "failed"
         at: datetime
         error: str
+
+    started_at: datetime
+    ended: SuccessfulDto | FailedDto | None
