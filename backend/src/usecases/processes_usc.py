@@ -1,3 +1,4 @@
+import asyncio
 from typing import Literal, Tuple
 
 from adapters.repositories.sqlalchemy_images_rep import sqlalchemy_images_rep_impl
@@ -7,11 +8,9 @@ from drivers.opcv_pillow_image_processing_driver import (
 )
 from drivers.os_env_loader_driver import os_env_laoder_driver_impl
 from drivers.sqlalchemy_db_driver import sqlalchemy_db_driver_impl
-from entities.common.extension_val import ExtensionVal
 from entities.image_ent import ImageEnt
 from entities.process_ent import ProcessEnt
 from helpers.exception_utils import BadRequestException
-from PIL.Image import Image
 from usecases.drivers.db_driver import DbDriver
 from usecases.drivers.env_loader_driver import EnvLoaderDriver
 from usecases.drivers.image_processing_driver import ImageProcessingDriver
@@ -68,7 +67,10 @@ class ProcessesUsc:
                 )
             return image, process
 
-        def terminate_process() -> None:
+        async def run_process() -> None:
+            out_image_data = self.image_processing_driver.process_image(
+                image.data, process
+            )
             with self.db_driver.get_session() as session:
                 updated_image = image.update_data(out_image_data, process.extension)
                 self.images_rep.update(session, updated_image)
@@ -77,8 +79,7 @@ class ProcessesUsc:
 
         raise_when_target_invalid()
         image, process = create_process()
-        out_image_data = self.image_processing_driver.process_image(image.data, process)
-        terminate_process()
+        asyncio.run(run_process())  # TODO BAD IT HAS TO RUN A DEDICATED PROCESS
         return process
 
 

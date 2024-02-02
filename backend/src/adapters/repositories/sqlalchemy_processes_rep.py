@@ -27,27 +27,30 @@ class ProcessRow(Base):
     status_ended_failed_at: Mapped[Optional[datetime]]
     status_ended_failed_error: Mapped[Optional[str]]
 
-    @classmethod
-    def from_ent(cls, entity: ProcessEnt) -> "ProcessRow":
-        return ProcessRow(
-            id=entity.id,
-            source_image_id=entity.source_image_id,
-            extension=entity.extension.value,
-            preserve_ratio=entity.preserve_ratio,
-            target_width=entity.target.width,
-            target_height=entity.target.height,
-            enable_ai=entity.enable_ai,
-            started_at=entity.status.started_at,
-            successful_at=ended_at.at
+    def set_all_with(self, entity: ProcessEnt) -> "ProcessRow":
+        self.source_image_id = entity.source_image_id
+        self.extension = entity.extension
+        self.preserve_ratio = entity.preserve_ratio
+        self.target_width = entity.target.width
+        self.target_height = entity.target.height
+        self.enable_ai = entity.enable_ai
+        self.started_at = entity.status.started_at
+        self.successful_at = (
+            ended_at.at
             if type(ended_at := entity.status.ended) is StatusVal.Successful
-            else None,
-            failed_at=ended_at.at
-            if type(ended_at := entity.status.ended) is StatusVal.Failed
-            else None,
-            error=ended_at.error
-            if type(ended_at := entity.status.ended) is StatusVal.Failed
-            else None,
+            else None
         )
+        self.failed_at = (
+            ended_at.at
+            if type(ended_at := entity.status.ended) is StatusVal.Failed
+            else None
+        )
+        self.error = (
+            ended_at.error
+            if type(ended_at := entity.status.ended) is StatusVal.Failed
+            else None
+        )
+        return self
 
     def to_ent(self) -> ProcessEnt:
         def parse_status_ended_columns() -> (
@@ -98,9 +101,11 @@ class SqlAlchemyProcessesRep(ProcessesRep):
         return row.to_ent()
 
     def update(self, session: Session, ent: ProcessEnt) -> ProcessEnt:
-        row = self._get_or_raise_when_process_not_found(session, ent.id)
-        row.extension = ...
-        # TODO James - Continue dev here (needs an update method)
+        return (
+            self._get_or_raise_when_process_not_found(session, ent.id)
+            .set_all_with(ent)
+            .to_ent()
+        )
 
     def get_latest(self, session: Session, image_id: int) -> ProcessEnt:
         ...

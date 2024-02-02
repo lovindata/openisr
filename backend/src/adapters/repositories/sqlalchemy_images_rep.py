@@ -17,12 +17,19 @@ class ImageRow(Base):
     name: Mapped[str] = mapped_column(nullable=False)
     data: Mapped[bytes] = mapped_column(nullable=False)
 
-    @classmethod
-    def from_ent(cls, entity: ImageEnt) -> "ImageRow":
-        data_bytes = BytesIO()
-        entity.data.save(data_bytes)
-        data_bytes = data_bytes.getvalue()
-        return ImageRow(name=entity.name, data=data_bytes)
+    def set_all_with(self, entity: ImageEnt) -> "ImageRow":
+        def convert_image_to_bytes():
+            data_bytes = BytesIO()
+            print(entity.name)
+            entity.data.save(
+                data_bytes, entity.name.split(".")[-1]
+            )  # TODO James bug "jpg" instead of "jpeg" cause bug for pillow
+            data_bytes = data_bytes.getvalue()
+            return data_bytes
+
+        self.name = entity.name
+        self.data = convert_image_to_bytes()
+        return self
 
     def to_ent(self) -> ImageEnt:
         data_image = BytesIO(self.data)
@@ -54,10 +61,11 @@ class SqlAlchemyImagesRep(ImagesRep):
         return ent
 
     def update(self, session: Session, ent: ImageEnt) -> ImageEnt:
-        row = self._get_or_raise_when_image_not_found(session, ent.id)
-        row.name = ent.name
-        row.data = row.data
-        return ent
+        return (
+            self._get_or_raise_when_image_not_found(session, ent.id)
+            .set_all_with(ent)
+            .to_ent()
+        )
 
     def _get_or_raise_when_image_not_found(self, session: Session, id: int) -> ImageRow:
         stmt = select(ImageRow).where(ImageRow.id == id)
