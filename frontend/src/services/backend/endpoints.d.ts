@@ -21,6 +21,12 @@ export interface paths {
     /** Image thumbnail (144x144) */
     get: operations["__images_thumbnail__id__webp_get"];
   };
+  "/images/{id}/process": {
+    /** Get latest process */
+    get: operations["__images__id__process_get"];
+    /** Run process */
+    post: operations["__images__id__process_post"];
+  };
 }
 
 export type webhooks = Record<string, never>;
@@ -31,6 +37,22 @@ export interface components {
     Body___images_upload_local_post: {
       /** Files */
       files: string[];
+    };
+    /** FailedDto */
+    FailedDto: {
+      /**
+       * Kind
+       * @default failed
+       * @enum {string}
+       */
+      kind?: "failed";
+      /**
+       * At
+       * Format: date-time
+       */
+      at: string;
+      /** Error */
+      error: string;
     };
     /** HTTPValidationError */
     HTTPValidationError: {
@@ -45,6 +67,11 @@ export interface components {
       src: string;
       /** Name */
       name: string;
+      /**
+       * Extension
+       * @enum {string}
+       */
+      extension: "JPEG" | "PNG" | "WEBP";
       source: components["schemas"]["ImageSizeDto"];
     };
     /** ImageSizeDto */
@@ -53,6 +80,55 @@ export interface components {
       width: number;
       /** Height */
       height: number;
+    };
+    /** ProcessIDto */
+    ProcessIDto: {
+      /**
+       * Extension
+       * @enum {string}
+       */
+      extension: "JPEG" | "PNG" | "WEBP";
+      target: components["schemas"]["ImageSizeDto"];
+      /** Enable Ai */
+      enable_ai: boolean;
+    };
+    /** ProcessODto */
+    ProcessODto: {
+      /** Id */
+      id: number;
+      target: components["schemas"]["ImageSizeDto"];
+      status: components["schemas"]["StatusDto"];
+      /**
+       * Extension
+       * @enum {string}
+       */
+      extension: "JPEG" | "PNG" | "WEBP";
+      /** Enable Ai */
+      enable_ai: boolean;
+    };
+    /** StatusDto */
+    StatusDto: {
+      /**
+       * Started At
+       * Format: date-time
+       */
+      started_at: string;
+      /** Ended */
+      ended?: components["schemas"]["SuccessfulDto"] | components["schemas"]["FailedDto"];
+    };
+    /** SuccessfulDto */
+    SuccessfulDto: {
+      /**
+       * Kind
+       * @default successful
+       * @enum {string}
+       */
+      kind?: "successful";
+      /**
+       * At
+       * Format: date-time
+       */
+      at: string;
     };
     /** ValidationError */
     ValidationError: {
@@ -143,6 +219,55 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Get latest process */
+  __images__id__process_get: {
+    parameters: {
+      path: {
+        id: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProcessODto"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Run process */
+  __images__id__process_post: {
+    parameters: {
+      path: {
+        id: number;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ProcessIDto"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProcessODto"];
+        };
       };
       /** @description Validation Error */
       422: {

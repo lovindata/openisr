@@ -22,7 +22,12 @@ export function LocalUploader() {
   });
 
   const { getRootProps, getInputProps } = useDropzone({
-    accept: { "images/*": [] },
+    accept: {
+      "image/png": [".png"],
+      "image/jpg": [".jpg"],
+      "image/jpeg": [".jpeg"],
+      "image/webp": [".webp"],
+    },
     onDrop: (acceptedFiles) => uploadImages(acceptedFiles),
   });
 

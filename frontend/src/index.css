@@ -36,3 +36,9 @@ body {
     rgb(var(--background-start-rgb));
   font-family: "Inter";
 }
+
+.hide-spinner::-webkit-inner-spin-button,
+.hide-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

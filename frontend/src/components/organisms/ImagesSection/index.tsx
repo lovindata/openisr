@@ -2,8 +2,8 @@ import { useBackend } from "../../../services/backend";
 import { paths } from "../../../services/backend/endpoints";
 import { SectionHeader } from "../../atoms/SectionHeader";
 import { ImageCard } from "./ImageCard";
-import { RadioProcess } from "./RadioProcess";
-import { ProcessOptions } from "./RadioProcess/ProcessOptions";
+import { ProcessRadio } from "./ProcessRadio";
+import { ProcessOptions } from "./ProcessRadio/ProcessOptions";
 import { SearchBar } from "./SearchBar";
 import { useQuery } from "@tanstack/react-query";
 import Fuse from "fuse.js";
@@ -37,7 +37,7 @@ export function ImagesSection() {
           value={search}
           onChange={(event) => setSearch(event.target.value)}
         />
-        <RadioProcess value={option} setValue={setOption} />
+        <ProcessRadio value={option} setValue={setOption} />
       </div>
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
         {imageDisplayed?.map((image) => (
@@ -46,6 +46,7 @@ export function ImagesSection() {
             id={image.id}
             src={image.src}
             name={image.name}
+            extension={image.extension}
             source={image.source}
           />
         ))}
