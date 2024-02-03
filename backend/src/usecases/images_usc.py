@@ -4,10 +4,11 @@ from typing import List, Tuple
 from adapters.repositories.sqlalchemy_images_rep import sqlalchemy_images_rep_impl
 from drivers.os_env_loader_driver import os_env_laoder_driver_impl
 from drivers.sqlalchemy_db_driver import sqlalchemy_db_driver_impl
+from entities.common.extension_val import ExtensionVal
 from entities.image_ent import ImageEnt
 from fastapi import UploadFile
 from helpers.exception_utils import BadRequestException
-from helpers.pil_utils import build_thumbnail
+from helpers.pil_utils import build_thumbnail, open_from_bytes
 from usecases.drivers.db_driver import DbDriver
 from usecases.drivers.env_loader_driver import EnvLoaderDriver
 from usecases.repositories.images_rep import ImagesRep
@@ -38,8 +39,12 @@ class ImagesUsc:
         def extract_name_and_data(file: UploadFile) -> Tuple[str, bytes]:
             if file.filename is None:
                 raise BadRequestException("Cannot extract a file name.")
-            name = file.filename
+            name = "".join(file.filename.split(".")[:-1])
             data = file.file.read()
+            if (img_format := open_from_bytes(data).format) not in [
+                x.value for x in list(ExtensionVal)
+            ]:
+                raise BadRequestException(f"Not supported image format: {img_format}.")
             return name, data
 
         images = [extract_name_and_data(file) for file in files]

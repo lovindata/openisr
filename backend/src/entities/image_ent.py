@@ -8,9 +8,6 @@ class ImageEnt:
         self.name = name
         self.data = data
 
-    def update_data(self, data: Image, extension: ExtensionVal) -> "ImageEnt":
-        self.name = (
-            "".join(self.name.split(".")[:-1]) + f".{extension.to_file_extension()}"
-        )
+    def update_data(self, data: Image) -> "ImageEnt":
         self.data = data
         return self

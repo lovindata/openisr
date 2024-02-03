@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Literal
 
+from entities.common.extension_val import ExtensionVal
 from entities.process_ent import ProcessEnt
 from sqlalchemy.orm import Session
 
@@ -11,8 +12,7 @@ class ProcessesRep(ABC):
         self,
         session: Session,
         image_id: int,
-        extension: Literal["JPEG", "PNG", "WEBP"],
-        preserve_ratio: bool,
+        extension: ExtensionVal,
         target_width: int,
         target_height: int,
         enable_ai: bool,

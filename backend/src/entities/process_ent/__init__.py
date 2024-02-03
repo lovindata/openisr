@@ -9,21 +9,23 @@ class ProcessEnt:
     def __init__(
         self,
         id: int,
-        source_image_id: int,
+        image_id: int,
         extension: ExtensionVal,
-        preserve_ratio: bool,
         target: ImageSizeVal,
         enable_ai: bool,
         status: StatusVal,
     ) -> None:
         self.id = id
-        self.source_image_id = source_image_id
+        self.image_id = image_id
         self.extension = extension
-        self.preserve_ratio = preserve_ratio
         self.target = target
         self.enable_ai = enable_ai
         self.status = status
 
-    def terminate_sucessfully(self) -> "ProcessEnt":
+    def terminate_success(self) -> "ProcessEnt":
         self.status.ended = StatusVal.Successful(datetime.now())
+        return self
+
+    def terminate_failed(self, stacktrace_error: str) -> "ProcessEnt":
+        self.status.ended = StatusVal.Failed(datetime.now(), stacktrace_error)
         return self

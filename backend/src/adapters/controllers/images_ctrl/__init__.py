@@ -1,7 +1,8 @@
 from typing import List
 
+from adapters.controllers.common.dto.image_size_dto import ImageSizeDto
 from adapters.controllers.images_ctrl.dto.image_odto import ImageODto
-from adapters.controllers.images_ctrl.dto.image_size_dto import ImageSizeDto
+from entities.common.extension_val import ExtensionVal
 from entities.image_ent import ImageEnt
 from fastapi import APIRouter, FastAPI, UploadFile
 from fastapi.responses import StreamingResponse
@@ -56,6 +57,7 @@ class ImagesCtrl:
             id=ent.id,
             src=src,
             name=ent.name,
+            extension=ExtensionVal(ent.data.format).value,
             source=ImageSizeDto(width=ent.data.size[0], height=ent.data.size[1]),
         )
 

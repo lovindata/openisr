@@ -4,6 +4,7 @@ from typing import List
 from adapters.repositories.configs.base import Base
 from entities.image_ent import ImageEnt
 from helpers.exception_utils import BadRequestException
+from helpers.pil_utils import extract_bytes, open_from_bytes
 from PIL import Image
 from sqlalchemy import select
 from sqlalchemy.orm import Mapped, Session, mapped_column
@@ -18,23 +19,12 @@ class ImageRow(Base):
     data: Mapped[bytes] = mapped_column(nullable=False)
 
     def set_all_with(self, entity: ImageEnt) -> "ImageRow":
-        def convert_image_to_bytes():
-            data_bytes = BytesIO()
-            print(entity.name)
-            entity.data.save(
-                data_bytes, entity.name.split(".")[-1]
-            )  # TODO James bug "jpg" instead of "jpeg" cause bug for pillow
-            data_bytes = data_bytes.getvalue()
-            return data_bytes
-
         self.name = entity.name
-        self.data = convert_image_to_bytes()
+        self.data = extract_bytes(entity.data)
         return self
 
     def to_ent(self) -> ImageEnt:
-        data_image = BytesIO(self.data)
-        data_image = Image.open(data_image)
-        return ImageEnt(self.id, self.name, data_image)
+        return ImageEnt(self.id, self.name, open_from_bytes(self.data))
 
 
 class SqlAlchemyImagesRep(ImagesRep):

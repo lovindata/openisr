@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 
+from entities.common.extension_val import ExtensionVal
 from entities.image_ent import ImageEnt
 from sqlalchemy.orm import Session
 

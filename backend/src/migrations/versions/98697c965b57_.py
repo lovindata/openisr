@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: ee500dcb08b3
+Revision ID: 98697c965b57
 Revises: 
-Create Date: 2024-01-29 07:21:11.624641
+Create Date: 2024-02-03 19:16:27.345619
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'ee500dcb08b3'
+revision: str = '98697c965b57'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -28,9 +28,8 @@ def upgrade() -> None:
     )
     op.create_table('processes',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('source_image_id', sa.Integer(), nullable=False),
+    sa.Column('image_id', sa.Integer(), nullable=False),
     sa.Column('extension', sa.Enum('JPEG', 'PNG', 'WEBP', name='extensionval'), nullable=False),
-    sa.Column('preserve_ratio', sa.Boolean(), nullable=False),
     sa.Column('target_width', sa.Integer(), nullable=False),
     sa.Column('target_height', sa.Integer(), nullable=False),
     sa.Column('enable_ai', sa.Boolean(), nullable=False),
@@ -38,7 +37,7 @@ def upgrade() -> None:
     sa.Column('status_ended_successful_at', sa.DateTime(), nullable=True),
     sa.Column('status_ended_failed_at', sa.DateTime(), nullable=True),
     sa.Column('status_ended_failed_error', sa.String(), nullable=True),
-    sa.ForeignKeyConstraint(['source_image_id'], ['images.id'], ),
+    sa.ForeignKeyConstraint(['image_id'], ['images.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###

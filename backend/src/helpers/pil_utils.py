@@ -1,4 +1,36 @@
-from PIL.Image import Image
+from enum import Enum
+from io import BytesIO
+
+from PIL.Image import Image, open
+
+
+class PILFormat(Enum):
+    JPEG = "JPEG"
+    PNG = "PNG"
+    BMP = "BMP"
+    GIF = "GIF"
+    TIFF = "TIFF"
+    ICO = "ICO"
+    WEBP = "WEBP"
+    PPM = "PPM"
+    PGM = "PGM"
+    PBM = "PBM"
+    PNM = "PNM"
+    RGB = "RGB"
+    RGBA = "RGBA"
+    CMYK = "CMYK"
+    EPS = "EPS"
+    TGA = "TGA"
+
+
+def open_from_bytes(bytes: bytes) -> Image:
+    return open(BytesIO(bytes))
+
+
+def extract_bytes(image: Image) -> bytes:
+    bytesio = BytesIO()
+    image.save(bytesio, format=image.format)
+    return bytesio.getvalue()
 
 
 def build_thumbnail(image: Image, square_length: int) -> Image:

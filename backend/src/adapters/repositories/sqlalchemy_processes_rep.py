@@ -16,9 +16,8 @@ class ProcessRow(Base):
     __tablename__ = "processes"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    source_image_id: Mapped[int] = mapped_column(ForeignKey("images.id"))
+    image_id: Mapped[int] = mapped_column(ForeignKey("images.id"))
     extension: Mapped[ExtensionVal]
-    preserve_ratio: Mapped[bool]
     target_width: Mapped[int]
     target_height: Mapped[int]
     enable_ai: Mapped[bool]
@@ -28,26 +27,23 @@ class ProcessRow(Base):
     status_ended_failed_error: Mapped[Optional[str]]
 
     def set_all_with(self, entity: ProcessEnt) -> "ProcessRow":
-        self.source_image_id = entity.source_image_id
+        self.image_id = entity.image_id
         self.extension = entity.extension
-        self.preserve_ratio = entity.preserve_ratio
         self.target_width = entity.target.width
         self.target_height = entity.target.height
         self.enable_ai = entity.enable_ai
-        self.started_at = entity.status.started_at
-        self.successful_at = (
-            ended_at.at
-            if type(ended_at := entity.status.ended) is StatusVal.Successful
+        self.status_started_at = entity.status.started_at
+        self.status_ended_successful_at = (
+            ended.at
+            if type(ended := entity.status.ended) is StatusVal.Successful
             else None
         )
-        self.failed_at = (
-            ended_at.at
-            if type(ended_at := entity.status.ended) is StatusVal.Failed
-            else None
+        self.status_ended_failed_at = (
+            ended.at if type(ended := entity.status.ended) is StatusVal.Failed else None
         )
-        self.error = (
-            ended_at.error
-            if type(ended_at := entity.status.ended) is StatusVal.Failed
+        self.status_ended_failed_error = (
+            ended.error
+            if type(ended := entity.status.ended) is StatusVal.Failed
             else None
         )
         return self
@@ -68,9 +64,8 @@ class ProcessRow(Base):
         ended = parse_status_ended_columns()
         return ProcessEnt(
             self.id,
-            self.source_image_id,
+            self.image_id,
             self.extension,
-            self.preserve_ratio,
             ImageSizeVal(self.target_width, self.target_height),
             self.enable_ai,
             StatusVal(self.status_started_at, ended),
@@ -82,16 +77,14 @@ class SqlAlchemyProcessesRep(ProcessesRep):
         self,
         session: Session,
         image_id: int,
-        extension: Literal["JPEG", "PNG", "WEBP"],
-        preserve_ratio: bool,
+        extension: ExtensionVal,
         target_width: int,
         target_height: int,
         enable_ai: bool,
     ) -> ProcessEnt:
         row = ProcessRow(
-            source_image_id=image_id,
+            image_id=image_id,
             extension=ExtensionVal(extension),
-            preserve_ratio=preserve_ratio,
             target_width=target_width,
             target_height=target_height,
             enable_ai=enable_ai,
@@ -107,8 +100,15 @@ class SqlAlchemyProcessesRep(ProcessesRep):
             .to_ent()
         )
 
-    def get_latest(self, session: Session, image_id: int) -> ProcessEnt:
-        ...
+    def get_latest(self, session: Session, image_id: int) -> ProcessEnt | None:
+        stmt = (
+            select(ProcessRow)
+            .where(ProcessRow.image_id == image_id)
+            .order_by(ProcessRow.status_started_at.desc())
+            .limit(1)
+        )
+        row = session.scalar(stmt)
+        return row.to_ent() if row else None
 
     def _get_or_raise_when_process_not_found(
         self, session: Session, id: int

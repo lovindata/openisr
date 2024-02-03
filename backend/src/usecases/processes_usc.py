@@ -1,4 +1,5 @@
-import asyncio
+import traceback
+from multiprocessing import Process
 from typing import Literal, Tuple
 
 from adapters.repositories.sqlalchemy_images_rep import sqlalchemy_images_rep_impl
@@ -8,6 +9,7 @@ from drivers.opcv_pillow_image_processing_driver import (
 )
 from drivers.os_env_loader_driver import os_env_laoder_driver_impl
 from drivers.sqlalchemy_db_driver import sqlalchemy_db_driver_impl
+from entities.common.extension_val import ExtensionVal
 from entities.image_ent import ImageEnt
 from entities.process_ent import ProcessEnt
 from helpers.exception_utils import BadRequestException
@@ -37,7 +39,6 @@ class ProcessesUsc:
         self,
         image_id: int,
         extension: Literal["JPEG", "PNG", "WEBP"],
-        preserve_ratio: bool,
         target_width: int,
         target_height: int,
         enable_ai: bool,
@@ -59,28 +60,38 @@ class ProcessesUsc:
                 process = self.processes_rep.create_run(
                     session,
                     image.id,
-                    extension,
-                    preserve_ratio,
+                    ExtensionVal(extension),
                     target_width,
                     target_height,
                     enable_ai,
                 )
             return image, process
 
-        async def run_process() -> None:
+        raise_when_target_invalid()
+        image, process = create_process()
+        Process(target=self._run_process, args=(image, process)).start()
+        return process
+
+    def get_latest_process(self, image_id: int) -> ProcessEnt | None:
+        with self.db_driver.get_session() as session:
+            process_latest = self.processes_rep.get_latest(session, image_id)
+        return process_latest
+
+    def _run_process(self, image: ImageEnt, process: ProcessEnt) -> None:
+        try:
             out_image_data = self.image_processing_driver.process_image(
                 image.data, process
             )
             with self.db_driver.get_session() as session:
-                updated_image = image.update_data(out_image_data, process.extension)
+                updated_image = image.update_data(out_image_data)
                 self.images_rep.update(session, updated_image)
-                updated_process = process.terminate_sucessfully()
+                updated_process = process.terminate_success()
                 self.processes_rep.update(session, updated_process)
-
-        raise_when_target_invalid()
-        image, process = create_process()
-        asyncio.run(run_process())  # TODO BAD IT HAS TO RUN A DEDICATED PROCESS
-        return process
+        except Exception:
+            stacktrace_error = traceback.format_exc()
+            with self.db_driver.get_session() as session:
+                updated_process = process.terminate_failed(stacktrace_error)
+                self.processes_rep.update(session, updated_process)
 
 
 processes_usc_impl = ProcessesUsc(

@@ -1,4 +1,4 @@
-from adapters.controllers.processes_ctrl.dto.image_size_dto import ImageSizeDto
+from adapters.controllers.common.dto.image_size_dto import ImageSizeDto
 from adapters.controllers.processes_ctrl.dto.process_idto import ProcessIDto
 from adapters.controllers.processes_ctrl.dto.process_odto import ProcessODto
 from adapters.controllers.processes_ctrl.dto.status_dto import StatusDto
@@ -22,7 +22,6 @@ class ProcessesCtrl:
             process = self.processes_usc.run(
                 id,
                 dto.extension,
-                dto.preserve_ratio,
                 dto.target.width,
                 dto.target.height,
                 dto.enable_ai,
@@ -32,10 +31,11 @@ class ProcessesCtrl:
         @self._app.get(
             summary="Get latest process",
             path="/images/{id}/process",
-            response_model=ProcessODto,
+            response_model=ProcessODto | None,
         )
-        def _(id: int) -> ProcessODto:
-            ...
+        def _(id: int) -> ProcessODto | None:
+            ent = self.processes_usc.get_latest_process(id)
+            return self._build_from_ent(ent) if ent else None
 
     def router(self) -> APIRouter:
         return self._app.router
@@ -58,7 +58,6 @@ class ProcessesCtrl:
             target=ImageSizeDto(width=ent.target.width, height=ent.target.height),
             status=StatusDto(started_at=ent.status.started_at, ended=ended),
             extension=ent.extension.value,
-            preserve_ratio=ent.preserve_ratio,
             enable_ai=ent.enable_ai,
         )
 
