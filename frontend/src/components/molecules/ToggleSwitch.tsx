@@ -2,15 +2,15 @@ import { BorderBox } from "../atoms/BorderBox";
 
 interface Props {
   checked: boolean;
-  setChecked: React.Dispatch<React.SetStateAction<boolean>>;
+  onSwitch: (_: boolean) => void;
 }
 
-export function ToggleSwitch({ checked, setChecked }: Props) {
+export function ToggleSwitch({ checked, onSwitch: setChecked }: Props) {
   return (
     <BorderBox
       roundedFull
       className="flex h-8 w-14 cursor-pointer items-center p-1.5"
-      onClick={() => setChecked((x) => !x)}
+      onClick={() => setChecked(!checked)}
     >
       <input
         type="checkbox"

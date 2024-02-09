@@ -29,8 +29,8 @@ export function HorizontalRadio<T extends string>({
                 className={
                   "flex h-full cursor-pointer items-center justify-center" +
                   (checked ? " bg-white text-black" : "") +
-                  (idx == 0 ? " rounded-l-lg" : "") +
-                  (idx == possibleValues.length - 1 ? " rounded-r-lg" : "")
+                  (idx == 0 ? " rounded-l" : "") +
+                  (idx == possibleValues.length - 1 ? " rounded-r" : "")
                 }
               >
                 {option}

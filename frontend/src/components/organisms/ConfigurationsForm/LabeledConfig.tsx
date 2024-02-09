@@ -11,7 +11,7 @@ export function LabeledConfig({ label, disabled = false, children }: Props) {
     <div
       className={
         "flex items-center justify-between text-xs" +
-        (disabled ? " opacity-50" : "")
+        (disabled ? " select-none opacity-50" : "")
       }
     >
       <label>{label}</label>

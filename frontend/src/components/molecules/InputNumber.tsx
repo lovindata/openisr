@@ -1,14 +1,14 @@
 import { BorderBox } from "../atoms/BorderBox";
 
 interface Props {
-  value: number | null;
-  setValue: (_: number | null) => void;
+  value: number;
+  onChange: (_: number) => void;
   min?: number;
   max?: number;
   className?: string;
 }
 
-export function InputNumber({ value, setValue, min, max, className }: Props) {
+export function InputNumber({ value, onChange, min, max, className }: Props) {
   return (
     <BorderBox
       className={
@@ -17,21 +17,18 @@ export function InputNumber({ value, setValue, min, max, className }: Props) {
       }
     >
       <input
-        type="number"
-        value={value?.toString() ?? ""}
+        type="text"
+        pattern="[0-9]*"
+        value={value}
         onChange={(event) => {
-          let onChangeValue = parseInt(event.target.value);
-          if (isNaN(onChangeValue)) {
-            setValue(null);
-            return;
+          let onChangeValue = parseInt(event.target.value, 10);
+          if (!isNaN(onChangeValue)) {
+            onChangeValue = Math.max(min ?? onChangeValue, onChangeValue);
+            onChangeValue = Math.min(max ?? onChangeValue, onChangeValue);
+            onChange(onChangeValue);
           }
-          onChangeValue = Math.max(min ?? onChangeValue, onChangeValue);
-          onChangeValue = Math.min(max ?? onChangeValue, onChangeValue);
-          setValue(onChangeValue);
         }}
         className="hide-spinner w-full bg-transparent text-center outline-none"
-        min={min}
-        max={max}
       />
     </BorderBox>
   );
