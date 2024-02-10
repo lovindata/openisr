@@ -8,7 +8,7 @@ interface Props {
   className?: string;
 }
 
-export function InputNumber({ value, onChange, min, max, className }: Props) {
+export function InputInt({ value, onChange, min, max, className }: Props) {
   return (
     <BorderBox
       className={
@@ -18,7 +18,7 @@ export function InputNumber({ value, onChange, min, max, className }: Props) {
     >
       <input
         type="text"
-        pattern="[0-9]*"
+        pattern="^-?[0-9]*$"
         value={value}
         onChange={(event) => {
           let onChangeValue = parseInt(event.target.value, 10);

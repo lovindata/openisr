@@ -3,7 +3,7 @@ import { BorderBox } from "../../atoms/BorderBox";
 import { SectionHeader } from "../../atoms/SectionHeader";
 import { Button } from "../../molecules/Button";
 import { HorizontalRadio } from "../../molecules/HorizontalRadio";
-import { InputNumber } from "../../molecules/InputNumber";
+import { InputInt } from "../../molecules/InputNumber";
 import { ToggleSwitch } from "../../molecules/ToggleSwitch";
 import { LabeledConfig } from "./LabeledConfig";
 import { useState } from "react";
@@ -21,6 +21,37 @@ export function ConfigurationsForm({ initialSource, initialExtension }: Props) {
     paths["/images/{id}/process"]["post"]["requestBody"]["content"]["application/json"]
   >({ extension: initialExtension, target: initialSource, enable_ai: false });
   const [preserveRatio, setPreserveRatio] = useState(true);
+
+  const handleExtensionChange = (extension: "JPEG" | "PNG" | "WEBP") => {
+    setConfigurations({ ...configurations, extension });
+  };
+  const handleTargetWidthChange = (value: number) => {
+    const newWidth = value;
+    let newHeight = configurations.target.height;
+    newHeight = preserveRatio
+      ? Math.round(newHeight * (newWidth / configurations.target.width))
+      : newHeight;
+    newHeight = Math.min(9999, Math.max(1, newHeight));
+    setConfigurations({
+      ...configurations,
+      target: { width: newWidth, height: newHeight },
+    });
+  };
+  const handleTargetHeightChange = (value: number) => {
+    const newHeight = value;
+    let newWidth = configurations.target.width;
+    newWidth = preserveRatio
+      ? Math.round(newWidth * (newHeight / configurations.target.height))
+      : newWidth;
+    newWidth = Math.min(9999, Math.max(1, newWidth));
+    setConfigurations({
+      ...configurations,
+      target: { ...configurations.target, width: newWidth, height: newHeight },
+    });
+  };
+  const handleEnableAIChange = (value: boolean) => {
+    setConfigurations({ ...configurations, enable_ai: value });
+  };
 
   return (
     <BorderBox className="w-72 space-y-3 bg-black p-4">
@@ -41,9 +72,7 @@ export function ConfigurationsForm({ initialSource, initialExtension }: Props) {
         <HorizontalRadio
           possibleValues={["JPEG", "PNG", "WEBP"]}
           value={configurations.extension}
-          setValue={(extension) =>
-            setConfigurations({ ...configurations, extension: extension })
-          }
+          setValue={handleExtensionChange}
           className="w-40"
         />
       </LabeledConfig>
@@ -52,27 +81,17 @@ export function ConfigurationsForm({ initialSource, initialExtension }: Props) {
       </LabeledConfig>
       <LabeledConfig label="Target">
         <div className="flex items-center space-x-1">
-          <InputNumber
+          <InputInt
             value={configurations.target.width}
-            onChange={(value) =>
-              setConfigurations({
-                ...configurations,
-                target: { ...configurations.target, width: value },
-              })
-            }
+            onChange={handleTargetWidthChange}
             min={1}
             max={9999}
             className="w-12"
           />
           <span>x</span>
-          <InputNumber
+          <InputInt
             value={configurations.target.height}
-            onChange={(value) =>
-              setConfigurations({
-                ...configurations,
-                target: { ...configurations.target, height: value },
-              })
-            }
+            onChange={handleTargetHeightChange}
             min={1}
             max={9999}
             className="w-12"
@@ -83,12 +102,10 @@ export function ConfigurationsForm({ initialSource, initialExtension }: Props) {
       <LabeledConfig label="Enable AI (only on upscale)">
         <ToggleSwitch
           checked={configurations.enable_ai}
-          onSwitch={(value) =>
-            setConfigurations({ ...configurations, enable_ai: value })
-          }
+          onSwitch={handleEnableAIChange}
         />
       </LabeledConfig>
-      <Button label="Let's run!" className="text-xs" />
+      <Button label="Let's run!" />
     </BorderBox>
   );
 }
