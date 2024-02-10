@@ -18,7 +18,7 @@ export function ImageCard({ id, src, name, extension, source }: Props) {
   const { backend } = useBackend();
   const queryClient = useQueryClient();
   const { mutate: deleteImage } = useMutation({
-    mutationFn: (id: number) =>
+    mutationFn: () =>
       backend
         .delete<
           paths["/images/{id}"]["delete"]["responses"]["200"]["content"]["application/json"]
@@ -36,7 +36,6 @@ export function ImageCard({ id, src, name, extension, source }: Props) {
   //       .then((_) => _.data),
   //   refetchInterval: 5000,
   // });
-
   const { openModal, closeModal } = useModal();
 
   return (
@@ -58,6 +57,7 @@ export function ImageCard({ id, src, name, extension, source }: Props) {
           onClick={() =>
             openModal(
               <ConfigurationsForm
+                image_id={id}
                 initialSource={source}
                 initialExtension={extension}
               />
@@ -67,7 +67,7 @@ export function ImageCard({ id, src, name, extension, source }: Props) {
         <SvgIcon
           type="delete"
           className="h-6 w-6 cursor-pointer"
-          onClick={() => deleteImage(id)}
+          onClick={() => deleteImage()}
         />
       </div>
     </BorderBox>

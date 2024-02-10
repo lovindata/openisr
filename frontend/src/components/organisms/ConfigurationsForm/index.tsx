@@ -1,3 +1,4 @@
+import { useBackend } from "../../../services/backend";
 import { paths } from "../../../services/backend/endpoints";
 import { BorderBox } from "../../atoms/BorderBox";
 import { SectionHeader } from "../../atoms/SectionHeader";
@@ -6,9 +7,11 @@ import { HorizontalRadio } from "../../molecules/HorizontalRadio";
 import { InputInt } from "../../molecules/InputNumber";
 import { ToggleSwitch } from "../../molecules/ToggleSwitch";
 import { LabeledConfig } from "./LabeledConfig";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 interface Props {
+  image_id: number;
   initialSource: {
     width: number;
     height: number;
@@ -16,7 +19,25 @@ interface Props {
   initialExtension: "JPEG" | "PNG" | "WEBP";
 }
 
-export function ConfigurationsForm({ initialSource, initialExtension }: Props) {
+export function ConfigurationsForm({
+  image_id,
+  initialSource,
+  initialExtension,
+}: Props) {
+  const { backend } = useBackend();
+  const queryClient = useQueryClient();
+  const { mutate: runProcess, isLoading } = useMutation({
+    mutationFn: () =>
+      backend
+        .post<
+          paths["/images/{id}/process"]["post"]["responses"]["200"]["content"]["application/json"]
+        >(`/images/${image_id}/process`, configurations)
+        .then((_) => _.data),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: [`/images/${image_id}/process`],
+      }),
+  });
   const [configurations, setConfigurations] = useState<
     paths["/images/{id}/process"]["post"]["requestBody"]["content"]["application/json"]
   >({ extension: initialExtension, target: initialSource, enable_ai: false });
@@ -105,7 +126,7 @@ export function ConfigurationsForm({ initialSource, initialExtension }: Props) {
           onSwitch={handleEnableAIChange}
         />
       </LabeledConfig>
-      <Button label="Let's run!" />
+      <Button label="Let's run!" onClick={() => runProcess()} />
     </BorderBox>
   );
 }
