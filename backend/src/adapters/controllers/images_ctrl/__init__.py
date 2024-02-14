@@ -1,9 +1,9 @@
 from typing import List
 
-from adapters.controllers.common.dto.image_size_dto import ImageSizeDto
 from adapters.controllers.images_ctrl.dto.image_odto import ImageODto
-from entities.common.extension_val import ExtensionVal
+from adapters.controllers.shared.dto.image_size_dto import ImageSizeDto
 from entities.image_ent import ImageEnt
+from entities.shared.extension_val import ExtensionVal
 from fastapi import APIRouter, FastAPI, UploadFile
 from fastapi.responses import StreamingResponse
 from usecases.images_usc import ImagesUsc, images_usc_impl

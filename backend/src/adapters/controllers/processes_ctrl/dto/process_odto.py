@@ -1,7 +1,7 @@
 from typing import Literal
 
-from adapters.controllers.common.dto.image_size_dto import ImageSizeDto
 from adapters.controllers.processes_ctrl.dto.status_dto import StatusDto
+from adapters.controllers.shared.dto.image_size_dto import ImageSizeDto
 from pydantic import BaseModel
 
 

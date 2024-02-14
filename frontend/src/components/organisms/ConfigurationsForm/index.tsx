@@ -17,75 +17,70 @@ interface Props {
     height: number;
   };
   initialExtension: "JPEG" | "PNG" | "WEBP";
+  onSuccessSubmit?: () => void;
 }
 
 export function ConfigurationsForm({
   image_id,
   initialSource,
   initialExtension,
+  onSuccessSubmit,
 }: Props) {
   const { backend } = useBackend();
   const queryClient = useQueryClient();
-  const { mutate: runProcess, isLoading } = useMutation({
+  const { mutate: runProcess, isPending } = useMutation({
     mutationFn: () =>
       backend
         .post<
           paths["/images/{id}/process"]["post"]["responses"]["200"]["content"]["application/json"]
         >(`/images/${image_id}/process`, configurations)
         .then((_) => _.data),
-    onSuccess: () =>
+    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [`/images/${image_id}/process`],
-      }),
+      });
+      onSuccessSubmit && onSuccessSubmit();
+    },
   });
+
   const [configurations, setConfigurations] = useState<
     paths["/images/{id}/process"]["post"]["requestBody"]["content"]["application/json"]
   >({ extension: initialExtension, target: initialSource, enable_ai: false });
   const [preserveRatio, setPreserveRatio] = useState(true);
 
-  const handleExtensionChange = (extension: "JPEG" | "PNG" | "WEBP") => {
+  const handleExtensionChange = (extension: "JPEG" | "PNG" | "WEBP") =>
     setConfigurations({ ...configurations, extension });
-  };
-  const handleTargetWidthChange = (value: number) => {
-    const newWidth = value;
-    let newHeight = configurations.target.height;
-    newHeight = preserveRatio
-      ? Math.round(newHeight * (newWidth / configurations.target.width))
-      : newHeight;
+  const handleTargetWidthChange = (newWidth: number) => {
+    let newHeight = preserveRatio
+      ? Math.round(initialSource.height * (newWidth / initialSource.width))
+      : configurations.target.height;
     newHeight = Math.min(9999, Math.max(1, newHeight));
     setConfigurations({
       ...configurations,
       target: { width: newWidth, height: newHeight },
     });
   };
-  const handleTargetHeightChange = (value: number) => {
-    const newHeight = value;
-    let newWidth = configurations.target.width;
-    newWidth = preserveRatio
-      ? Math.round(newWidth * (newHeight / configurations.target.height))
-      : newWidth;
+  const handleTargetHeightChange = (newHeight: number) => {
+    let newWidth = preserveRatio
+      ? Math.round(initialSource.width * (newHeight / initialSource.height))
+      : configurations.target.width;
     newWidth = Math.min(9999, Math.max(1, newWidth));
     setConfigurations({
       ...configurations,
-      target: { ...configurations.target, width: newWidth, height: newHeight },
+      target: { width: newWidth, height: newHeight },
     });
   };
-  const handleEnableAIChange = (value: boolean) => {
+  const handleEnableAIChange = (value: boolean) =>
     setConfigurations({ ...configurations, enable_ai: value });
-  };
 
   return (
     <BorderBox className="w-72 space-y-3 bg-black p-4">
       <SectionHeader name="Configurations" />
       <LabeledConfig label="Source" disabled>
         <div className="flex items-center space-x-1">
-          <BorderBox className="flex h-8 w-12 items-center justify-center">
-            {initialSource.width}
-          </BorderBox>
+          <InputInt value={initialSource.width} disabled className="w-12" />
           <span>x</span>
-          <BorderBox className="flex h-8 w-12 items-center justify-center">
-            {initialSource.height}
-          </BorderBox>
+          <InputInt value={initialSource.height} disabled className="w-12" />
           <span>px</span>
         </div>
       </LabeledConfig>
@@ -104,17 +99,17 @@ export function ConfigurationsForm({
         <div className="flex items-center space-x-1">
           <InputInt
             value={configurations.target.width}
-            onChange={handleTargetWidthChange}
             min={1}
             max={9999}
+            onChange={handleTargetWidthChange}
             className="w-12"
           />
           <span>x</span>
           <InputInt
             value={configurations.target.height}
-            onChange={handleTargetHeightChange}
             min={1}
             max={9999}
+            onChange={handleTargetHeightChange}
             className="w-12"
           />
           <span>px</span>
@@ -126,7 +121,11 @@ export function ConfigurationsForm({
           onSwitch={handleEnableAIChange}
         />
       </LabeledConfig>
-      <Button label="Let's run!" onClick={() => runProcess()} />
+      <Button
+        label="Let's run!"
+        isLoading={isPending}
+        onClick={() => runProcess()}
+      />
     </BorderBox>
   );
 }

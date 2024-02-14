@@ -1,13 +1,13 @@
-from io import BytesIO
 from typing import List
 
 from adapters.repositories.configs.base import Base
+from adapters.repositories.sqlalchemy_processes_rep import ProcessRow
 from entities.image_ent import ImageEnt
 from helpers.exception_utils import BadRequestException
 from helpers.pil_utils import extract_bytes, open_from_bytes
 from PIL import Image
 from sqlalchemy import select
-from sqlalchemy.orm import Mapped, Session, mapped_column
+from sqlalchemy.orm import Mapped, Session, mapped_column, relationship
 from usecases.repositories.images_rep import ImagesRep
 
 
@@ -17,6 +17,8 @@ class ImageRow(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(nullable=False)
     data: Mapped[bytes] = mapped_column(nullable=False)
+
+    processes = relationship(ProcessRow)
 
     def set_all_with(self, entity: ImageEnt) -> "ImageRow":
         self.name = entity.name

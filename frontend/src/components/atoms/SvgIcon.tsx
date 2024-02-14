@@ -6,6 +6,7 @@ import Error from "../../assets/svgs/error.svg?react";
 import Folder from "../../assets/svgs/folder.svg?react";
 import GitHub from "../../assets/svgs/github.svg?react";
 import Internet from "../../assets/svgs/internet.svg?react";
+import Loading from "../../assets/svgs/loading.svg?react";
 import Logo from "../../assets/svgs/logo.svg?react";
 import Run from "../../assets/svgs/run.svg?react";
 import Search from "../../assets/svgs/search.svg?react";
@@ -26,7 +27,8 @@ interface Props {
     | "error"
     | "run"
     | "select"
-    | "stop";
+    | "stop"
+    | "loading";
   className?: string;
   onClick?: React.MouseEventHandler<SVGSVGElement> | undefined;
 }
@@ -46,6 +48,7 @@ export function SvgIcon({ type, className, onClick }: Props) {
     run: Run,
     select: Select,
     stop: Stop,
+    loading: Loading,
   };
 
   const Icon = mapper[type];

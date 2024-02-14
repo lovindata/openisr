@@ -42,15 +42,9 @@ export interface components {
     FailedDto: {
       /**
        * Kind
-       * @default failed
        * @enum {string}
        */
-      kind?: "failed";
-      /**
-       * At
-       * Format: date-time
-       */
-      at: string;
+      kind: "failed";
       /** Error */
       error: string;
     };
@@ -108,11 +102,8 @@ export interface components {
     };
     /** StatusDto */
     StatusDto: {
-      /**
-       * Started At
-       * Format: date-time
-       */
-      started_at: string;
+      /** Duration */
+      duration: number;
       /** Ended */
       ended?: components["schemas"]["SuccessfulDto"] | components["schemas"]["FailedDto"];
     };
@@ -120,15 +111,9 @@ export interface components {
     SuccessfulDto: {
       /**
        * Kind
-       * @default successful
        * @enum {string}
        */
-      kind?: "successful";
-      /**
-       * At
-       * Format: date-time
-       */
-      at: string;
+      kind: "successful";
     };
     /** ValidationError */
     ValidationError: {

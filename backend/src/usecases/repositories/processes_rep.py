@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Literal
 
-from entities.common.extension_val import ExtensionVal
 from entities.process_ent import ProcessEnt
+from entities.shared.extension_val import ExtensionVal
 from sqlalchemy.orm import Session
 
 

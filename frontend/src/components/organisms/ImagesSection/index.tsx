@@ -41,14 +41,7 @@ export function ImagesSection() {
       </div>
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
         {imageDisplayed?.map((image) => (
-          <ImageCard
-            key={image.id}
-            id={image.id}
-            src={image.src}
-            name={image.name}
-            extension={image.extension}
-            source={image.source}
-          />
+          <ImageCard key={image.id} image={image} />
         ))}
       </div>
     </section>

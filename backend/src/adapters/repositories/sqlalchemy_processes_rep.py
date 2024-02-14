@@ -2,10 +2,10 @@ from datetime import datetime
 from typing import Literal, Optional
 
 from adapters.repositories.configs.base import Base
-from entities.common.extension_val import ExtensionVal
 from entities.process_ent import ProcessEnt
 from entities.process_ent.image_size_val import ImageSizeVal
 from entities.process_ent.status_val import StatusVal
+from entities.shared.extension_val import ExtensionVal
 from helpers.exception_utils import BadRequestException
 from sqlalchemy import ForeignKey, func, select
 from sqlalchemy.orm import Mapped, Session, mapped_column
@@ -16,12 +16,12 @@ class ProcessRow(Base):
     __tablename__ = "processes"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    image_id: Mapped[int] = mapped_column(ForeignKey("images.id"))
+    image_id: Mapped[Optional[int]] = mapped_column(ForeignKey("images.id"))
     extension: Mapped[ExtensionVal]
     target_width: Mapped[int]
     target_height: Mapped[int]
     enable_ai: Mapped[bool]
-    status_started_at: Mapped[datetime] = mapped_column(default=func.now())
+    status_started_at: Mapped[datetime]
     status_ended_successful_at: Mapped[Optional[datetime]]
     status_ended_failed_at: Mapped[Optional[datetime]]
     status_ended_failed_error: Mapped[Optional[str]]
@@ -88,6 +88,7 @@ class SqlAlchemyProcessesRep(ProcessesRep):
             target_width=target_width,
             target_height=target_height,
             enable_ai=enable_ai,
+            status_started_at=datetime.now(),
         )
         session.add(row)
         session.flush()

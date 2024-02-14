@@ -2,13 +2,31 @@ import { BorderBox } from "../atoms/BorderBox";
 
 interface Props {
   value: number;
-  onChange: (_: number) => void;
   min?: number;
   max?: number;
+  onChange?: (_: number) => void;
+  disabled?: boolean;
   className?: string;
 }
 
-export function InputInt({ value, onChange, min, max, className }: Props) {
+export function InputInt({
+  value,
+  min,
+  max,
+  onChange,
+  disabled,
+  className,
+}: Props) {
+  const parseIntMinMax = (value: string) => {
+    let valueInt = parseInt(value, 10);
+    if (!isNaN(valueInt)) {
+      valueInt = Math.max(min ?? valueInt, valueInt);
+      valueInt = Math.min(max ?? valueInt, valueInt);
+      return valueInt;
+    }
+    return undefined;
+  };
+
   return (
     <BorderBox
       className={
@@ -21,13 +39,12 @@ export function InputInt({ value, onChange, min, max, className }: Props) {
         pattern="^-?[0-9]*$"
         value={value}
         onChange={(event) => {
-          let onChangeValue = parseInt(event.target.value, 10);
-          if (!isNaN(onChangeValue)) {
-            onChangeValue = Math.max(min ?? onChangeValue, onChangeValue);
-            onChangeValue = Math.min(max ?? onChangeValue, onChangeValue);
-            onChange(onChangeValue);
+          if (onChange) {
+            const onChangeValue = parseIntMinMax(event.target.value);
+            onChangeValue && onChange(onChangeValue);
           }
         }}
+        disabled={disabled}
         className="hide-spinner w-full bg-transparent text-center outline-none"
       />
     </BorderBox>

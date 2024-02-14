@@ -9,9 +9,9 @@ from drivers.opcv_pillow_image_processing_driver import (
 )
 from drivers.os_env_loader_driver import os_env_laoder_driver_impl
 from drivers.sqlalchemy_db_driver import sqlalchemy_db_driver_impl
-from entities.common.extension_val import ExtensionVal
 from entities.image_ent import ImageEnt
 from entities.process_ent import ProcessEnt
+from entities.shared.extension_val import ExtensionVal
 from helpers.exception_utils import BadRequestException
 from usecases.drivers.db_driver import DbDriver
 from usecases.drivers.env_loader_driver import EnvLoaderDriver

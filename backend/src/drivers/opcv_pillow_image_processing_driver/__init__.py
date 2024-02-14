@@ -1,9 +1,9 @@
 from io import BytesIO
 
 from cv2.dnn_superres import DnnSuperResImpl
-from entities.common.extension_val import ExtensionVal
 from entities.process_ent import ProcessEnt
 from entities.process_ent.image_size_val import ImageSizeVal
+from entities.shared.extension_val import ExtensionVal
 from helpers.exception_utils import ServerInternalErrorException
 from loguru import logger
 from PIL.Image import LANCZOS, Image, open

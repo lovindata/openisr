@@ -1,15 +1,15 @@
 from datetime import datetime
 
-from entities.common.extension_val import ExtensionVal
 from entities.process_ent.image_size_val import ImageSizeVal
 from entities.process_ent.status_val import StatusVal
+from entities.shared.extension_val import ExtensionVal
 
 
 class ProcessEnt:
     def __init__(
         self,
         id: int,
-        image_id: int,
+        image_id: int | None,
         extension: ExtensionVal,
         target: ImageSizeVal,
         enable_ai: bool,

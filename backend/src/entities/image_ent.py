@@ -1,4 +1,4 @@
-from entities.common.extension_val import ExtensionVal
+from entities.shared.extension_val import ExtensionVal
 from PIL.Image import Image
 
 

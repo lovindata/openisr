@@ -4,8 +4,8 @@ from typing import List, Tuple
 from adapters.repositories.sqlalchemy_images_rep import sqlalchemy_images_rep_impl
 from drivers.os_env_loader_driver import os_env_laoder_driver_impl
 from drivers.sqlalchemy_db_driver import sqlalchemy_db_driver_impl
-from entities.common.extension_val import ExtensionVal
 from entities.image_ent import ImageEnt
+from entities.shared.extension_val import ExtensionVal
 from fastapi import UploadFile
 from helpers.exception_utils import BadRequestException
 from helpers.pil_utils import build_thumbnail, open_from_bytes
