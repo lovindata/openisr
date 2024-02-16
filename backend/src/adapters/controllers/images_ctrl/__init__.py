@@ -1,6 +1,7 @@
 from typing import List
 
 from adapters.controllers.images_ctrl.dto.image_odto import ImageODto
+from adapters.controllers.images_ctrl.dto.src_dto import SrcDto
 from adapters.controllers.shared.dto.image_size_dto import ImageSizeDto
 from entities.image_ent import ImageEnt
 from entities.shared.extension_val import ExtensionVal
@@ -48,14 +49,30 @@ class ImagesCtrl:
             bytesio = self.images_usc.get_image_thumbnail_as_webp(id)
             return StreamingResponse(content=bytesio, media_type="image/webp")
 
+        @self._app.get(
+            summary="Image download",
+            path="/images/{id}/download",
+            response_class=StreamingResponse,
+        )
+        def _(id: int) -> StreamingResponse:
+            bytesio, filename, extension = self.images_usc.download_image(id)
+            return StreamingResponse(
+                content=bytesio,
+                media_type=extension.to_media_type(),
+                headers={
+                    "Content-Disposition": f"attachment; filename={filename}.{extension.to_file_extension()}"
+                },
+            )
+
     def router(self) -> APIRouter:
         return self._app.router
 
     def _build_from_ent(self, ent: ImageEnt) -> ImageODto:
-        src = self.images_usc.build_image_src(ent.id)
+        src_thumbnail = self.images_usc.build_image_src_thumbnail(ent.id)
+        src_download = self.images_usc.build_image_src_download(ent.id)
         return ImageODto(
             id=ent.id,
-            src=src,
+            src=SrcDto(thumbnail=src_thumbnail, download=src_download),
             name=ent.name,
             extension=ExtensionVal(ent.data.format).value,
             source=ImageSizeDto(width=ent.data.size[0], height=ent.data.size[1]),

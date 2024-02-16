@@ -17,12 +17,7 @@ export function ProcessIcon({ image, latestProcess }: Props) {
         type="run"
         onClick={() =>
           openModal(
-            <ConfigurationsForm
-              image_id={image.id}
-              initialSource={image.source}
-              initialExtension={image.extension}
-              onSuccessSubmit={closeModal}
-            />
+            <ConfigurationsForm image={image} onSuccessSubmit={closeModal} />
           )
         }
       />
@@ -47,11 +42,9 @@ export function ProcessIcon({ image, latestProcess }: Props) {
         );
       case "successful":
         return (
-          <Icon
-            type="download"
-            latestProcess={latestProcess}
-            onClick={() => console.log("Implement download image on backend.")}
-          />
+          <a href={image.src.download} download>
+            <Icon type="download" latestProcess={latestProcess} />
+          </a>
         );
     }
   }

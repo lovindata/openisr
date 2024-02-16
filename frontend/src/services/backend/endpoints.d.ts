@@ -21,6 +21,10 @@ export interface paths {
     /** Image thumbnail (144x144) */
     get: operations["__images_thumbnail__id__webp_get"];
   };
+  "/images/{id}/download": {
+    /** Image download */
+    get: operations["__images__id__download_get"];
+  };
   "/images/{id}/process": {
     /** Get latest process */
     get: operations["__images__id__process_get"];
@@ -57,8 +61,7 @@ export interface components {
     ImageODto: {
       /** Id */
       id: number;
-      /** Src */
-      src: string;
+      src: components["schemas"]["SrcDto"];
       /** Name */
       name: string;
       /**
@@ -99,6 +102,13 @@ export interface components {
       extension: "JPEG" | "PNG" | "WEBP";
       /** Enable Ai */
       enable_ai: boolean;
+    };
+    /** SrcDto */
+    SrcDto: {
+      /** Thumbnail */
+      thumbnail: string;
+      /** Download */
+      download: string;
     };
     /** StatusDto */
     StatusDto: {
@@ -195,6 +205,26 @@ export interface operations {
   };
   /** Image thumbnail (144x144) */
   __images_thumbnail__id__webp_get: {
+    parameters: {
+      path: {
+        id: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: never;
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Image download */
+  __images__id__download_get: {
     parameters: {
       path: {
         id: number;

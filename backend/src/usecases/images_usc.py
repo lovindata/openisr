@@ -7,7 +7,7 @@ from drivers.sqlalchemy_db_driver import sqlalchemy_db_driver_impl
 from entities.image_ent import ImageEnt
 from entities.shared.extension_val import ExtensionVal
 from fastapi import UploadFile
-from helpers.exception_utils import BadRequestException
+from helpers.exception_utils import BadRequestException, ServerInternalErrorException
 from helpers.pil_utils import build_thumbnail, open_from_bytes
 from usecases.drivers.db_driver import DbDriver
 from usecases.drivers.env_loader_driver import EnvLoaderDriver
@@ -63,8 +63,36 @@ class ImagesUsc:
         bytesio.seek(0)
         return bytesio
 
-    def build_image_src(self, id: int) -> str:
+    def download_image(self, id: int) -> Tuple[BytesIO, str, ExtensionVal]:
+        def build_image_extension() -> ExtensionVal:
+            if image.data.format is None:
+                raise ServerInternalErrorException(
+                    f"Cannot retrieve image id={id} format: {image.data.format}."
+                )
+            else:
+                try:
+                    return ExtensionVal(image.data.format)
+                except:
+                    raise ServerInternalErrorException(
+                        f"Unknown image id={id} format: {image.data.format}."
+                    )
+
+        with self.db_driver.get_session() as session:
+            image = self.images_rep.get(session, id)
+        bytesio = BytesIO()
+        image.data.save(bytesio, format=image.data.format)
+        bytesio.seek(0)
+        extension = build_image_extension()
+        return bytesio, image.name, extension
+
+    def build_image_src_thumbnail(self, id: int) -> str:
         src = f"/images/thumbnail/{id}.webp"
+        if not self.env_loader_driver.prod_mode:
+            src = f"http://localhost:{self.env_loader_driver.api_port}" + src
+        return src
+
+    def build_image_src_download(self, id: int) -> str:
+        src = f"/images/{id}/download"
         if not self.env_loader_driver.prod_mode:
             src = f"http://localhost:{self.env_loader_driver.api_port}" + src
         return src

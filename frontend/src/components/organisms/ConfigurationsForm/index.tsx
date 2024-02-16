@@ -1,5 +1,5 @@
 import { useBackend } from "../../../services/backend";
-import { paths } from "../../../services/backend/endpoints";
+import { components, paths } from "../../../services/backend/endpoints";
 import { BorderBox } from "../../atoms/BorderBox";
 import { SectionHeader } from "../../atoms/SectionHeader";
 import { Button } from "../../molecules/Button";
@@ -11,21 +11,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 interface Props {
-  image_id: number;
-  initialSource: {
-    width: number;
-    height: number;
-  };
-  initialExtension: "JPEG" | "PNG" | "WEBP";
+  image: components["schemas"]["ImageODto"];
   onSuccessSubmit?: () => void;
 }
 
-export function ConfigurationsForm({
-  image_id,
-  initialSource,
-  initialExtension,
-  onSuccessSubmit,
-}: Props) {
+export function ConfigurationsForm({ image, onSuccessSubmit }: Props) {
   const { backend } = useBackend();
   const queryClient = useQueryClient();
   const { mutate: runProcess, isPending } = useMutation({
@@ -33,11 +23,11 @@ export function ConfigurationsForm({
       backend
         .post<
           paths["/images/{id}/process"]["post"]["responses"]["200"]["content"]["application/json"]
-        >(`/images/${image_id}/process`, configurations)
+        >(`/images/${image.id}/process`, configurations)
         .then((_) => _.data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [`/images/${image_id}/process`],
+        queryKey: [`/images/${image.id}/process`],
       });
       onSuccessSubmit && onSuccessSubmit();
     },
@@ -45,14 +35,14 @@ export function ConfigurationsForm({
 
   const [configurations, setConfigurations] = useState<
     paths["/images/{id}/process"]["post"]["requestBody"]["content"]["application/json"]
-  >({ extension: initialExtension, target: initialSource, enable_ai: false });
+  >({ extension: image.extension, target: image.source, enable_ai: false });
   const [preserveRatio, setPreserveRatio] = useState(true);
 
   const handleExtensionChange = (extension: "JPEG" | "PNG" | "WEBP") =>
     setConfigurations({ ...configurations, extension });
   const handleTargetWidthChange = (newWidth: number) => {
     let newHeight = preserveRatio
-      ? Math.round(initialSource.height * (newWidth / initialSource.width))
+      ? Math.round(image.source.height * (newWidth / image.source.width))
       : configurations.target.height;
     newHeight = Math.min(9999, Math.max(1, newHeight));
     setConfigurations({
@@ -62,7 +52,7 @@ export function ConfigurationsForm({
   };
   const handleTargetHeightChange = (newHeight: number) => {
     let newWidth = preserveRatio
-      ? Math.round(initialSource.width * (newHeight / initialSource.height))
+      ? Math.round(image.source.width * (newHeight / image.source.height))
       : configurations.target.width;
     newWidth = Math.min(9999, Math.max(1, newWidth));
     setConfigurations({
@@ -78,9 +68,9 @@ export function ConfigurationsForm({
       <SectionHeader name="Configurations" />
       <LabeledConfig label="Source" disabled>
         <div className="flex items-center space-x-1">
-          <InputInt value={initialSource.width} disabled className="w-12" />
+          <InputInt value={image.source.width} disabled className="w-12" />
           <span>x</span>
-          <InputInt value={initialSource.height} disabled className="w-12" />
+          <InputInt value={image.source.height} disabled className="w-12" />
           <span>px</span>
         </div>
       </LabeledConfig>

@@ -1,9 +1,7 @@
-// import { useModal } from "../../../../hooks/contexts/Modal/useModal";
 import { useBackend } from "../../../../services/backend";
 import { components, paths } from "../../../../services/backend/endpoints";
 import { BorderBox } from "../../../atoms/BorderBox";
 import { SvgIcon } from "../../../atoms/SvgIcon";
-// import { ConfigurationsForm } from "../../ConfigurationsForm";
 import { ProcessIcon } from "./ProcessIcon";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -39,7 +37,7 @@ export function ImageCard({ image }: Props) {
     <BorderBox className="flex h-20 w-72 items-center justify-between p-3 text-xs">
       <div className="flex space-x-3">
         <img
-          src={image.src}
+          src={image.src.thumbnail}
           alt={image.name}
           className="h-14 w-14 rounded-lg"
         />
