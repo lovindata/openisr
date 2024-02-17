@@ -39,6 +39,24 @@ class ProcessesCtrl:
             ent = self.processes_usc.get_latest_process(id)
             return self._build_from_ent(ent) if ent else None
 
+        @self._app.post(
+            summary="Retry latest process",
+            path="/images/{id}/process/retry",
+            response_model=ProcessODto,
+        )
+        def _(id: int) -> ProcessODto:
+            process = self.processes_usc.retry(id)
+            return self._build_from_ent(process)
+
+        @self._app.delete(
+            summary="Stop latest process",
+            path="/images/{id}/process",
+            response_model=ProcessODto,
+        )
+        def _(id: int) -> ProcessODto:
+            process = self.processes_usc.stop(id)
+            return self._build_from_ent(process)
+
     def router(self) -> APIRouter:
         return self._app.router
 
@@ -58,9 +76,9 @@ class ProcessesCtrl:
             "StatusDto.SuccessfulDto | StatusDto.FailedDto | None"
         ):
             match ent.status.ended:
-                case StatusVal.Successful(at=_):
+                case StatusVal.Successful():
                     return StatusDto.SuccessfulDto(kind="successful")
-                case StatusVal.Failed(at=_, error=error):
+                case StatusVal.Failed(error=error):
                     return StatusDto.FailedDto(kind="failed", error=error)
                 case _:
                     return ent.status.ended

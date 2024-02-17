@@ -14,6 +14,7 @@ class StatusVal:
             self.at = at
 
     class Failed:
-        def __init__(self, at: datetime, error: str) -> None:
+        def __init__(self, at: datetime, error: str, stacktrace: str | None) -> None:
             self.at = at
             self.error = error
+            self.stacktrace = stacktrace

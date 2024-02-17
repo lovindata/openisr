@@ -14,7 +14,7 @@ class OsEnvLoaderDriver(EnvLoaderDriver):
 
     @property
     def process_timeout(self) -> int:
-        return int(os.getenv("OPENISR_PROCESS_TIMEOUT", "8000"))
+        return int(os.getenv("OPENISR_PROCESS_TIMEOUT_IN_SECONDS", "60"))
 
 
 os_env_laoder_driver_impl = OsEnvLoaderDriver()

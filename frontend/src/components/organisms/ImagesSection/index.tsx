@@ -1,6 +1,6 @@
 import { useBackend } from "../../../services/backend";
 import { paths } from "../../../services/backend/endpoints";
-import { SectionHeader } from "../../atoms/SectionHeader";
+import { Header } from "../../atoms/Header";
 import { ImageCard } from "./ImageCard";
 import { ProcessRadio } from "./ProcessRadio";
 import { ProcessOptions } from "./ProcessRadio/ProcessOptions";
@@ -31,7 +31,7 @@ export function ImagesSection() {
       : new Fuse(images, { keys: ["name"] }).search(search).map((_) => _.item));
   return (
     <section>
-      <SectionHeader name="Images" className="max-md:hidden md:mb-3" />
+      <Header name="Images" className="max-md:hidden md:mb-3" />
       <div className="mb-3 flex max-md:flex-col max-md:space-y-3 md:space-x-3">
         <SearchBar
           value={search}

@@ -14,7 +14,7 @@ class OpcvPillowImageProcessingDriver(ImageProcessingDriver):
     def process_image(self, data: Image, process: ProcessEnt) -> Image:
         def resize(data: Image, target: ImageSizeVal, enable_ai: bool) -> Image:
             if enable_ai:
-                raise ServerInternalErrorException("Enable AI not implemented yet.")
+                raise ServerInternalErrorException("Enable AI is not implemented yet.")
             return data.resize((target.width, target.height), LANCZOS)
 
         def change_extension(data: Image, extension: ExtensionVal) -> Image:

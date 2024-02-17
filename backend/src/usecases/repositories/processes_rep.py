@@ -24,5 +24,13 @@ class ProcessesRep(ABC):
         pass
 
     @abstractmethod
-    def get_latest(self, session: Session, image_id: int) -> ProcessEnt:
+    def get_latest(self, session: Session, image_id: int) -> ProcessEnt | None:
+        pass
+
+    @abstractmethod
+    def get_latest_or_throw(self, session: Session, image_id: int) -> ProcessEnt:
+        pass
+
+    @abstractmethod
+    def delete(self, session: Session, id: int) -> ProcessEnt:
         pass

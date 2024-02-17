@@ -1,7 +1,9 @@
 import { useModal } from "../../../../../hooks/contexts/Modal/useModal";
-import { components } from "../../../../../services/backend/endpoints";
-import { ConfigurationsForm } from "../../../ConfigurationsForm";
+import { useBackend } from "../../../../../services/backend";
+import { components, paths } from "../../../../../services/backend/endpoints";
+import { ProcessForm } from "../../../ProcessForm";
 import { Icon } from "./Icon";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface Props {
   image: components["schemas"]["ImageODto"];
@@ -9,6 +11,20 @@ interface Props {
 }
 
 export function ProcessIcon({ image, latestProcess }: Props) {
+  const { backend } = useBackend();
+  const queryClient = useQueryClient();
+  const { mutate: stopProcess } = useMutation({
+    mutationFn: () =>
+      backend.delete<
+        paths["/images/{id}/process"]["delete"]["responses"]["200"]["content"]["application/json"]
+      >(`/images/${image.id}/process`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [`/images/${image.id}/process`],
+      });
+    },
+  });
+
   const { openModal, closeModal } = useModal();
 
   if (!latestProcess)
@@ -16,9 +32,7 @@ export function ProcessIcon({ image, latestProcess }: Props) {
       <Icon
         type="run"
         onClick={() =>
-          openModal(
-            <ConfigurationsForm image={image} onSuccessSubmit={closeModal} />
-          )
+          openModal(<ProcessForm image={image} onSuccessSubmit={closeModal} />)
         }
       />
     );
@@ -29,7 +43,7 @@ export function ProcessIcon({ image, latestProcess }: Props) {
           <Icon
             type="stop"
             latestProcess={latestProcess}
-            onClick={() => console.log("Implement stop on backend.")}
+            onClick={() => stopProcess()}
           />
         );
       case "failed":
@@ -37,7 +51,15 @@ export function ProcessIcon({ image, latestProcess }: Props) {
           <Icon
             type="error"
             latestProcess={latestProcess}
-            onClick={() => console.log("Implement modal error on frontend.")}
+            onClick={() =>
+              openModal(
+                <ProcessForm
+                  image={image}
+                  latestProcess={latestProcess}
+                  onSuccessSubmit={closeModal}
+                />
+              )
+            }
           />
         );
       case "successful":

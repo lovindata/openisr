@@ -30,6 +30,12 @@ export interface paths {
     get: operations["__images__id__process_get"];
     /** Run process */
     post: operations["__images__id__process_post"];
+    /** Stop latest process */
+    delete: operations["__images__id__process_delete"];
+  };
+  "/images/{id}/process/retry": {
+    /** Retry latest process */
+    post: operations["__images__id__process_retry_post"];
   };
 }
 
@@ -275,6 +281,50 @@ export interface operations {
     requestBody: {
       content: {
         "application/json": components["schemas"]["ProcessIDto"];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProcessODto"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Stop latest process */
+  __images__id__process_delete: {
+    parameters: {
+      path: {
+        id: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ProcessODto"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /** Retry latest process */
+  __images__id__process_retry_post: {
+    parameters: {
+      path: {
+        id: number;
       };
     };
     responses: {

@@ -43,10 +43,10 @@ export function ImageCard({ image }: Props) {
         />
         <div className="flex w-32 flex-col justify-between">
           <label className="truncate">{image.name}</label>
-          <span>
+          <span className="truncate">
             Source: {image.source.width}x{image.source.height}px
           </span>
-          <span className="font-bold">
+          <span className="truncate font-bold">
             {latestProcess && !latestProcess.status.ended
               ? `Target: ${latestProcess.target.width}x${latestProcess.target.height}px`
               : "Target: -"}
