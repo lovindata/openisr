@@ -1,26 +1,42 @@
 # Backend
 
-## Installation
+## Contribution
 
-Please install [Miniconda](https://docs.conda.io/projects/miniconda/en/latest/index.html).
+Please install [Python](https://www.python.org/downloads/).
 
-Please install VSCode extensions:
+Please install [Poetry](https://python-poetry.org/docs/#installation) via [pipx](https://pipx.pypa.io/stable/installation/).
+
+Please install [VSCode](https://code.visualstudio.com/) and its extensions:
 
 - Black Formatter
 - isort
 - Python
 - Pylance
+- Even Better TOML
+- Prettier
 
-To install dependencies on a given `openisr` Python environnement, from `./backend` run the command:
+To have your Python environment inside your project (optional):
 
 ```bash
-conda env create --file environment.yml
+poetry config virtualenvs.in-project true
 ```
 
-To update this environment:
+To create your Python environment and install dependencies:
 
 ```bash
-conda env update --file environment.yml --prune
+poetry install
+```
+
+To update dependencies:
+
+```bash
+poetry update
+```
+
+To run unit tests:
+
+```bash
+pytest
 ```
 
 Using the newly created `openisr` Python environnement from `./backend`, run [main.py](.\src\main.py) (please adapt the paths):

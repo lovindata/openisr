@@ -107,7 +107,9 @@ class ProcessesUsc:
 
         image, process_latest = get_image_and_recreate_latest_process(image_id)
         Process(
-            target=self._pickable_process_task, args=(image, process_latest)
+            target=self._pickable_process_task,
+            args=(image, process_latest),
+            daemon=True,
         ).start()
         return process_latest
 
@@ -162,8 +164,8 @@ class ProcessesUsc:
                     self.processes_rep.update(session, updated_process)
 
         queue: Queue[Image | None] = Queue()
-        Thread(target=run_while_process_resumable, args=(queue,)).start()
-        Thread(target=run_process_image, args=(queue,)).start()
+        Thread(target=run_while_process_resumable, args=(queue,), daemon=True).start()
+        Thread(target=run_process_image, args=(queue,), daemon=True).start()
         out_image_data = queue.get(
             timeout=self.env_loader_driver.process_timeout
         )  # Get first result only
