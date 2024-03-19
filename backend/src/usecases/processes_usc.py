@@ -7,10 +7,8 @@ from typing import Literal, Tuple
 
 from adapters.repositories.sqlalchemy_images_rep import sqlalchemy_images_rep_impl
 from adapters.repositories.sqlalchemy_processes_rep import sqlalchemy_processes_rep_impl
-from drivers.opcv_pillow_image_processing_driver import (
-    opcv_pillow_image_processing_driver_impl,
-)
 from drivers.os_env_loader_driver import os_env_laoder_driver_impl
+from drivers.pillow_image_processing_driver import pillow_image_processing_driver_impl
 from drivers.sqlalchemy_db_driver import sqlalchemy_db_driver_impl
 from entities.image_ent import ImageEnt
 from entities.process_ent import ProcessEnt
@@ -175,7 +173,7 @@ class ProcessesUsc:
 processes_usc_impl = ProcessesUsc(
     os_env_laoder_driver_impl,
     sqlalchemy_db_driver_impl,
-    opcv_pillow_image_processing_driver_impl,
+    pillow_image_processing_driver_impl,
     sqlalchemy_images_rep_impl,
     sqlalchemy_processes_rep_impl,
 )

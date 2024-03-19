@@ -39,30 +39,28 @@ To run unit tests:
 pytest
 ```
 
-Using the newly created `openisr` Python environnement from `./backend`, run [main.py](.\src\main.py) (please adapt the paths):
+To start the backend server:
 
 ```bash
-& D:/prog/miniconda/envs/openisr/python.exe d:/prog/proj/openisr/backend/src/main.py
+poetry run python ./src/main.py
 ```
 
 ## Data migrations
 
-In case of data migrations for your local dev environment `./backend/data/openisr.db`, here are some commands (please adapt the paths).
-
 - To generate migration:
 
 ```bash
-D:\prog\miniconda\envs\openisr\Scripts\alembic.exe revision --autogenerate
+alembic revision --autogenerate
 ```
 
 - To migrate to head:
 
 ```bash
-D:\prog\miniconda\envs\openisr\Scripts\alembic.exe upgrade head
+alembic upgrade head
 ```
 
 - To downgrade:
 
 ```bash
-D:\prog\miniconda\envs\openisr\Scripts\alembic.exe downgrade -1
+alembic downgrade -1
 ```
