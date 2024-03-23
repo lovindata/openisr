@@ -4,10 +4,10 @@ from typing import List
 from fastapi import APIRouter, FastAPI
 from fastapi.responses import StreamingResponse
 from v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
-from v2.views.app.models.card_mod import CardMod
-from v2.views.app.repositories.card_rep import card_rep_impl
-from v2.views.app.repositories.card_thumbnail_rep import card_thumbnail_rep_impl
-from v2.views.app.repositories.download_rep import download_rep_impl
+from v2.queries.app.models.card_mod import CardMod
+from v2.queries.app.repositories.card_rep import card_rep_impl
+from v2.queries.app.repositories.card_thumbnail_rep import card_thumbnail_rep_impl
+from v2.queries.app.repositories.download_rep import download_rep_impl
 
 
 @dataclass

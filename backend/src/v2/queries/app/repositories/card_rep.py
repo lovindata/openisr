@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, List
 
@@ -5,13 +6,13 @@ from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.indexable import index_property
 from sqlalchemy.orm import Mapped, Session, mapped_column
+from v2.commands.images.models.image_mod import ImageMod
+from v2.commands.processes.models.process_mod import ProcessMod
+from v2.commands.processes.models.process_mod.status_val import StatusVal
+from v2.commands.shared.models.extension_val import ExtensionVal
 from v2.confs.envs_conf import envs_conf_impl
 from v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
-from v2.features.images.models.image_mod import ImageMod
-from v2.features.processes.models.process_mod import ProcessMod
-from v2.features.processes.models.process_mod.status_val import StatusVal
-from v2.features.shared.models.extension_val import ExtensionVal
-from v2.views.app.models.card_mod import CardMod
+from v2.queries.app.models.card_mod import CardMod
 
 
 class CardRow(sqlalchemy_conf_impl.Base):
@@ -24,13 +25,12 @@ class CardRow(sqlalchemy_conf_impl.Base):
         return CardMod.model_validate(self.data)
 
 
+@dataclass
 class CardRep:
     envs_conf = envs_conf_impl
 
     def get_all(self, session: Session) -> List[CardMod]:
-        stmt = select(CardRow)
-        cards = [card.to_mod() for card in session.scalars(stmt).all()]
-        return cards
+        return [card.to_mod() for card in session.query(CardRow).all()]
 
     def sync(
         self, session: Session, image: ImageMod, process: ProcessMod | None

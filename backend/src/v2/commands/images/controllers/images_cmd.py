@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List
 
 from fastapi import APIRouter, FastAPI, UploadFile
-from v2.features.images.services.images_svc import images_svc_impl
+from v2.commands.images.services.images_svc import images_svc_impl
 
 
 @dataclass

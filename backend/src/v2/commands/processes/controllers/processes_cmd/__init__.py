@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
 from fastapi import APIRouter, FastAPI
-from v2.features.processes.commands.processes_cmd.process_dto import ProcessDto
-from v2.features.processes.services.processes_svc import processes_svc_impl
+from v2.commands.processes.controllers.processes_cmd.process_dto import ProcessDto
+from v2.commands.processes.services.processes_svc import processes_svc_impl
 
 
 @dataclass

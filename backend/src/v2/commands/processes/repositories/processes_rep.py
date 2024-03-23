@@ -1,15 +1,16 @@
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
-from helpers.exception_utils import BadRequestException
 from sqlalchemy import ForeignKey, select
 from sqlalchemy.orm import Mapped, Session, mapped_column
+from v2.commands.processes.controllers.processes_cmd.process_dto import ProcessDto
+from v2.commands.processes.models.process_mod import ProcessMod
+from v2.commands.processes.models.process_mod.image_size_val import ImageSizeVal
+from v2.commands.processes.models.process_mod.status_val import StatusVal
+from v2.commands.shared.models.extension_val import ExtensionVal
 from v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
-from v2.features.processes.commands.processes_cmd.process_dto import ProcessDto
-from v2.features.processes.models.process_mod import ProcessMod
-from v2.features.processes.models.process_mod.image_size_val import ImageSizeVal
-from v2.features.processes.models.process_mod.status_val import StatusVal
-from v2.features.shared.models.extension_val import ExtensionVal
+from v2.helpers.exception_utils import BadRequestException
 
 
 class ProcessRow(sqlalchemy_conf_impl.Base):
@@ -80,6 +81,7 @@ class ProcessRow(sqlalchemy_conf_impl.Base):
         )
 
 
+@dataclass
 class ProcessesRep:
     def create_run_with_dto(
         self, session: Session, image_id: int, dto: ProcessDto
@@ -112,16 +114,16 @@ class ProcessesRep:
         return row.to_mod()
 
     def update(self, session: Session, mod: ProcessMod) -> None:
-        self._get_or_raise_when_process_not_found(session, mod.id).set_all_with(mod)
+        session.query(ProcessRow).where(ProcessRow.id == id).one().set_all_with(mod)
 
     def get_latest(self, session: Session, image_id: int) -> ProcessMod | None:
-        stmt = (
-            select(ProcessRow)
+        row = (
+            session.query(ProcessRow)
             .where(ProcessRow.image_id == image_id)
             .order_by(ProcessRow.status_started_at.desc())
             .limit(1)
+            .one_or_none()
         )
-        row = session.scalar(stmt)
         return row.to_mod() if row else None
 
     def get_latest_or_throw(self, session: Session, image_id: int) -> ProcessMod:
@@ -133,20 +135,8 @@ class ProcessesRep:
         return process_latest
 
     def delete(self, session: Session, id: int) -> None:
-        row = self._get_or_raise_when_process_not_found(session, id)
+        row = session.query(ProcessRow).where(ProcessRow.id == id).one()
         session.delete(row)
-
-    def _get_or_raise_when_process_not_found(
-        self, session: Session, id: int
-    ) -> ProcessRow:
-        stmt = select(ProcessRow).where(ProcessRow.id == id)
-        row = session.scalar(stmt)
-        if row:
-            return row
-        else:
-            raise BadRequestException(
-                f"The process associated with the provided ID ({id}) does not exist."
-            )
 
 
 processes_rep_impl = ProcessesRep()

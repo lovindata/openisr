@@ -2,12 +2,12 @@ from dataclasses import dataclass
 from typing import List, Tuple
 
 from fastapi import UploadFile
-from helpers.exception_utils import BadRequestException
 from PIL.Image import Image
+from v2.commands.images.repositories.images_rep import images_rep_impl
+from v2.commands.shared.models.extension_val import ExtensionVal
 from v2.confs.envs_conf import envs_conf_impl
 from v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
-from v2.features.images.repositories.images_rep import images_rep_impl
-from v2.features.shared.models.extension_val import ExtensionVal
+from v2.helpers.exception_utils import BadRequestException
 from v2.helpers.pil_utils import open_from_bytes
 
 

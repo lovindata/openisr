@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from v2.features.processes.models.process_mod.image_size_val import ImageSizeVal
-from v2.features.processes.models.process_mod.status_val import StatusVal
-from v2.features.shared.models.extension_val import ExtensionVal
+from v2.commands.processes.models.process_mod.image_size_val import ImageSizeVal
+from v2.commands.processes.models.process_mod.status_val import StatusVal
+from v2.commands.shared.models.extension_val import ExtensionVal
 from v2.helpers.exception_utils import ServerInternalErrorException
 
 

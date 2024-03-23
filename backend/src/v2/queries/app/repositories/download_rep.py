@@ -1,14 +1,15 @@
+from dataclasses import dataclass
 from io import BytesIO
 from typing import Any
 
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.indexable import index_property
 from sqlalchemy.orm import Mapped, Session, mapped_column
+from v2.commands.images.models.image_mod import ImageMod
+from v2.commands.shared.models.extension_val import ExtensionVal
 from v2.confs.envs_conf import envs_conf_impl
 from v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
-from v2.features.images.models.image_mod import ImageMod
-from v2.features.shared.models.extension_val import ExtensionVal
-from v2.views.app.models.download_mod import DownloadMod
+from v2.queries.app.models.download_mod import DownloadMod
 
 
 class DownloadRow(sqlalchemy_conf_impl.Base):
@@ -21,6 +22,7 @@ class DownloadRow(sqlalchemy_conf_impl.Base):
         return DownloadMod.model_validate(self.data)
 
 
+@dataclass
 class DownloadRep:
     envs_conf = envs_conf_impl
 

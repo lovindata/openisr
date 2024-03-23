@@ -4,10 +4,11 @@ import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from helpers.exception_utils import BadRequestException
+from v2.commands.images.controllers.images_cmd import images_cmd_impl
+from v2.commands.processes.controllers.processes_cmd import processes_cmd_impl
 from v2.confs.envs_conf import envs_conf_impl
-from v2.features.images.commands.images_cmd import images_cmd_impl
-from v2.features.processes.commands.processes_cmd import processes_cmd_impl
+from v2.helpers.exception_utils import BadRequestException
+from v2.queries.app.controllers.app_qry import app_qry_impl
 
 
 @dataclass
@@ -15,6 +16,7 @@ class FastAPIConf:
     envs_conf = envs_conf_impl
     images_cmd = images_cmd_impl
     processes_cmd = processes_cmd_impl
+    app_qry = app_qry_impl
 
     _app = FastAPI(title="OpenISR")
 
@@ -23,6 +25,7 @@ class FastAPIConf:
         self._set_exception_handler()
         self._app.include_router(self.images_cmd.router())
         self._app.include_router(self.processes_cmd.router())
+        self._app.include_router(self.app_qry.router())
         self._run_server()
 
     def _set_allow_cors_if_dev(self) -> None:
