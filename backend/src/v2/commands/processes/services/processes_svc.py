@@ -10,8 +10,8 @@ from typing import Tuple
 from PIL.Image import Image
 from v2.commands.images.models.image_mod import ImageMod
 from v2.commands.images.repositories.images_rep import images_rep_impl
-from v2.commands.processes.controllers.processes_cmd.process_dto import ProcessDto
-from v2.commands.processes.models.process_mod import ProcessMod
+from v2.commands.processes.controllers.processes_ctrl.process_dto import ProcessDto
+from v2.commands.processes.models.process_mod.process_mod import ProcessMod
 from v2.commands.processes.repositories.processes_rep import processes_rep_impl
 from v2.commands.processes.services.image_processing_svc import (
     image_processing_svc_impl,

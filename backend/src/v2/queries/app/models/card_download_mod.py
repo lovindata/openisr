@@ -1,10 +1,8 @@
-from io import BytesIO
-
 from pydantic import BaseModel
 
 
-class DownloadMod(BaseModel):
-    bytes: BytesIO
+class CardDownloadMod(BaseModel):
+    bytes: bytes
     media_type: str
     filename: str
     image_id: int

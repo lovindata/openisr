@@ -1,12 +1,10 @@
 from dataclasses import dataclass
 
 from PIL.Image import Image
-from sqlalchemy import select
 from sqlalchemy.orm import Mapped, Session, mapped_column, relationship
 from v2.commands.images.models.image_mod import ImageMod
 from v2.commands.processes.repositories.processes_rep import ProcessRow
 from v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
-from v2.helpers.exception_utils import BadRequestException
 from v2.helpers.pil_utils import extract_bytes, open_from_bytes
 
 

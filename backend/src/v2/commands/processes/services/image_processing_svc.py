@@ -2,7 +2,7 @@ from io import BytesIO
 
 from PIL.Image import BICUBIC, Image, open
 from PIL_DAT.dat_light import DATLight
-from v2.commands.processes.models.process_mod import ProcessMod
+from v2.commands.processes.models.process_mod.process_mod import ProcessMod
 
 
 class ImageProcessingSvc:

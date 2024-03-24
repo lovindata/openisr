@@ -1,8 +1,6 @@
-from io import BytesIO
-
 from pydantic import BaseModel
 
 
 class CardThumbnailMod(BaseModel):
-    thumbnail_bytes: BytesIO
+    thumbnail_bytes: bytes
     image_id: int

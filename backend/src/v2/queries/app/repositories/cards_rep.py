@@ -2,14 +2,12 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, List
 
-from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.indexable import index_property
 from sqlalchemy.orm import Mapped, Session, mapped_column
 from v2.commands.images.models.image_mod import ImageMod
-from v2.commands.processes.models.process_mod import ProcessMod
+from v2.commands.processes.models.process_mod.process_mod import ProcessMod
 from v2.commands.processes.models.process_mod.status_val import StatusVal
-from v2.commands.shared.models.extension_val import ExtensionVal
 from v2.confs.envs_conf import envs_conf_impl
 from v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
 from v2.queries.app.models.card_mod import CardMod
@@ -18,6 +16,7 @@ from v2.queries.app.models.card_mod import CardMod
 class CardRow(sqlalchemy_conf_impl.Base):
     __tablename__ = "cards"
 
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     data: Mapped[dict[str, Any]] = mapped_column(type_=JSONB, nullable=False)
     image_id = index_property("data", "image_id")
 
@@ -26,7 +25,7 @@ class CardRow(sqlalchemy_conf_impl.Base):
 
 
 @dataclass
-class CardRep:
+class CardsRep:
     envs_conf = envs_conf_impl
 
     def get_all(self, session: Session) -> List[CardMod]:
@@ -76,9 +75,7 @@ class CardRep:
             if process and (type(process.status.ended) is StatusVal.Failed)
             else None
         )
-        extension = (
-            process.extension if process else ExtensionVal(image.data.format)
-        ).value
+        extension = (process.extension if process else image.extension()).value
         enable_ai = process.enable_ai if process else False
         mod = CardMod(
             thumbnail_src=thumbnail_src,
@@ -96,4 +93,4 @@ class CardRep:
         update_row(row, mod) if row else insert_row(mod)
 
 
-card_rep_impl = CardRep()
+cards_rep_impl = CardsRep()
