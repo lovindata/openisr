@@ -2,8 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, List
 
-from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.ext.indexable import index_property
+from sqlalchemy import JSON
 from sqlalchemy.orm import Mapped, Session, mapped_column
 from v2.commands.images.models.image_mod import ImageMod
 from v2.commands.processes.models.process_mod.process_mod import ProcessMod
@@ -17,8 +16,17 @@ class CardRow(sqlalchemy_conf_impl.Base):
     __tablename__ = "cards"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    data: Mapped[dict[str, Any]] = mapped_column(type_=JSONB, nullable=False)
-    image_id = index_property("data", "image_id")
+    data: Mapped[dict[str, Any]] = mapped_column(type_=JSON, nullable=False)
+    image_id: Mapped[int] = mapped_column(unique=True, index=True)
+
+    @classmethod
+    def insert_with(cls, session: Session, mod: CardMod) -> None:
+        row = CardRow(data=mod.model_dump(), image_id=mod.image_id)
+        session.add(row)
+
+    def update_with(self, mod: CardMod) -> None:
+        self.data = mod.model_dump()
+        self.image_id = mod.image_id
 
     def to_mod(self) -> CardMod:
         return CardMod.model_validate(self.data)
@@ -55,13 +63,6 @@ class CardsRep:
                     )
                     return CardMod.Stoppable(duration=duration)
 
-        def update_row(row: CardRow, mod: CardMod) -> None:
-            row.data = mod.model_dump()
-
-        def insert_row(mod: CardMod) -> None:
-            row = CardRow(data=mod.model_dump())
-            session.add(row)
-
         thumbnail_src = build_thumbnail_src()
         source = CardMod.Dimension(width=image.data.size[0], height=image.data.size[1])
         target = (
@@ -90,7 +91,10 @@ class CardsRep:
             enable_ai=enable_ai,
         )
         row = session.query(CardRow).where(CardRow.image_id == image.id).one_or_none()
-        update_row(row, mod) if row else insert_row(mod)
+        row.update_with(mod) if row else CardRow.insert_with(session, mod)
+
+    def clean_sync(self, session: Session, image_id: int) -> None:
+        session.query(CardRow).where(CardRow.image_id == image_id).delete()
 
 
 cards_rep_impl = CardsRep()

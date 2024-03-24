@@ -2,8 +2,7 @@ from dataclasses import dataclass
 from io import BytesIO
 from typing import Any
 
-from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.ext.indexable import index_property
+from sqlalchemy import JSON
 from sqlalchemy.orm import Mapped, Session, mapped_column
 from v2.commands.images.models.image_mod import ImageMod
 from v2.confs.envs_conf import envs_conf_impl
@@ -15,8 +14,17 @@ class CardDownloadRow(sqlalchemy_conf_impl.Base):
     __tablename__ = "card_downloads"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    data: Mapped[dict[str, Any]] = mapped_column(type_=JSONB, nullable=False)
-    image_id = index_property("data", "image_id")
+    data: Mapped[dict[str, Any]] = mapped_column(type_=JSON, nullable=False)
+    image_id: Mapped[int] = mapped_column(unique=True, index=True)
+
+    @classmethod
+    def insert_with(cls, session: Session, mod: CardDownloadMod) -> None:
+        row = CardDownloadRow(data=mod.model_dump(), image_id=mod.image_id)
+        session.add(row)
+
+    def update_with(self, mod: CardDownloadMod) -> None:
+        self.data = mod.model_dump()
+        self.image_id = mod.image_id
 
     def to_mod(self) -> CardDownloadMod:
         return CardDownloadMod.model_validate(self.data)
@@ -41,13 +49,6 @@ class CardDownloadsRep:
             bytesio.seek(0)
             return bytesio.getvalue()
 
-        def update_row(row: CardDownloadRow, mod: CardDownloadMod) -> None:
-            row.data = mod.model_dump()
-
-        def insert_row(mod: CardDownloadMod) -> None:
-            row = CardDownloadRow(data=mod.model_dump())
-            session.add(row)
-
         bytes = build_bytes()
         mod = CardDownloadMod(
             bytes=bytes,
@@ -60,7 +61,12 @@ class CardDownloadsRep:
             .where(CardDownloadRow.image_id == image.id)
             .one_or_none()
         )
-        update_row(row, mod) if row else insert_row(mod)
+        row.update_with(mod) if row else CardDownloadRow.insert_with(session, mod)
+
+    def clean_sync(self, session: Session, image_id: int) -> None:
+        session.query(CardDownloadRow).where(
+            CardDownloadRow.image_id == image_id
+        ).delete()
 
 
 card_downloads_rep_impl = CardDownloadsRep()

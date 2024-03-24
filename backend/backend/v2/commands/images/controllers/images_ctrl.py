@@ -13,24 +13,24 @@ class ImagesCtrl:
     def router(self) -> APIRouter:
         app = FastAPI()
 
-        @app.delete(
-            tags=[commands.__name__],
-            summary="Delete image",
-            path="/images/{id}",
-            status_code=204,
-        )
-        def _(id: int) -> None:
-            self.images_svc.delete_image(id)
-
         @app.post(
             tags=[commands.__name__],
             summary="Upload local images",
-            path="/images/upload-local",
+            path="/command/v1/images/upload-local",
             response_model=None,
             status_code=204,
         )
         def _(files: List[UploadFile]) -> None:
             self.images_svc.upload_images(files)
+
+        @app.delete(
+            tags=[commands.__name__],
+            summary="Delete image",
+            path="/command/v1/images/{id}/delete",
+            status_code=204,
+        )
+        def _(id: int) -> None:
+            self.images_svc.delete_image(id)
 
         return app.router
 

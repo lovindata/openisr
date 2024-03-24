@@ -9,6 +9,9 @@ from v2.confs.envs_conf import envs_conf_impl
 from v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
 from v2.helpers.exception_utils import BadRequestException
 from v2.helpers.pil_utils import open_from_bytes
+from v2.queries.app.repositories.card_download_rep import card_downloads_rep_impl
+from v2.queries.app.repositories.card_thumbnails_rep import card_thumbnails_rep_impl
+from v2.queries.app.repositories.cards_rep import cards_rep_impl
 
 
 @dataclass
@@ -16,10 +19,16 @@ class ImagesSvc:
     envs_conf = envs_conf_impl
     sqlalchemy_conf = sqlalchemy_conf_impl
     images_rep = images_rep_impl
+    cards_rep = cards_rep_impl
+    card_thumbnails_rep = card_thumbnails_rep_impl
+    card_download_rep = card_downloads_rep_impl
 
     def delete_image(self, id: int) -> None:
         with self.sqlalchemy_conf.get_session() as session:
             self.images_rep.delete(session, id)
+            self.cards_rep.clean_sync(session, id)
+            self.card_thumbnails_rep.clean_sync(session, id)
+            self.card_download_rep.clean_sync(session, id)
 
     def upload_images(self, files: List[UploadFile]) -> None:
         def extract_name_and_data(
@@ -36,7 +45,10 @@ class ImagesSvc:
         def upload_transactionally(images: List[Tuple[str, Image]]) -> None:
             with self.sqlalchemy_conf.get_session() as session:
                 for name, data in images:
-                    self.images_rep.insert(session, name, data)
+                    image = self.images_rep.insert(session, name, data)
+                    self.cards_rep.sync(session, image, None)
+                    self.card_thumbnails_rep.sync(session, image)
+                    self.card_download_rep.sync(session, image)
 
         images = [extract_name_and_data(file) for file in files]
         upload_transactionally(images)

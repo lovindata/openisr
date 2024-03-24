@@ -17,7 +17,7 @@ class ImageRow(sqlalchemy_conf_impl.Base):
 
     processes = relationship(ProcessRow)
 
-    def set_all_with(self, mod: ImageMod) -> "ImageRow":
+    def update_with(self, mod: ImageMod) -> "ImageRow":
         self.name = mod.name
         self.data = extract_bytes(mod.data)
         return self
@@ -28,21 +28,21 @@ class ImageRow(sqlalchemy_conf_impl.Base):
 
 @dataclass
 class ImagesRep:
-    def insert(self, session: Session, name: str, data: Image) -> None:
+    def insert(self, session: Session, name: str, data: Image) -> ImageMod:
         row = ImageRow(name=name, data=extract_bytes(data))
         session.add(row)
         session.flush()
+        return row.to_mod()
 
     def delete(self, session: Session, id: int) -> None:
-        row = session.query(ImageRow).where(ImageRow.id == id).one()
-        session.delete(row)
+        session.query(ImageRow).where(ImageRow.id == id).delete()
 
     def update(self, session: Session, mod: ImageMod) -> ImageMod:
         return (
             session.query(ImageRow)
             .where(ImageRow.id == id)
             .one()
-            .set_all_with(mod)
+            .update_with(mod)
             .to_mod()
         )
 

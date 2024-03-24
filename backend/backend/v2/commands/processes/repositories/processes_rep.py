@@ -28,7 +28,7 @@ class ProcessRow(sqlalchemy_conf_impl.Base):
     status_ended_failed_error: Mapped[Optional[str]]
     status_ended_failed_stacktrace: Mapped[Optional[str]]
 
-    def set_all_with(self, model: ProcessMod) -> "ProcessRow":
+    def update_with(self, model: ProcessMod) -> "ProcessRow":
         self.image_id = model.image_id
         self.extension = model.extension
         self.target_width = model.target.width
@@ -114,7 +114,7 @@ class ProcessesRep:
         return row.to_mod()
 
     def update(self, session: Session, mod: ProcessMod) -> None:
-        session.query(ProcessRow).where(ProcessRow.id == id).one().set_all_with(mod)
+        session.query(ProcessRow).where(ProcessRow.id == id).one().update_with(mod)
 
     def get_latest(self, session: Session, image_id: int) -> ProcessMod | None:
         row = (

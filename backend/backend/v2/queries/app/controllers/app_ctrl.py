@@ -25,7 +25,7 @@ class AppCtrl:
         @app.get(
             tags=[queries.__name__],
             summary="Get cards",
-            path="/app/cards",
+            path="/query/v1/app/cards",
             response_model=List[CardMod],
         )
         def _() -> List[CardMod]:
@@ -35,7 +35,7 @@ class AppCtrl:
         @app.get(
             tags=[queries.__name__],
             summary="Card thumbnail (144x144)",
-            path="/app/cards/thumbnail/{image_id}.webp",
+            path="/query/v1/app/cards/thumbnail/{image_id}.webp",
             response_class=StreamingResponse,
         )
         def _(image_id: int) -> StreamingResponse:
@@ -48,7 +48,7 @@ class AppCtrl:
         @app.get(
             tags=[queries.__name__],
             summary="Download image",
-            path="/app/cards/download",
+            path="/query/v1/app/cards/download",
             response_class=StreamingResponse,
         )
         def _(image_id: int) -> StreamingResponse:

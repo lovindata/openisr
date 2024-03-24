@@ -47,19 +47,19 @@ poetry run python ./backend/main.py
 
 ## Data migrations
 
-- To generate migration:
+To generate migration:
 
 ```bash
 alembic revision --autogenerate
 ```
 
-- To migrate to head:
+To migrate to head:
 
 ```bash
 alembic upgrade head
 ```
 
-- To downgrade:
+To downgrade:
 
 ```bash
 alembic downgrade -1

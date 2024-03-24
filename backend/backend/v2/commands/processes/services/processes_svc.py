@@ -19,6 +19,9 @@ from v2.commands.processes.services.image_processing_svc import (
 from v2.confs.envs_conf import envs_conf_impl
 from v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
 from v2.helpers.exception_utils import BadRequestException
+from v2.queries.app.repositories.card_download_rep import card_downloads_rep_impl
+from v2.queries.app.repositories.card_thumbnails_rep import card_thumbnails_rep_impl
+from v2.queries.app.repositories.cards_rep import cards_rep_impl
 
 
 @dataclass
@@ -28,6 +31,9 @@ class ProcessesSvc:
     images_rep = images_rep_impl
     processes_rep = processes_rep_impl
     image_processing_svc = image_processing_svc_impl
+    cards_rep = cards_rep_impl
+    card_thumbnails_rep = card_thumbnails_rep_impl
+    card_download_rep = card_downloads_rep_impl
 
     def run(self, image_id: int, dto: ProcessDto) -> None:
         def raise_when_target_invalid() -> None:
@@ -50,6 +56,9 @@ class ProcessesSvc:
                     args=(image, process),
                     daemon=True,
                 ).start()
+                self.cards_rep.sync(session, image, process)
+                self.card_thumbnails_rep.sync(session, image)
+                self.card_download_rep.sync(session, image)
 
         raise_when_target_invalid()
         start_process()
