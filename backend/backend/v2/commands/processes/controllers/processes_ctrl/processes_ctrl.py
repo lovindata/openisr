@@ -17,7 +17,7 @@ class ProcessesCtrl:
             tags=[commands.__name__],
             summary="Run process",
             path="/images/{id}/process",
-            response_model=None,
+            status_code=204,
         )
         def _(id: int, dto: ProcessDto) -> None:
             self.processes_svc.run(id, dto)
@@ -26,7 +26,7 @@ class ProcessesCtrl:
             tags=[commands.__name__],
             summary="Retry latest process",
             path="/images/{id}/process/retry",
-            response_model=None,
+            status_code=204,
         )
         def _(id: int) -> None:
             self.processes_svc.retry(id)
@@ -35,7 +35,7 @@ class ProcessesCtrl:
             tags=[commands.__name__],
             summary="Stop latest process",
             path="/images/{id}/process",
-            response_model=None,
+            status_code=204,
         )
         def _(id: int) -> None:
             self.processes_svc.stop(id)

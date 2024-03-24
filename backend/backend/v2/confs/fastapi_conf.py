@@ -88,7 +88,7 @@ class FastAPIConf:
                 log_level="info",
                 access_log=False,
                 reload=True,
-                reload_dirs="./src",
+                reload_dirs="./backend",
             )
 
 

@@ -1,5 +1,4 @@
 [tool.poetry]
-package-mode = false
 name = "backend"
 version = "0.1.0"
 description = ""

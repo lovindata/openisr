@@ -17,7 +17,7 @@ class ImagesCtrl:
             tags=[commands.__name__],
             summary="Delete image",
             path="/images/{id}",
-            response_model=None,
+            status_code=204,
         )
         def _(id: int) -> None:
             self.images_svc.delete_image(id)
@@ -27,6 +27,7 @@ class ImagesCtrl:
             summary="Upload local images",
             path="/images/upload-local",
             response_model=None,
+            status_code=204,
         )
         def _(files: List[UploadFile]) -> None:
             self.images_svc.upload_images(files)
