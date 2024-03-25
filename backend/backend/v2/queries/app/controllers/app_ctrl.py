@@ -55,7 +55,7 @@ class AppCtrl:
             with self.sqlalchemy_conf.get_session() as session:
                 download = self.download_rep.get(session, image_id)
                 return StreamingResponse(
-                    content=BytesIO(download.bytes),
+                    content=BytesIO(download.image_bytes),
                     media_type=download.media_type,
                     headers={
                         "Content-Disposition": f"attachment; filename={download.filename}"

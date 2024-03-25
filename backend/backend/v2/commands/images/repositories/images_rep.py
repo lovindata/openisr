@@ -40,7 +40,7 @@ class ImagesRep:
     def update(self, session: Session, mod: ImageMod) -> ImageMod:
         return (
             session.query(ImageRow)
-            .where(ImageRow.id == id)
+            .where(ImageRow.id == mod.id)
             .one()
             .update_with(mod)
             .to_mod()

@@ -1,10 +1,9 @@
-from typing import Literal
-
 from pydantic import BaseModel
 from v2.commands.processes.controllers.processes_ctrl.image_size_dto import ImageSizeDto
+from v2.commands.shared.models.extension_val import ExtensionVal
 
 
 class ProcessDto(BaseModel):
-    extension: Literal["JPEG", "PNG", "WEBP"]
+    extension: ExtensionVal
     target: ImageSizeDto
     enable_ai: bool

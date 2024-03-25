@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from multiprocessing import Process
 from queue import Queue
 from threading import Thread
-from time import time
 from typing import Tuple
 
 from PIL.Image import Image
@@ -47,52 +46,47 @@ class ProcessesSvc:
                     f"Invalid target: ({dto.target.width}, {dto.target.height})."
                 )
 
-        def start_process() -> None:
+        def get_image_and_create_process() -> Tuple[ImageMod, ProcessMod]:
             with self.sqlalchemy_conf.get_session() as session:
                 image = self.images_rep.get(session, image_id)
                 process = self.processes_rep.create_run_with_dto(session, image.id, dto)
-                Process(
-                    target=self._pickable_process,
-                    args=(image, process),
-                    daemon=True,
-                ).start()
                 self.cards_rep.sync(session, image, process)
-                self.card_thumbnails_rep.sync(session, image)
-                self.card_download_rep.sync(session, image)
+                return image, process
 
         raise_when_target_invalid()
-        start_process()
-
-    def retry(self, image_id: int) -> None:
-        def get_image_and_recreate_latest_process(
-            image_id: int,
-        ) -> Tuple[ImageMod, ProcessMod]:
-            with self.sqlalchemy_conf.get_session() as session:
-                image = self.images_rep.get(session, image_id)
-                process_latest = self.processes_rep.get_latest_or_throw(
-                    session, image_id
-                )
-                process_latest = self.processes_rep.create_run_with_mod(
-                    session, image_id, process_latest
-                )
-                return (image, process_latest)
-
-        image, process_latest = get_image_and_recreate_latest_process(image_id)
+        image, process = get_image_and_create_process()
         Process(
             target=self._pickable_process,
-            args=(image, process_latest),
+            args=(image, process),
             daemon=True,
         ).start()
 
-    def stop(self, id: int) -> None:
+    def retry(self, image_id: int) -> None:
+        with self.sqlalchemy_conf.get_session() as session:
+            image = self.images_rep.get(session, image_id)
+            process_latest = self.processes_rep.get_latest_or_throw(session, image_id)
+            process_latest = self.processes_rep.create_run_with_mod(
+                session, image_id, process_latest
+            )
+            Process(
+                target=self._pickable_process,
+                args=(image, process_latest),
+                daemon=True,
+            ).start()
+            self.cards_rep.sync(session, image, process_latest)
+
+    def stop(self, image_id: int) -> None:
         with self.sqlalchemy_conf.get_session() as session:
             is_ended = (
-                self.processes_rep.get_latest_or_throw(session, id).status.ended
+                self.processes_rep.get_latest_or_throw(session, image_id).status.ended
                 is not None
             )
             if is_ended:
                 raise BadRequestException("Cannot stop an ended process.")
-            self.processes_rep.delete(session, id)
+            self.processes_rep.delete(session, image_id)
+            image = self.images_rep.get(session, image_id)
+            latest_process = self.processes_rep.get_latest(session, image_id)
+            self.cards_rep.sync(session, image, latest_process)
 
     def _pickable_process(self, image: ImageMod, process: ProcessMod) -> None:
         def run_while_process_resumable(queue: Queue[Image | None]) -> None:
@@ -101,6 +95,7 @@ class ProcessesSvc:
                 time.sleep(1)
                 with self.sqlalchemy_conf.get_session() as session:
                     uptodate_process = self.processes_rep.get_latest(session, image.id)
+                    self.cards_rep.sync(session, image, uptodate_process)
                     resumable = (
                         uptodate_process is not None
                         and uptodate_process.status.ended is None
@@ -123,6 +118,7 @@ class ProcessesSvc:
                 with self.sqlalchemy_conf.get_session() as session:
                     updated_process = process.terminate_failed(error, stacktrace)
                     self.processes_rep.update(session, updated_process)
+                    self.cards_rep.sync(session, image, updated_process)
                 queue.put(None)
 
         def handle_result(out_image_data: Image | None) -> None:
@@ -132,6 +128,9 @@ class ProcessesSvc:
                     self.images_rep.update(session, updated_image)
                     updated_process = process.terminate_success()
                     self.processes_rep.update(session, updated_process)
+                    self.cards_rep.sync(session, updated_image, updated_process)
+                    self.card_thumbnails_rep.sync(session, image)
+                    self.card_download_rep.sync(session, image)
 
         queue: Queue[Image | None] = Queue()
         Thread(target=run_while_process_resumable, args=(queue,), daemon=True).start()

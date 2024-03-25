@@ -48,7 +48,6 @@ class ImagesSvc:
                     image = self.images_rep.insert(session, name, data)
                     self.cards_rep.sync(session, image, None)
                     self.card_thumbnails_rep.sync(session, image)
-                    self.card_download_rep.sync(session, image)
 
         images = [extract_name_and_data(file) for file in files]
         upload_transactionally(images)

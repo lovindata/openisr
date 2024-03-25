@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from io import BytesIO
-from typing import Any
 
-from sqlalchemy import JSON
 from sqlalchemy.orm import Mapped, Session, mapped_column
 from v2.commands.images.models.image_mod import ImageMod
 from v2.confs.envs_conf import envs_conf_impl
@@ -15,20 +13,24 @@ class CardThumbnailRow(sqlalchemy_conf_impl.Base):
     __tablename__ = "card_thumbnails"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    data: Mapped[dict[str, Any]] = mapped_column(type_=JSON, nullable=False)
+    thumbnail_bytes: Mapped[bytes]
     image_id: Mapped[int] = mapped_column(unique=True, index=True)
 
     @classmethod
     def insert_with(cls, session: Session, mod: CardThumbnailMod) -> None:
-        row = CardThumbnailRow(data=mod.model_dump(), image_id=mod.image_id)
+        row = CardThumbnailRow(
+            thumbnail_bytes=mod.thumbnail_bytes, image_id=mod.image_id
+        )
         session.add(row)
 
     def update_with(self, mod: CardThumbnailMod) -> None:
-        self.data = mod.model_dump()
+        self.thumbnail_bytes = mod.thumbnail_bytes
         self.image_id = mod.image_id
 
     def to_mod(self) -> CardThumbnailMod:
-        return CardThumbnailMod.model_validate(self.data)
+        return CardThumbnailMod(
+            thumbnail_bytes=self.thumbnail_bytes, image_id=self.image_id
+        )
 
 
 @dataclass

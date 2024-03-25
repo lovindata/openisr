@@ -1,5 +1,6 @@
 # SQLite
 data/openisr.db
+data/openisr.db-journal
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

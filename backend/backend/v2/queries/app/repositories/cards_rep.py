@@ -29,7 +29,7 @@ class CardRow(sqlalchemy_conf_impl.Base):
         self.image_id = mod.image_id
 
     def to_mod(self) -> CardMod:
-        return CardMod.model_validate(self.data)
+        return CardMod(**self.data)
 
 
 @dataclass

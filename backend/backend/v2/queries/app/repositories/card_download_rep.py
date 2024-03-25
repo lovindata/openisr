@@ -15,19 +15,25 @@ class CardDownloadRow(sqlalchemy_conf_impl.Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     data: Mapped[dict[str, Any]] = mapped_column(type_=JSON, nullable=False)
+    image_bytes: Mapped[bytes]
     image_id: Mapped[int] = mapped_column(unique=True, index=True)
 
     @classmethod
     def insert_with(cls, session: Session, mod: CardDownloadMod) -> None:
-        row = CardDownloadRow(data=mod.model_dump(), image_id=mod.image_id)
+        row = CardDownloadRow(
+            data=mod.model_dump(exclude={"image_bytes"}),
+            image_bytes=mod.image_bytes,
+            image_id=mod.image_id,
+        )
         session.add(row)
 
     def update_with(self, mod: CardDownloadMod) -> None:
-        self.data = mod.model_dump()
+        self.data = mod.model_dump(exclude={"image_bytes"})
+        self.image_bytes = mod.image_bytes
         self.image_id = mod.image_id
 
     def to_mod(self) -> CardDownloadMod:
-        return CardDownloadMod.model_validate(self.data)
+        return CardDownloadMod(image_bytes=self.image_bytes, **self.data)
 
 
 @dataclass
@@ -43,15 +49,15 @@ class CardDownloadsRep:
         )
 
     def sync(self, session: Session, image: ImageMod) -> None:
-        def build_bytes() -> "bytes":
+        def build_image_bytes() -> bytes:
             bytesio = BytesIO()
             image.data.save(bytesio, image.extension().value)
             bytesio.seek(0)
             return bytesio.getvalue()
 
-        bytes = build_bytes()
+        image_bytes = build_image_bytes()
         mod = CardDownloadMod(
-            bytes=bytes,
+            image_bytes=image_bytes,
             media_type=image.extension().to_media_type(),
             filename=f"{image.name}.{image.extension().to_file_extension()}",
             image_id=image.id,
