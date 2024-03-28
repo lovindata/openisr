@@ -1,6 +1,7 @@
+from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, computed_field
 
 
 class CardMod(BaseModel):
@@ -8,7 +9,9 @@ class CardMod(BaseModel):
     name: str
     source: "Dimension"
     target: "Dimension | None"
-    status: "Runnable | Stoppable | Errored | Downloadable"
+    status: "Runnable | Stoppable | Errored | Downloadable" = Field(
+        discriminator="type"
+    )
     error: str | None
     extension: Literal["JPEG", "PNG", "WEBP"]
     preserve_ratio: bool
@@ -20,13 +23,27 @@ class CardMod(BaseModel):
         height: int
 
     class Runnable(BaseModel):
-        pass
+        type: Literal["Runnable"] = "Runnable"
 
     class Stoppable(BaseModel):
-        duration: int
+        type: Literal["Stoppable"] = "Stoppable"
+
+        @computed_field
+        @property
+        def duration(self) -> int:
+            return round((datetime.now() - self.started_at).total_seconds())
+
+        started_at: datetime
 
     class Errored(BaseModel):
-        duration: int
+        type: Literal["Errored"] = "Errored"
+
+        @computed_field
+        @property
+        def duration(self) -> int:
+            return round((datetime.now() - self.started_at).total_seconds())
+
+        started_at: datetime
 
     class Downloadable(BaseModel):
-        pass
+        type: Literal["Downloadable"] = "Downloadable"

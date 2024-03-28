@@ -14,26 +14,28 @@ class CardDownloadRow(sqlalchemy_conf_impl.Base):
     __tablename__ = "card_downloads"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    data: Mapped[dict[str, Any]] = mapped_column(type_=JSON, nullable=False)
+    data: Mapped[str] = mapped_column(type_=JSON, nullable=False)
     image_bytes: Mapped[bytes]
     image_id: Mapped[int] = mapped_column(unique=True, index=True)
 
     @classmethod
     def insert_with(cls, session: Session, mod: CardDownloadMod) -> None:
         row = CardDownloadRow(
-            data=mod.model_dump(exclude={"image_bytes"}),
+            data=mod.model_dump_json(exclude={"image_bytes"}),
             image_bytes=mod.image_bytes,
             image_id=mod.image_id,
         )
         session.add(row)
 
     def update_with(self, mod: CardDownloadMod) -> None:
-        self.data = mod.model_dump(exclude={"image_bytes"})
+        self.data = mod.model_dump_json(exclude={"image_bytes"})
         self.image_bytes = mod.image_bytes
         self.image_id = mod.image_id
 
     def to_mod(self) -> CardDownloadMod:
-        return CardDownloadMod(image_bytes=self.image_bytes, **self.data)
+        return CardDownloadMod.model_validate_json(
+            self.data, context={"image_bytes": self.image_bytes}
+        )
 
 
 @dataclass

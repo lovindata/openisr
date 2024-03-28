@@ -137,7 +137,6 @@ class ProcessesRep:
     def delete(self, session: Session, id: int) -> None:
         row = session.query(ProcessRow).where(ProcessRow.id == id).one()
         session.delete(row)
-        session.flush()
 
 
 processes_rep_impl = ProcessesRep()

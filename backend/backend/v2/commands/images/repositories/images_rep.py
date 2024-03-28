@@ -38,13 +38,14 @@ class ImagesRep:
         session.query(ImageRow).where(ImageRow.id == id).delete()
 
     def update(self, session: Session, mod: ImageMod) -> ImageMod:
-        return (
+        mod = (
             session.query(ImageRow)
             .where(ImageRow.id == mod.id)
             .one()
             .update_with(mod)
             .to_mod()
         )
+        return mod
 
     def get(self, session: Session, id: int) -> ImageMod:
         return session.query(ImageRow).where(ImageRow.id == id).one().to_mod()

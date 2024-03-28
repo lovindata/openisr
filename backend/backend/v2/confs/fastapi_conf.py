@@ -20,14 +20,33 @@ class FastAPIConf:
     processes_cmd = processes_ctrl_impl
     app_qry = app_ctrl_impl
 
-    _app = FastAPI(title="OpenISR")
-
     def __post_init__(self) -> None:
+        self._app = FastAPI(title="OpenISR")
         self._set_allow_cors_if_dev()
         self._set_exception_handler()
         self._app.include_router(self.app_qry.router())
         self._app.include_router(self.images_cmd.router())
         self._app.include_router(self.processes_cmd.router())
+
+    def run_server(self) -> None:
+        if self.envs_conf.prod_mode:
+            uvicorn.run(
+                app=self._app,
+                host="0.0.0.0",
+                port=self.envs_conf.api_port,
+                log_level="info",
+                access_log=False,
+            )
+        else:
+            uvicorn.run(
+                app=f"{self.__module__}:_",  # Must pass the application as an import string (https://www.uvicorn.org/deployment/#running-programmatically)
+                host="0.0.0.0",
+                port=self.envs_conf.api_port,
+                log_level="info",
+                access_log=False,
+                reload=True,
+                reload_dirs="./backend",
+            )
 
     def _set_allow_cors_if_dev(self) -> None:
         if not self.envs_conf.prod_mode:
@@ -71,26 +90,8 @@ class FastAPIConf:
                     headers=headers,
                 )
 
-    def run_server(self) -> None:
-        if self.envs_conf.prod_mode:
-            uvicorn.run(
-                app=self._app,
-                host="0.0.0.0",
-                port=self.envs_conf.api_port,
-                log_level="info",
-                access_log=False,
-            )
-        else:
-            uvicorn.run(
-                app=f"{self.__module__}:_",  # Must pass the application as an import string (https://www.uvicorn.org/deployment/#running-programmatically)
-                host="0.0.0.0",
-                port=self.envs_conf.api_port,
-                log_level="info",
-                access_log=False,
-                reload=True,
-                reload_dirs="./backend",
-            )
-
 
 fastapi_conf_impl = FastAPIConf()
-_ = None if envs_conf_impl.prod_mode else fastapi_conf_impl._app
+_ = (
+    None if envs_conf_impl.prod_mode else fastapi_conf_impl._app
+)  # For reloads, FastAPI should be accessible in the main context.

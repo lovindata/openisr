@@ -95,7 +95,6 @@ class ProcessesSvc:
                 time.sleep(1)
                 with self.sqlalchemy_conf.get_session() as session:
                     uptodate_process = self.processes_rep.get_latest(session, image.id)
-                    self.cards_rep.sync(session, image, uptodate_process)
                     resumable = (
                         uptodate_process is not None
                         and uptodate_process.status.ended is None
@@ -134,7 +133,7 @@ class ProcessesSvc:
 
         queue: Queue[Image | None] = Queue()
         Thread(target=run_while_process_resumable, args=(queue,), daemon=True).start()
-        Thread(target=run_process_image, args=(queue,), daemon=True).start()
+        # Thread(target=run_process_image, args=(queue,), daemon=True).start()
         out_image_data = queue.get(
             timeout=self.envs_conf.process_timeout
         )  # Get first result only

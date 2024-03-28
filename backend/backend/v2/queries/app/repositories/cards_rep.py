@@ -1,3 +1,4 @@
+import json
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, List
@@ -21,15 +22,15 @@ class CardRow(sqlalchemy_conf_impl.Base):
 
     @classmethod
     def insert_with(cls, session: Session, mod: CardMod) -> None:
-        row = CardRow(data=mod.model_dump(), image_id=mod.image_id)
+        row = CardRow(data=json.loads(mod.model_dump_json()), image_id=mod.image_id)
         session.add(row)
 
     def update_with(self, mod: CardMod) -> None:
-        self.data = mod.model_dump()
+        self.data = json.loads(mod.model_dump_json())
         self.image_id = mod.image_id
 
     def to_mod(self) -> CardMod:
-        return CardMod(**self.data)
+        return CardMod.model_validate_json(json.dumps(self.data))
 
 
 @dataclass
@@ -54,14 +55,10 @@ class CardsRep:
             match process.status.ended:
                 case StatusVal.Successful():
                     return CardMod.Downloadable()
-                case StatusVal.Failed(at=at):
-                    duration = round((at - process.status.started_at).total_seconds())
-                    return CardMod.Errored(duration=duration)
+                case StatusVal.Failed():
+                    return CardMod.Errored(started_at=process.status.started_at)
                 case None:
-                    duration = round(
-                        (datetime.now() - process.status.started_at).total_seconds()
-                    )
-                    return CardMod.Stoppable(duration=duration)
+                    return CardMod.Stoppable(started_at=process.status.started_at)
 
         thumbnail_src = build_thumbnail_src()
         source = CardMod.Dimension(width=image.data.size[0], height=image.data.size[1])

@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 4a6ce2b1abb0
+Revision ID: 657d5612ba49
 Revises: 
-Create Date: 2024-03-24 12:43:54.242467
+Create Date: 2024-03-28 07:13:19.583965
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '4a6ce2b1abb0'
+revision: str = '657d5612ba49'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -23,13 +23,14 @@ def upgrade() -> None:
     op.create_table('card_downloads',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('data', sa.JSON(), nullable=False),
+    sa.Column('image_bytes', sa.LargeBinary(), nullable=False),
     sa.Column('image_id', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_card_downloads_image_id'), 'card_downloads', ['image_id'], unique=True)
     op.create_table('card_thumbnails',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('data', sa.JSON(), nullable=False),
+    sa.Column('thumbnail_bytes', sa.LargeBinary(), nullable=False),
     sa.Column('image_id', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
