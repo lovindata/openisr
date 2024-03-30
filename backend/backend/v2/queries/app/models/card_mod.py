@@ -37,13 +37,7 @@ class CardMod(BaseModel):
 
     class Errored(BaseModel):
         type: Literal["Errored"] = "Errored"
-
-        @computed_field
-        @property
-        def duration(self) -> int:
-            return round((datetime.now() - self.started_at).total_seconds())
-
-        started_at: datetime
+        duration: int
 
     class Downloadable(BaseModel):
         type: Literal["Downloadable"] = "Downloadable"

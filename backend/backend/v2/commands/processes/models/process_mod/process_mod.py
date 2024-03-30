@@ -1,10 +1,10 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from v2.commands.processes.models.process_mod.image_size_val import ImageSizeVal
-from v2.commands.processes.models.process_mod.status_val import StatusVal
-from v2.commands.shared.models.extension_val import ExtensionVal
-from v2.helpers.exception_utils import ServerInternalErrorException
+from backend.v2.commands.processes.models.process_mod.image_size_val import ImageSizeVal
+from backend.v2.commands.processes.models.process_mod.status_val import StatusVal
+from backend.v2.commands.shared.models.extension_val import ExtensionVal
+from backend.v2.helpers.exception_utils import ServerInternalErrorException
 
 
 @dataclass
@@ -30,11 +30,13 @@ class ProcessMod:
 
     def resolve_timeout(self, timeout_in_seconds: int) -> "ProcessMod":
         diff = round((datetime.now() - self.status.started_at).total_seconds())
-        return (
-            self.terminate_failed("Process timeout.")
-            if (self.status.ended is None and diff > timeout_in_seconds)
-            else self
-        )
+        if self.status.ended is None and diff > timeout_in_seconds:
+            self.status.ended = StatusVal.Failed(
+                self.status.started_at + timedelta(seconds=timeout_in_seconds),
+                "Process timeout.",
+                None,
+            )
+        return self
 
     def _raise_when_terminating_already_ended(self) -> None:
         if self.status.ended is not None:

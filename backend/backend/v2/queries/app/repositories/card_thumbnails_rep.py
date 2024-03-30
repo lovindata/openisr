@@ -2,11 +2,12 @@ from dataclasses import dataclass
 from io import BytesIO
 
 from sqlalchemy.orm import Mapped, Session, mapped_column
-from v2.commands.images.models.image_mod import ImageMod
-from v2.confs.envs_conf import envs_conf_impl
-from v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
-from v2.helpers.pil_utils import build_thumbnail
-from v2.queries.app.models.card_thumbnail_mod import CardThumbnailMod
+
+from backend.v2.commands.images.models.image_mod import ImageMod
+from backend.v2.confs.envs_conf import envs_conf_impl
+from backend.v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
+from backend.v2.helpers.pil_utils import build_thumbnail
+from backend.v2.queries.app.models.card_thumbnail_mod import CardThumbnailMod
 
 
 class CardThumbnailRow(sqlalchemy_conf_impl.Base):

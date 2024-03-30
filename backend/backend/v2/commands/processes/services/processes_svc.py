@@ -4,23 +4,31 @@ from dataclasses import dataclass
 from multiprocessing import Process
 from queue import Queue
 from threading import Thread
-from typing import Tuple
+from typing import List, Tuple
 
 from PIL.Image import Image
-from v2.commands.images.models.image_mod import ImageMod
-from v2.commands.images.repositories.images_rep import images_rep_impl
-from v2.commands.processes.controllers.processes_ctrl.process_dto import ProcessDto
-from v2.commands.processes.models.process_mod.process_mod import ProcessMod
-from v2.commands.processes.repositories.processes_rep import processes_rep_impl
-from v2.commands.processes.services.image_processing_svc import (
+from sqlalchemy.orm import Session
+
+from backend.v2.commands.images.models.image_mod import ImageMod
+from backend.v2.commands.images.repositories.images_rep import images_rep_impl
+from backend.v2.commands.processes.controllers.processes_ctrl.process_dto import (
+    ProcessDto,
+)
+from backend.v2.commands.processes.models.process_mod.process_mod import ProcessMod
+from backend.v2.commands.processes.repositories.processes_rep import processes_rep_impl
+from backend.v2.commands.processes.services.image_processing_svc import (
     image_processing_svc_impl,
 )
-from v2.confs.envs_conf import envs_conf_impl
-from v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
-from v2.helpers.exception_utils import BadRequestException
-from v2.queries.app.repositories.card_download_rep import card_downloads_rep_impl
-from v2.queries.app.repositories.card_thumbnails_rep import card_thumbnails_rep_impl
-from v2.queries.app.repositories.cards_rep import cards_rep_impl
+from backend.v2.confs.envs_conf import envs_conf_impl
+from backend.v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
+from backend.v2.helpers.exception_utils import BadRequestException
+from backend.v2.queries.app.repositories.card_download_rep import (
+    card_downloads_rep_impl,
+)
+from backend.v2.queries.app.repositories.card_thumbnails_rep import (
+    card_thumbnails_rep_impl,
+)
+from backend.v2.queries.app.repositories.cards_rep import cards_rep_impl
 
 
 @dataclass
@@ -88,6 +96,20 @@ class ProcessesSvc:
             latest_process = self.processes_rep.get_latest(session, image_id)
             self.cards_rep.sync(session, image, latest_process)
 
+    def resolve_timeouts_if_exist(self, session: Session, image_ids: List[int]) -> None:
+        process_latests = self.processes_rep.list_latest(session, image_ids)
+        process_latests = [
+            process_latest.resolve_timeout(self.envs_conf.process_timeout)
+            for process_latest in process_latests
+        ]
+        images = {image.id: image for image in self.images_rep.list(session, image_ids)}
+        for process_latest in process_latests:
+            if process_latest.image_id:
+                self.processes_rep.update(session, process_latest)
+                self.cards_rep.sync(
+                    session, images[process_latest.image_id], process_latest
+                )
+
     def _pickable_process(self, image: ImageMod, process: ProcessMod) -> None:
         def run_while_process_resumable(queue: Queue[Image | None]) -> None:
             resumable = True
@@ -133,7 +155,7 @@ class ProcessesSvc:
 
         queue: Queue[Image | None] = Queue()
         Thread(target=run_while_process_resumable, args=(queue,), daemon=True).start()
-        # Thread(target=run_process_image, args=(queue,), daemon=True).start()
+        Thread(target=run_process_image, args=(queue,), daemon=True).start()
         out_image_data = queue.get(
             timeout=self.envs_conf.process_timeout
         )  # Get first result only

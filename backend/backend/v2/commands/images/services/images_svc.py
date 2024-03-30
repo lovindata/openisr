@@ -3,15 +3,20 @@ from typing import List, Tuple
 
 from fastapi import UploadFile
 from PIL.Image import Image
-from v2.commands.images.repositories.images_rep import images_rep_impl
-from v2.commands.shared.models.extension_val import ExtensionVal
-from v2.confs.envs_conf import envs_conf_impl
-from v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
-from v2.helpers.exception_utils import BadRequestException
-from v2.helpers.pil_utils import open_from_bytes
-from v2.queries.app.repositories.card_download_rep import card_downloads_rep_impl
-from v2.queries.app.repositories.card_thumbnails_rep import card_thumbnails_rep_impl
-from v2.queries.app.repositories.cards_rep import cards_rep_impl
+
+from backend.v2.commands.images.repositories.images_rep import images_rep_impl
+from backend.v2.commands.shared.models.extension_val import ExtensionVal
+from backend.v2.confs.envs_conf import envs_conf_impl
+from backend.v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
+from backend.v2.helpers.exception_utils import BadRequestException
+from backend.v2.helpers.pil_utils import open_from_bytes
+from backend.v2.queries.app.repositories.card_download_rep import (
+    card_downloads_rep_impl,
+)
+from backend.v2.queries.app.repositories.card_thumbnails_rep import (
+    card_thumbnails_rep_impl,
+)
+from backend.v2.queries.app.repositories.cards_rep import cards_rep_impl
 
 
 @dataclass

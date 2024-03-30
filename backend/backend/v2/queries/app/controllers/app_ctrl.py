@@ -4,12 +4,18 @@ from typing import List
 
 from fastapi import APIRouter, FastAPI
 from fastapi.responses import StreamingResponse
-from v2 import queries
-from v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
-from v2.queries.app.models.card_mod import CardMod
-from v2.queries.app.repositories.card_download_rep import card_downloads_rep_impl
-from v2.queries.app.repositories.card_thumbnails_rep import card_thumbnails_rep_impl
-from v2.queries.app.repositories.cards_rep import cards_rep_impl
+
+from backend.v2 import queries
+from backend.v2.commands.processes.services.processes_svc import processes_svc_impl
+from backend.v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
+from backend.v2.queries.app.models.card_mod import CardMod
+from backend.v2.queries.app.repositories.card_download_rep import (
+    card_downloads_rep_impl,
+)
+from backend.v2.queries.app.repositories.card_thumbnails_rep import (
+    card_thumbnails_rep_impl,
+)
+from backend.v2.queries.app.repositories.cards_rep import cards_rep_impl
 
 
 @dataclass
@@ -18,6 +24,7 @@ class AppCtrl:
     card_rep = cards_rep_impl
     card_thumbnail_rep = card_thumbnails_rep_impl
     download_rep = card_downloads_rep_impl
+    processes_svc = processes_svc_impl
 
     def router(self) -> APIRouter:
         app = FastAPI()
@@ -30,7 +37,13 @@ class AppCtrl:
         )
         def _() -> List[CardMod]:
             with self.sqlalchemy_conf.get_session() as session:
-                return self.card_rep.get_all(session)
+                image_ids = [
+                    card.image_id
+                    for card in self.card_rep.list(session)
+                    if type(card.status) is CardMod.Stoppable
+                ]
+                self.processes_svc.resolve_timeouts_if_exist(session, image_ids)
+                return self.card_rep.list(session)
 
         @app.get(
             tags=[queries.__name__],

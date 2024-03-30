@@ -1,11 +1,13 @@
 from dataclasses import dataclass
+from typing import List
 
 from PIL.Image import Image
 from sqlalchemy.orm import Mapped, Session, mapped_column, relationship
-from v2.commands.images.models.image_mod import ImageMod
-from v2.commands.processes.repositories.processes_rep import ProcessRow
-from v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
-from v2.helpers.pil_utils import extract_bytes, open_from_bytes
+
+from backend.v2.commands.images.models.image_mod import ImageMod
+from backend.v2.commands.processes.repositories.processes_rep import ProcessRow
+from backend.v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
+from backend.v2.helpers.pil_utils import extract_bytes, open_from_bytes
 
 
 class ImageRow(sqlalchemy_conf_impl.Base):
@@ -49,6 +51,11 @@ class ImagesRep:
 
     def get(self, session: Session, id: int) -> ImageMod:
         return session.query(ImageRow).where(ImageRow.id == id).one().to_mod()
+
+    def list(self, session: Session, ids: List[int]) -> List[ImageMod]:
+        rows = session.query(ImageRow).where(ImageRow.id.in_(ids)).all()
+        mods = [row.to_mod() for row in rows]
+        return mods
 
 
 images_rep_impl = ImagesRep()

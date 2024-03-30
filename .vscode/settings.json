@@ -12,5 +12,5 @@
   "python.analysis.diagnosticMode": "workspace",
   "python.analysis.ignore": ["**/.venv/**"],
   "python.analysis.autoSearchPaths": false,
-  "python.analysis.extraPaths": ["backend/backend"]
+  "python.analysis.extraPaths": ["backend"]
 }

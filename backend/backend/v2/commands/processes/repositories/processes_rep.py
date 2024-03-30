@@ -1,16 +1,19 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, func
 from sqlalchemy.orm import Mapped, Session, mapped_column
-from v2.commands.processes.controllers.processes_ctrl.process_dto import ProcessDto
-from v2.commands.processes.models.process_mod.image_size_val import ImageSizeVal
-from v2.commands.processes.models.process_mod.process_mod import ProcessMod
-from v2.commands.processes.models.process_mod.status_val import StatusVal
-from v2.commands.shared.models.extension_val import ExtensionVal
-from v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
-from v2.helpers.exception_utils import BadRequestException
+
+from backend.v2.commands.processes.controllers.processes_ctrl.process_dto import (
+    ProcessDto,
+)
+from backend.v2.commands.processes.models.process_mod.image_size_val import ImageSizeVal
+from backend.v2.commands.processes.models.process_mod.process_mod import ProcessMod
+from backend.v2.commands.processes.models.process_mod.status_val import StatusVal
+from backend.v2.commands.shared.models.extension_val import ExtensionVal
+from backend.v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
+from backend.v2.helpers.exception_utils import BadRequestException
 
 
 class ProcessRow(sqlalchemy_conf_impl.Base):
@@ -133,6 +136,27 @@ class ProcessesRep:
                 f"No latest process found for image with ID={image_id}."
             )
         return process_latest
+
+    def list_latest(self, session: Session, image_ids: List[int]) -> List[ProcessMod]:
+        subquery = (
+            session.query(
+                ProcessRow.image_id,
+                func.max(ProcessRow.status_started_at).label("status_started_at"),
+            )
+            .where(ProcessRow.image_id.in_(image_ids))
+            .group_by(ProcessRow.image_id)
+        ).subquery()
+        query = (
+            session.query(ProcessRow)
+            .where(ProcessRow.image_id.in_(image_ids))
+            .join(
+                subquery,
+                (ProcessRow.image_id == subquery.c.image_id)
+                & (ProcessRow.status_started_at == subquery.c.status_started_at),
+            )
+        )
+        mods = [row.to_mod() for row in query.all()]
+        return mods
 
     def delete(self, session: Session, id: int) -> None:
         row = session.query(ProcessRow).where(ProcessRow.id == id).one()

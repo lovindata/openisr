@@ -18,12 +18,12 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 # target_metadata = None
 
-from v2.commands.images.repositories.images_rep import *
-from v2.commands.processes.repositories.processes_rep import *
-from v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
-from v2.queries.app.repositories.card_download_rep import *
-from v2.queries.app.repositories.card_thumbnails_rep import *
-from v2.queries.app.repositories.cards_rep import *
+from backend.v2.commands.images.repositories.images_rep import *
+from backend.v2.commands.processes.repositories.processes_rep import *
+from backend.v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
+from backend.v2.queries.app.repositories.card_download_rep import *
+from backend.v2.queries.app.repositories.card_thumbnails_rep import *
+from backend.v2.queries.app.repositories.cards_rep import *
 
 target_metadata = sqlalchemy_conf_impl.Base.metadata
 

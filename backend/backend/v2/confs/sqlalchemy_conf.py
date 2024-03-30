@@ -5,7 +5,8 @@ from typing import Generator
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
-from v2.confs.envs_conf import envs_conf_impl
+
+from backend.v2.confs.envs_conf import envs_conf_impl
 
 
 @dataclass

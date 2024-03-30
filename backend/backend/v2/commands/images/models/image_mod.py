@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 
 from PIL.Image import Image
-from v2.commands.shared.models.extension_val import ExtensionVal
+
+from backend.v2.commands.shared.models.extension_val import ExtensionVal
 
 
 @dataclass

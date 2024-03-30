@@ -1,5 +1,6 @@
 from loguru import logger
-from v2.confs.fastapi_conf import fastapi_conf_impl
+
+from backend.v2.confs.fastapi_conf import fastapi_conf_impl
 
 
 @logger.catch

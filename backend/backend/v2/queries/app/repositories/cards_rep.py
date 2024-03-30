@@ -5,12 +5,13 @@ from typing import Any, List
 
 from sqlalchemy import JSON
 from sqlalchemy.orm import Mapped, Session, mapped_column
-from v2.commands.images.models.image_mod import ImageMod
-from v2.commands.processes.models.process_mod.process_mod import ProcessMod
-from v2.commands.processes.models.process_mod.status_val import StatusVal
-from v2.confs.envs_conf import envs_conf_impl
-from v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
-from v2.queries.app.models.card_mod import CardMod
+
+from backend.v2.commands.images.models.image_mod import ImageMod
+from backend.v2.commands.processes.models.process_mod.process_mod import ProcessMod
+from backend.v2.commands.processes.models.process_mod.status_val import StatusVal
+from backend.v2.confs.envs_conf import envs_conf_impl
+from backend.v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
+from backend.v2.queries.app.models.card_mod import CardMod
 
 
 class CardRow(sqlalchemy_conf_impl.Base):
@@ -37,7 +38,7 @@ class CardRow(sqlalchemy_conf_impl.Base):
 class CardsRep:
     envs_conf = envs_conf_impl
 
-    def get_all(self, session: Session) -> List[CardMod]:
+    def list(self, session: Session) -> List[CardMod]:
         return [card.to_mod() for card in session.query(CardRow).all()]
 
     def sync(
@@ -56,7 +57,13 @@ class CardsRep:
                 case StatusVal.Successful():
                     return CardMod.Downloadable()
                 case StatusVal.Failed():
-                    return CardMod.Errored(started_at=process.status.started_at)
+                    return CardMod.Errored(
+                        duration=round(
+                            (
+                                process.status.ended.at - process.status.started_at
+                            ).total_seconds()
+                        )
+                    )
                 case None:
                     return CardMod.Stoppable(started_at=process.status.started_at)
 

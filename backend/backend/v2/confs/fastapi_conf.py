@@ -4,13 +4,14 @@ import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from v2.commands.images.controllers.images_ctrl import images_ctrl_impl
-from v2.commands.processes.controllers.processes_ctrl.processes_ctrl import (
+
+from backend.v2.commands.images.controllers.images_ctrl import images_ctrl_impl
+from backend.v2.commands.processes.controllers.processes_ctrl.processes_ctrl import (
     processes_ctrl_impl,
 )
-from v2.confs.envs_conf import envs_conf_impl
-from v2.helpers.exception_utils import BadRequestException
-from v2.queries.app.controllers.app_ctrl import app_ctrl_impl
+from backend.v2.confs.envs_conf import envs_conf_impl
+from backend.v2.helpers.exception_utils import BadRequestException
+from backend.v2.queries.app.controllers.app_ctrl import app_ctrl_impl
 
 
 @dataclass
