@@ -13,14 +13,17 @@ from backend.v2.commands.processes.models.process_mod.process_mod import Process
 from backend.v2.commands.processes.models.process_mod.status_val import StatusVal
 from backend.v2.commands.shared.models.extension_val import ExtensionVal
 from backend.v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
-from backend.v2.helpers.exception_utils import BadRequestException
+from backend.v2.helpers.exception_utils import (
+    BadRequestException,
+    ServerInternalErrorException,
+)
 
 
 class ProcessRow(sqlalchemy_conf_impl.Base):
     __tablename__ = "processes"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, index=True)
-    image_id: Mapped[Optional[int]] = mapped_column(ForeignKey("images.id"))
+    image_id: Mapped[Optional[int]] = mapped_column(ForeignKey("images.id"), index=True)
     extension: Mapped[ExtensionVal]
     target_width: Mapped[int]
     target_height: Mapped[int]
@@ -73,10 +76,18 @@ class ProcessRow(sqlalchemy_conf_impl.Base):
             else:
                 return None
 
+        def get_image_id_or_raise() -> int:
+            if self.image_id is None:
+                raise ServerInternalErrorException(
+                    "Unconvertible dangling process row."
+                )
+            return self.image_id
+
         ended = parse_status_ended_columns()
+        image_id = get_image_id_or_raise()
         return ProcessMod(
             self.id,
-            self.image_id,
+            image_id,
             self.extension,
             ImageSizeVal(self.target_width, self.target_height),
             self.enable_ai,
@@ -129,7 +140,7 @@ class ProcessesRep:
         )
         return row.to_mod() if row else None
 
-    def get_latest_or_throw(self, session: Session, image_id: int) -> ProcessMod:
+    def get_latest_or_raise(self, session: Session, image_id: int) -> ProcessMod:
         process_latest = self.get_latest(session, image_id)
         if process_latest is None:
             raise BadRequestException(
@@ -159,8 +170,9 @@ class ProcessesRep:
         return mods
 
     def delete(self, session: Session, process_id: int) -> None:
-        row = session.query(ProcessRow).where(ProcessRow.id == process_id).one()
-        session.delete(row)
+        row = session.query(ProcessRow).where(ProcessRow.id == process_id).one_or_none()
+        if row:
+            session.delete(row)
 
 
 processes_rep_impl = ProcessesRep()

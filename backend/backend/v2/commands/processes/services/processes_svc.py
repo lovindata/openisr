@@ -56,7 +56,7 @@ class ProcessesSvc:
 
         def get_image_and_create_process() -> Tuple[ImageMod, ProcessMod]:
             with self.sqlalchemy_conf.get_session() as session:
-                image = self.images_rep.get(session, image_id)
+                image = self.images_rep.get_or_raise(session, image_id)
                 process = self.processes_rep.create_run_with_dto(session, image.id, dto)
                 self.cards_rep.sync(session, image, process)
                 return image, process
@@ -71,8 +71,8 @@ class ProcessesSvc:
 
     def retry(self, image_id: int) -> None:
         with self.sqlalchemy_conf.get_session() as session:
-            image = self.images_rep.get(session, image_id)
-            process_latest = self.processes_rep.get_latest_or_throw(session, image_id)
+            image = self.images_rep.get_or_raise(session, image_id)
+            process_latest = self.processes_rep.get_latest_or_raise(session, image_id)
             process_latest = self.processes_rep.create_run_with_mod(
                 session, image_id, process_latest
             )
@@ -85,11 +85,11 @@ class ProcessesSvc:
 
     def stop(self, image_id: int) -> None:
         with self.sqlalchemy_conf.get_session() as session:
-            latest_process = self.processes_rep.get_latest_or_throw(session, image_id)
+            latest_process = self.processes_rep.get_latest_or_raise(session, image_id)
             if latest_process.status.ended:
                 raise BadRequestException("Cannot stop an ended process.")
             self.processes_rep.delete(session, latest_process.id)
-            image = self.images_rep.get(session, image_id)
+            image = self.images_rep.get_or_raise(session, image_id)
             latest_process = self.processes_rep.get_latest(session, image_id)
             self.cards_rep.sync(session, image, latest_process)
 
@@ -101,11 +101,10 @@ class ProcessesSvc:
         ]
         images = {image.id: image for image in self.images_rep.list(session, image_ids)}
         for process_latest in process_latests:
-            if process_latest.image_id:
-                self.processes_rep.update(session, process_latest)
-                self.cards_rep.sync(
-                    session, images[process_latest.image_id], process_latest
-                )
+            self.processes_rep.update(session, process_latest)
+            self.cards_rep.sync(
+                session, images[process_latest.image_id], process_latest
+            )
 
     def _pickable_process(self, image: ImageMod, process: ProcessMod) -> None:
         def run_while_process_resumable(queue: Queue[Image | None]) -> None:

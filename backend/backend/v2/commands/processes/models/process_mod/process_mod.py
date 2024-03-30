@@ -10,7 +10,7 @@ from backend.v2.helpers.exception_utils import ServerInternalErrorException
 @dataclass
 class ProcessMod:
     id: int
-    image_id: int | None
+    image_id: int
     extension: ExtensionVal
     target: ImageSizeVal
     enable_ai: bool

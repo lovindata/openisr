@@ -1,6 +1,5 @@
 import json
 from dataclasses import dataclass
-from datetime import datetime
 from typing import Any, List
 
 from sqlalchemy import JSON
@@ -98,7 +97,9 @@ class CardsRep:
         row.update_with(mod) if row else CardRow.insert_with(session, mod)
 
     def clean_sync(self, session: Session, image_id: int) -> None:
-        session.query(CardRow).where(CardRow.image_id == image_id).delete()
+        row = session.query(CardRow).where(CardRow.image_id == image_id).one_or_none()
+        if row:
+            session.delete(row)
 
 
 cards_rep_impl = CardsRep()

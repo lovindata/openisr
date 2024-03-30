@@ -71,9 +71,13 @@ class CardDownloadsRep:
         row.update_with(mod) if row else CardDownloadRow.insert_with(session, mod)
 
     def clean_sync(self, session: Session, image_id: int) -> None:
-        session.query(CardDownloadRow).where(
-            CardDownloadRow.image_id == image_id
-        ).delete()
+        row = (
+            session.query(CardDownloadRow)
+            .where(CardDownloadRow.image_id == image_id)
+            .one_or_none()
+        )
+        if row:
+            session.delete(row)
 
 
 card_downloads_rep_impl = CardDownloadsRep()

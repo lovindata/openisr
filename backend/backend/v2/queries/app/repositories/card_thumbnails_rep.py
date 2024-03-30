@@ -64,9 +64,13 @@ class CardThumbnailsRep:
         row.update_with(mod) if row else CardThumbnailRow.insert_with(session, mod)
 
     def clean_sync(self, session: Session, image_id: int) -> None:
-        session.query(CardThumbnailRow).where(
-            CardThumbnailRow.image_id == image_id
-        ).delete()
+        row = (
+            session.query(CardThumbnailRow)
+            .where(CardThumbnailRow.image_id == image_id)
+            .one_or_none()
+        )
+        if row:
+            session.delete(row)
 
 
 card_thumbnails_rep_impl = CardThumbnailsRep()

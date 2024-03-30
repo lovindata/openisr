@@ -7,6 +7,7 @@ from sqlalchemy.orm import Mapped, Session, mapped_column, relationship
 from backend.v2.commands.images.models.image_mod import ImageMod
 from backend.v2.commands.processes.repositories.processes_rep import ProcessRow
 from backend.v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
+from backend.v2.helpers.exception_utils import BadRequestException
 from backend.v2.helpers.pil_utils import extract_bytes, open_from_bytes
 
 
@@ -14,10 +15,12 @@ class ImageRow(sqlalchemy_conf_impl.Base):
     __tablename__ = "images"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, index=True)
-    name: Mapped[str] = mapped_column(nullable=False)
-    data: Mapped[bytes] = mapped_column(nullable=False)
+    name: Mapped[str]
+    data: Mapped[bytes]
 
-    processes = relationship(ProcessRow)
+    processes: Mapped[List[ProcessRow]] = (
+        relationship()
+    )  # Cascade effect only applies with 'session.delete': https://github.com/sqlalchemy/sqlalchemy/discussions/7974
 
     def update_with(self, mod: ImageMod) -> "ImageRow":
         self.name = mod.name
@@ -37,7 +40,9 @@ class ImagesRep:
         return row.to_mod()
 
     def delete(self, session: Session, image_id: int) -> None:
-        session.query(ImageRow).where(ImageRow.id == image_id).delete()
+        row = session.query(ImageRow).where(ImageRow.id == image_id).one_or_none()
+        if row:
+            session.delete(row)
 
     def update(self, session: Session, mod: ImageMod) -> ImageMod:
         mod = (
@@ -49,8 +54,11 @@ class ImagesRep:
         )
         return mod
 
-    def get(self, session: Session, image_id: int) -> ImageMod:
-        return session.query(ImageRow).where(ImageRow.id == image_id).one().to_mod()
+    def get_or_raise(self, session: Session, image_id: int) -> ImageMod:
+        row = session.query(ImageRow).where(ImageRow.id == image_id).one_or_none()
+        if row is None:
+            raise BadRequestException(f"No image with ID={image_id}.")
+        return row.to_mod()
 
     def list(self, session: Session, ids: List[int]) -> List[ImageMod]:
         rows = session.query(ImageRow).where(ImageRow.id.in_(ids)).all()
