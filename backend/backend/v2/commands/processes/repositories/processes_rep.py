@@ -158,8 +158,8 @@ class ProcessesRep:
         mods = [row.to_mod() for row in query.all()]
         return mods
 
-    def delete(self, session: Session, id: int) -> None:
-        row = session.query(ProcessRow).where(ProcessRow.id == id).one()
+    def delete(self, session: Session, process_id: int) -> None:
+        row = session.query(ProcessRow).where(ProcessRow.id == process_id).one()
         session.delete(row)
 
 

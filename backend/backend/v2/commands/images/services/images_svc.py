@@ -28,12 +28,12 @@ class ImagesSvc:
     card_thumbnails_rep = card_thumbnails_rep_impl
     card_download_rep = card_downloads_rep_impl
 
-    def delete_image(self, id: int) -> None:
+    def delete_image(self, image_id: int) -> None:
         with self.sqlalchemy_conf.get_session() as session:
-            self.images_rep.delete(session, id)
-            self.cards_rep.clean_sync(session, id)
-            self.card_thumbnails_rep.clean_sync(session, id)
-            self.card_download_rep.clean_sync(session, id)
+            self.images_rep.delete(session, image_id)
+            self.cards_rep.clean_sync(session, image_id)
+            self.card_thumbnails_rep.clean_sync(session, image_id)
+            self.card_download_rep.clean_sync(session, image_id)
 
     def upload_images(self, files: List[UploadFile]) -> None:
         def extract_name_and_data(

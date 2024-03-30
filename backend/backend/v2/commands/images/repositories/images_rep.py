@@ -36,8 +36,8 @@ class ImagesRep:
         session.flush()
         return row.to_mod()
 
-    def delete(self, session: Session, id: int) -> None:
-        session.query(ImageRow).where(ImageRow.id == id).delete()
+    def delete(self, session: Session, image_id: int) -> None:
+        session.query(ImageRow).where(ImageRow.id == image_id).delete()
 
     def update(self, session: Session, mod: ImageMod) -> ImageMod:
         mod = (
@@ -49,8 +49,8 @@ class ImagesRep:
         )
         return mod
 
-    def get(self, session: Session, id: int) -> ImageMod:
-        return session.query(ImageRow).where(ImageRow.id == id).one().to_mod()
+    def get(self, session: Session, image_id: int) -> ImageMod:
+        return session.query(ImageRow).where(ImageRow.id == image_id).one().to_mod()
 
     def list(self, session: Session, ids: List[int]) -> List[ImageMod]:
         rows = session.query(ImageRow).where(ImageRow.id.in_(ids)).all()

@@ -19,29 +19,29 @@ class ProcessesCtrl:
         @app.post(
             tags=[commands.__name__],
             summary="Run process",
-            path="/command/v1/images/{id}/process/run",
+            path="/command/v1/images/{image_id}/process/run",
             status_code=204,
         )
-        def _(id: int, dto: ProcessDto) -> None:
-            self.processes_svc.run(id, dto)
+        def _(image_id: int, dto: ProcessDto) -> None:
+            self.processes_svc.run(image_id, dto)
 
         @app.post(
             tags=[commands.__name__],
             summary="Retry latest process",
-            path="/command/v1/images/{id}/process/retry",
+            path="/command/v1/images/{image_id}/process/retry",
             status_code=204,
         )
-        def _(id: int) -> None:
-            self.processes_svc.retry(id)
+        def _(image_id: int) -> None:
+            self.processes_svc.retry(image_id)
 
         @app.delete(
             tags=[commands.__name__],
             summary="Stop latest process",
-            path="/command/v1/images/{id}/process/stop",
+            path="/command/v1/images/{image_id}/process/stop",
             status_code=204,
         )
-        def _(id: int) -> None:
-            self.processes_svc.stop(id)
+        def _(image_id: int) -> None:
+            self.processes_svc.stop(image_id)
 
         return app.router
 

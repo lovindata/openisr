@@ -27,11 +27,11 @@ class ImagesCtrl:
         @app.delete(
             tags=[commands.__name__],
             summary="Delete image",
-            path="/command/v1/images/{id}/delete",
+            path="/command/v1/images/{image_id}/delete",
             status_code=204,
         )
-        def _(id: int) -> None:
-            self.images_svc.delete_image(id)
+        def _(image_id: int) -> None:
+            self.images_svc.delete_image(image_id)
 
         return app.router
 

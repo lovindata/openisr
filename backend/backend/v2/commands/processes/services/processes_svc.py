@@ -85,13 +85,10 @@ class ProcessesSvc:
 
     def stop(self, image_id: int) -> None:
         with self.sqlalchemy_conf.get_session() as session:
-            is_ended = (
-                self.processes_rep.get_latest_or_throw(session, image_id).status.ended
-                is not None
-            )
-            if is_ended:
+            latest_process = self.processes_rep.get_latest_or_throw(session, image_id)
+            if latest_process.status.ended:
                 raise BadRequestException("Cannot stop an ended process.")
-            self.processes_rep.delete(session, image_id)
+            self.processes_rep.delete(session, latest_process.id)
             image = self.images_rep.get(session, image_id)
             latest_process = self.processes_rep.get_latest(session, image_id)
             self.cards_rep.sync(session, image, latest_process)
