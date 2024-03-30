@@ -67,7 +67,11 @@ class CardsRep:
                     return CardMod.Stoppable(started_at=process.status.started_at)
 
         thumbnail_src = build_thumbnail_src()
-        source = CardMod.Dimension(width=image.data.size[0], height=image.data.size[1])
+        source = (
+            CardMod.Dimension(width=process.source.width, height=process.source.height)
+            if process
+            else CardMod.Dimension(width=image.data.size[0], height=image.data.size[1])
+        )
         target = (
             CardMod.Dimension(width=process.target.width, height=process.target.height)
             if process

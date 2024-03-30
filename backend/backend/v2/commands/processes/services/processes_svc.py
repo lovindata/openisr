@@ -57,7 +57,7 @@ class ProcessesSvc:
         def get_image_and_create_process() -> Tuple[ImageMod, ProcessMod]:
             with self.sqlalchemy_conf.get_session() as session:
                 image = self.images_rep.get_or_raise(session, image_id)
-                process = self.processes_rep.create_run_with_dto(session, image.id, dto)
+                process = self.processes_rep.create_run_with_dto(session, image, dto)
                 self.cards_rep.sync(session, image, process)
                 return image, process
 
@@ -74,7 +74,7 @@ class ProcessesSvc:
             image = self.images_rep.get_or_raise(session, image_id)
             process_latest = self.processes_rep.get_latest_or_raise(session, image_id)
             process_latest = self.processes_rep.create_run_with_mod(
-                session, image_id, process_latest
+                session, image, process_latest
             )
             Process(
                 target=self._pickable_process,

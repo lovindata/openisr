@@ -5,6 +5,7 @@ from typing import List, Optional
 from sqlalchemy import ForeignKey, func
 from sqlalchemy.orm import Mapped, Session, mapped_column
 
+from backend.v2.commands.images.models.image_mod import ImageMod
 from backend.v2.commands.processes.controllers.processes_ctrl.process_dto import (
     ProcessDto,
 )
@@ -25,6 +26,8 @@ class ProcessRow(sqlalchemy_conf_impl.Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, index=True)
     image_id: Mapped[Optional[int]] = mapped_column(ForeignKey("images.id"), index=True)
     extension: Mapped[ExtensionVal]
+    source_width: Mapped[int]
+    source_height: Mapped[int]
     target_width: Mapped[int]
     target_height: Mapped[int]
     enable_ai: Mapped[bool]
@@ -89,6 +92,7 @@ class ProcessRow(sqlalchemy_conf_impl.Base):
             self.id,
             image_id,
             self.extension,
+            ImageSizeVal(self.source_width, self.source_height),
             ImageSizeVal(self.target_width, self.target_height),
             self.enable_ai,
             StatusVal(self.status_started_at, ended),
@@ -98,11 +102,13 @@ class ProcessRow(sqlalchemy_conf_impl.Base):
 @dataclass
 class ProcessesRep:
     def create_run_with_dto(
-        self, session: Session, image_id: int, dto: ProcessDto
+        self, session: Session, image: ImageMod, dto: ProcessDto
     ) -> ProcessMod:
         row = ProcessRow(
-            image_id=image_id,
+            image_id=image.id,
             extension=dto.extension,
+            source_width=image.data.size[0],
+            source_height=image.data.size[1],
             target_width=dto.target.width,
             target_height=dto.target.height,
             enable_ai=dto.enable_ai,
@@ -113,11 +119,13 @@ class ProcessesRep:
         return row.to_mod()
 
     def create_run_with_mod(
-        self, session: Session, image_id: int, mod: ProcessMod
+        self, session: Session, image: ImageMod, mod: ProcessMod
     ) -> ProcessMod:
         row = ProcessRow(
-            image_id=image_id,
+            image_id=image.id,
             extension=mod.extension,
+            source_width=image.data.size[0],
+            source_height=image.data.size[1],
             target_width=mod.target.width,
             target_height=mod.target.height,
             enable_ai=mod.enable_ai,

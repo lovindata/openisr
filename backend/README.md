@@ -42,7 +42,7 @@ pytest
 To start the backend server:
 
 ```bash
-poetry run python main.py
+python main.py
 ```
 
 ## Data migrations

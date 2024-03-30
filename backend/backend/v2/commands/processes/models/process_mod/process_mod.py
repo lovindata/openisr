@@ -12,6 +12,7 @@ class ProcessMod:
     id: int
     image_id: int
     extension: ExtensionVal
+    source: ImageSizeVal
     target: ImageSizeVal
     enable_ai: bool
     status: StatusVal
