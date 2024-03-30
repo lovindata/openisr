@@ -138,6 +138,18 @@ class ProcessesRep:
     def update(self, session: Session, mod: ProcessMod) -> None:
         session.query(ProcessRow).where(ProcessRow.id == mod.id).one().update_with(mod)
 
+    def bulk_update(self, session: Session, mods: List[ProcessMod]) -> None:
+        mods_dict = {mod.id: mod for mod in mods}
+        rows = (
+            session.query(ProcessRow).where(ProcessRow.id.in_(mods_dict.keys())).all()
+        )
+        if (nb_rows := len(rows)) != (nb_mods := len(mods)):
+            raise ServerInternalErrorException(
+                f"Bulk update failed: detected {nb_rows} rows instead of {nb_mods}."
+            )
+        for row in rows:
+            row.update_with(mods_dict[row.id])
+
     def get_latest(self, session: Session, image_id: int) -> ProcessMod | None:
         row = (
             session.query(ProcessRow)
@@ -156,25 +168,9 @@ class ProcessesRep:
             )
         return process_latest
 
-    def list_latest(self, session: Session, image_ids: List[int]) -> List[ProcessMod]:
-        subquery = (
-            session.query(
-                ProcessRow.image_id,
-                func.max(ProcessRow.status_started_at).label("status_started_at"),
-            )
-            .where(ProcessRow.image_id.in_(image_ids))
-            .group_by(ProcessRow.image_id)
-        ).subquery()
-        query = (
-            session.query(ProcessRow)
-            .where(ProcessRow.image_id.in_(image_ids))
-            .join(
-                subquery,
-                (ProcessRow.image_id == subquery.c.image_id)
-                & (ProcessRow.status_started_at == subquery.c.status_started_at),
-            )
-        )
-        mods = [row.to_mod() for row in query.all()]
+    def list(self, session: Session, image_ids: List[int]) -> List[ProcessMod]:
+        rows = session.query(ProcessRow).where(ProcessRow.image_id.in_(image_ids)).all()
+        mods = [row.to_mod() for row in rows]
         return mods
 
     def delete(self, session: Session, process_id: int) -> None:

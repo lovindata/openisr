@@ -50,19 +50,7 @@ class CardDownloadsRep:
         )
 
     def sync(self, session: Session, image: ImageMod) -> None:
-        def build_image_bytes() -> bytes:
-            bytesio = BytesIO()
-            image.data.save(bytesio, image.extension().value)
-            bytesio.seek(0)
-            return bytesio.getvalue()
-
-        image_bytes = build_image_bytes()
-        mod = CardDownloadMod(
-            image_bytes=image_bytes,
-            media_type=image.extension().to_media_type(),
-            filename=f"{image.name}.{image.extension().to_file_extension()}",
-            image_id=image.id,
-        )
+        mod = self._build_mod(image)
         row = (
             session.query(CardDownloadRow)
             .where(CardDownloadRow.image_id == image.id)
@@ -78,6 +66,22 @@ class CardDownloadsRep:
         )
         if row:
             session.delete(row)
+
+    def _build_mod(self, image: ImageMod) -> CardDownloadMod:
+        def build_image_bytes() -> bytes:
+            bytesio = BytesIO()
+            image.data.save(bytesio, image.extension().value)
+            bytesio.seek(0)
+            return bytesio.getvalue()
+
+        image_bytes = build_image_bytes()
+        mod = CardDownloadMod(
+            image_bytes=image_bytes,
+            media_type=image.extension().to_media_type(),
+            filename=f"{image.name}.{image.extension().to_file_extension()}",
+            image_id=image.id,
+        )
+        return mod
 
 
 card_downloads_rep_impl = CardDownloadsRep()

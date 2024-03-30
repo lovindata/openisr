@@ -31,7 +31,7 @@ class ProcessMod:
 
     def resolve_timeout(self, timeout_in_seconds: int) -> "ProcessMod":
         diff = round((datetime.now() - self.status.started_at).total_seconds())
-        if self.status.ended is None and diff > timeout_in_seconds:
+        if not self.status.ended and diff > timeout_in_seconds:
             self.status.ended = StatusVal.Failed(
                 self.status.started_at + timedelta(seconds=timeout_in_seconds),
                 "Process timeout.",
@@ -40,7 +40,7 @@ class ProcessMod:
         return self
 
     def _raise_when_terminating_already_ended(self) -> None:
-        if self.status.ended is not None:
+        if self.status.ended:
             raise ServerInternalErrorException(
                 "Cannot terminate an already ended process."
             )

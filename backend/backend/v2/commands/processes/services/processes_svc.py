@@ -93,18 +93,22 @@ class ProcessesSvc:
             latest_process = self.processes_rep.get_latest(session, image_id)
             self.cards_rep.sync(session, image, latest_process)
 
-    def resolve_timeouts_if_exist(self, session: Session, image_ids: List[int]) -> None:
-        process_latests = self.processes_rep.list_latest(session, image_ids)
+    def resolve_timeouts(self, session: Session, image_ids: List[int]) -> None:
+        process_latests = self.processes_rep.list(session, image_ids)
         process_latests = [
             process_latest.resolve_timeout(self.envs_conf.process_timeout)
             for process_latest in process_latests
+            if not process_latest.status.ended
         ]
         images = {image.id: image for image in self.images_rep.list(session, image_ids)}
-        for process_latest in process_latests:
-            self.processes_rep.update(session, process_latest)
-            self.cards_rep.sync(
-                session, images[process_latest.image_id], process_latest
-            )
+        self.processes_rep.bulk_update(session, process_latests)
+        self.cards_rep.bulk_sync(
+            session,
+            [
+                (images[process_latest.image_id], process_latest)
+                for process_latest in process_latests
+            ],
+        )
 
     def _pickable_process(self, image: ImageMod, process: ProcessMod) -> None:
         def run_while_process_resumable(queue: Queue[Image | None]) -> None:

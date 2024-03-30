@@ -47,15 +47,7 @@ class CardThumbnailsRep:
         )
 
     def sync(self, session: Session, image: ImageMod) -> None:
-        def build_thumbnail_bytes() -> bytes:
-            thumbnail = build_thumbnail(image.data, 48 * 3)
-            bytesio = BytesIO()
-            thumbnail.save(bytesio, "WEBP")  # WEBP bytes
-            bytesio.seek(0)
-            return bytesio.getvalue()
-
-        thumbnail_bytes = build_thumbnail_bytes()
-        mod = CardThumbnailMod(thumbnail_bytes=thumbnail_bytes, image_id=image.id)
+        mod = self._build_mod(image)
         row = (
             session.query(CardThumbnailRow)
             .where(CardThumbnailRow.image_id == image.id)
@@ -71,6 +63,18 @@ class CardThumbnailsRep:
         )
         if row:
             session.delete(row)
+
+    def _build_mod(self, image: ImageMod) -> CardThumbnailMod:
+        def build_thumbnail_bytes() -> bytes:
+            thumbnail = build_thumbnail(image.data, 48 * 3)
+            bytesio = BytesIO()
+            thumbnail.save(bytesio, "WEBP")  # WEBP bytes
+            bytesio.seek(0)
+            return bytesio.getvalue()
+
+        thumbnail_bytes = build_thumbnail_bytes()
+        mod = CardThumbnailMod(thumbnail_bytes=thumbnail_bytes, image_id=image.id)
+        return mod
 
 
 card_thumbnails_rep_impl = CardThumbnailsRep()

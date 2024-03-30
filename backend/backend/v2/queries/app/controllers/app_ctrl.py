@@ -42,7 +42,7 @@ class AppCtrl:
                     for card in self.card_rep.list(session)
                     if type(card.status) is CardMod.Stoppable
                 ]
-                self.processes_svc.resolve_timeouts_if_exist(session, image_ids)
+                self.processes_svc.resolve_timeouts(session, image_ids)
                 return self.card_rep.list(session)
 
         @app.get(
