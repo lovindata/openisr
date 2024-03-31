@@ -41,3 +41,4 @@ class CardMod(BaseModel):
 
     class Downloadable(BaseModel):
         type: Literal["Downloadable"]
+        image_src: str

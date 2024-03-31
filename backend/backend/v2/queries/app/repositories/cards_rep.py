@@ -76,7 +76,13 @@ class CardsRep:
 
     def _build_mod(self, image: ImageMod, process: ProcessMod | None) -> CardMod:
         def build_thumbnail_src() -> str:
-            src = f"/app/cards/thumbnail/{image.id}.webp"
+            src = f"/query/v1/app/cards/thumbnail/{image.id}.webp"
+            if not self.envs_conf.prod_mode:
+                src = f"http://localhost:{self.envs_conf.api_port}" + src
+            return src
+
+        def build_image_src() -> str:
+            src = f"/query/v1/app/cards/download?image_id={image.id}"
             if not self.envs_conf.prod_mode:
                 src = f"http://localhost:{self.envs_conf.api_port}" + src
             return src
@@ -86,7 +92,10 @@ class CardsRep:
         ) -> CardMod.Stoppable | CardMod.Errored | CardMod.Downloadable:
             match process.status.ended:
                 case StatusVal.Successful():
-                    return CardMod.Downloadable(type="Downloadable")
+                    image_src = build_image_src()
+                    return CardMod.Downloadable(
+                        type="Downloadable", image_src=image_src
+                    )
                 case StatusVal.Failed():
                     return CardMod.Errored(
                         type="Errored",
