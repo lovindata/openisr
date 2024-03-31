@@ -12,7 +12,6 @@ class CardMod(BaseModel):
     status: "Runnable | Stoppable | Errored | Downloadable" = Field(
         discriminator="type"
     )
-    error: str | None
     extension: Literal["JPEG", "PNG", "WEBP"]
     preserve_ratio: bool
     enable_ai: bool
@@ -38,6 +37,7 @@ class CardMod(BaseModel):
     class Errored(BaseModel):
         type: Literal["Errored"]
         duration: int
+        error: str
 
     class Downloadable(BaseModel):
         type: Literal["Downloadable"]

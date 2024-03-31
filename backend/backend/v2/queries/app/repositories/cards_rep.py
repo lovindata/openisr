@@ -96,7 +96,7 @@ class CardsRep:
                     return CardMod.Downloadable(
                         type="Downloadable", image_src=image_src
                     )
-                case StatusVal.Failed():
+                case StatusVal.Failed(error=error):
                     return CardMod.Errored(
                         type="Errored",
                         duration=round(
@@ -104,6 +104,7 @@ class CardsRep:
                                 process.status.ended.at - process.status.started_at
                             ).total_seconds()
                         ),
+                        error=error,
                     )
                 case None:
                     return CardMod.Stoppable(
@@ -126,11 +127,6 @@ class CardsRep:
             if process
             else CardMod.Runnable(type="Runnable")
         )
-        error = (
-            process.status.ended.error
-            if process and (type(process.status.ended) is StatusVal.Failed)
-            else None
-        )
         extension = (process.extension if process else image.extension()).value
         enable_ai = process.enable_ai if process else False
         mod = CardMod(
@@ -140,7 +136,6 @@ class CardsRep:
             target=target,
             status=status,
             image_id=image.id,
-            error=error,
             extension=extension,
             preserve_ratio=True,
             enable_ai=enable_ai,
