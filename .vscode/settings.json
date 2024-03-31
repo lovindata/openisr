@@ -1,4 +1,5 @@
 {
+  // Python
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter",
     "editor.formatOnSave": true,
@@ -12,5 +13,8 @@
   "python.analysis.diagnosticMode": "workspace",
   "python.analysis.ignore": ["**/.venv/**"],
   "python.analysis.autoSearchPaths": false,
-  "python.analysis.extraPaths": ["backend"]
+  "python.analysis.extraPaths": ["backend"],
+
+  // Typescript
+  "typescript.preferences.importModuleSpecifier": "non-relative"
 }

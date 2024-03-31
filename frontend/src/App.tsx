@@ -1,4 +1,4 @@
-import _ from "./app/page";
+import { AppPg } from "@/v2/features/images/components/pages/AppPg";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 
@@ -8,7 +8,7 @@ function App() {
       <BrowserRouter>
         <QueryClientProvider client={new QueryClient()}>
           <Routes>
-            <Route path="/app" element={<_ />} />
+            <Route path="/app" element={<AppPg />} />
           </Routes>
         </QueryClientProvider>
       </BrowserRouter>

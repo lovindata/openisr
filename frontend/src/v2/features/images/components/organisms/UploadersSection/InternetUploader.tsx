@@ -1,0 +1,13 @@
+import { BorderBox } from "@/v2/features/shared/components/atoms/BorderBox";
+import { SvgIcon } from "@/v2/features/shared/components/atoms/SvgIcon";
+
+export function InternetUploader() {
+  return (
+    <BorderBox dashed className="h-16 w-32">
+      <div className="mx-auto flex h-full w-min items-center space-x-3">
+        <SvgIcon type="internet" className="h-8 w-8" />
+        <label>Internet upload</label>
+      </div>
+    </BorderBox>
+  );
+}
