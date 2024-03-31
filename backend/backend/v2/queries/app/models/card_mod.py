@@ -23,10 +23,10 @@ class CardMod(BaseModel):
         height: int
 
     class Runnable(BaseModel):
-        type: Literal["Runnable"] = "Runnable"
+        type: Literal["Runnable"]
 
     class Stoppable(BaseModel):
-        type: Literal["Stoppable"] = "Stoppable"
+        type: Literal["Stoppable"]
 
         @computed_field
         @property
@@ -36,8 +36,8 @@ class CardMod(BaseModel):
         started_at: datetime
 
     class Errored(BaseModel):
-        type: Literal["Errored"] = "Errored"
+        type: Literal["Errored"]
         duration: int
 
     class Downloadable(BaseModel):
-        type: Literal["Downloadable"] = "Downloadable"
+        type: Literal["Downloadable"]

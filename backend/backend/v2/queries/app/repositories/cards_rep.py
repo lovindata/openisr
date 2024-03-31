@@ -86,17 +86,20 @@ class CardsRep:
         ) -> CardMod.Stoppable | CardMod.Errored | CardMod.Downloadable:
             match process.status.ended:
                 case StatusVal.Successful():
-                    return CardMod.Downloadable()
+                    return CardMod.Downloadable(type="Downloadable")
                 case StatusVal.Failed():
                     return CardMod.Errored(
+                        type="Errored",
                         duration=round(
                             (
                                 process.status.ended.at - process.status.started_at
                             ).total_seconds()
-                        )
+                        ),
                     )
                 case None:
-                    return CardMod.Stoppable(started_at=process.status.started_at)
+                    return CardMod.Stoppable(
+                        type="Stoppable", started_at=process.status.started_at
+                    )
 
         thumbnail_src = build_thumbnail_src()
         source = (
@@ -109,7 +112,11 @@ class CardsRep:
             if process
             else None
         )
-        status = parse_process_status_ended(process) if process else CardMod.Runnable()
+        status = (
+            parse_process_status_ended(process)
+            if process
+            else CardMod.Runnable(type="Runnable")
+        )
         error = (
             process.status.ended.error
             if process and (type(process.status.ended) is StatusVal.Failed)
