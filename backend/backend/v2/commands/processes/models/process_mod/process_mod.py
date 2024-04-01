@@ -33,15 +33,20 @@ class ProcessMod:
         output.status.ended = StatusVal.Failed(datetime.now(), error, stacktrace)
         return output
 
+    def terminate_failed_timed_out(self, timeout_in_seconds: int) -> "ProcessMod":
+        output = deepcopy(self)
+        output.status.ended = StatusVal.Failed(
+            output.status.started_at + timedelta(seconds=timeout_in_seconds),
+            "Process timeout.",
+            None,
+        )
+        return output
+
     def resolve_timeout(self, timeout_in_seconds: int) -> "ProcessMod":
         output = deepcopy(self)
         diff = round((datetime.now() - output.status.started_at).total_seconds())
         if not output.status.ended and diff > timeout_in_seconds:
-            output.status.ended = StatusVal.Failed(
-                output.status.started_at + timedelta(seconds=timeout_in_seconds),
-                "Process timeout.",
-                None,
-            )
+            output = self.terminate_failed_timed_out(timeout_in_seconds)
         return output
 
     def _raise_when_terminating_already_ended(self) -> None:

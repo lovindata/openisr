@@ -88,9 +88,14 @@ class FastAPIConf:
                     headers=headers,
                 )
             elif not self.envs_conf.prod_mode:
+                error = (
+                    str(e.args[0])
+                    if e.args
+                    else "Apologies, an unknown error occurred. Please retry later."
+                )
                 return JSONResponse(
                     status_code=500,
-                    content={"detail": e.args[0]},
+                    content={"detail": error},
                     headers=headers,
                 )
             else:

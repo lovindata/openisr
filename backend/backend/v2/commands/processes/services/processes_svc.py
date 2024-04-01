@@ -2,7 +2,7 @@ import time
 import traceback
 from dataclasses import dataclass
 from multiprocessing import Process
-from queue import Queue
+from queue import Empty, Queue
 from threading import Thread
 from typing import Tuple
 
@@ -124,24 +124,32 @@ class ProcessesSvc:
                     self.cards_rep.sync(session, image, updated_process)
                 queue.put(None)
 
-        def handle_result(out_image_data: Image | None) -> None:
-            if out_image_data:
+        def handle_result(queue: Queue[Image | None]) -> None:
+            try:
+                out_image_data = queue.get(
+                    timeout=self.envs_conf.process_timeout
+                )  # Get first result only
+                if out_image_data:
+                    with self.sqlalchemy_conf.get_session() as session:
+                        updated_image = image.update_data(out_image_data)
+                        self.images_rep.update(session, updated_image)
+                        updated_process = process.terminate_success()
+                        self.processes_rep.update(session, updated_process)
+                        self.cards_rep.sync(session, updated_image, updated_process)
+                        self.card_thumbnails_rep.sync(session, image)
+                        self.card_download_rep.sync(session, image)
+            except Empty:
                 with self.sqlalchemy_conf.get_session() as session:
-                    updated_image = image.update_data(out_image_data)
-                    self.images_rep.update(session, updated_image)
-                    updated_process = process.terminate_success()
+                    updated_process = process.terminate_failed_timed_out(
+                        self.envs_conf.process_timeout
+                    )
                     self.processes_rep.update(session, updated_process)
-                    self.cards_rep.sync(session, updated_image, updated_process)
-                    self.card_thumbnails_rep.sync(session, image)
-                    self.card_download_rep.sync(session, image)
+                    self.cards_rep.sync(session, image, updated_process)
 
         queue: Queue[Image | None] = Queue()
         Thread(target=run_while_process_resumable, args=(queue,), daemon=True).start()
         Thread(target=run_process_image, args=(queue,), daemon=True).start()
-        out_image_data = queue.get(
-            timeout=self.envs_conf.process_timeout
-        )  # Get first result only
-        handle_result(out_image_data)
+        handle_result(queue)
 
 
 processes_svc_impl = ProcessesSvc()
