@@ -37,12 +37,6 @@ class AppCtrl:
         )
         def _() -> List[CardMod]:
             with self.sqlalchemy_conf.get_session() as session:
-                image_ids = [
-                    card.image_id
-                    for card in self.card_rep.list(session)
-                    if type(card.status) is CardMod.Stoppable
-                ]
-                self.processes_svc.resolve_timeouts(session, image_ids)
                 return self.card_rep.list(session)
 
         @app.get(

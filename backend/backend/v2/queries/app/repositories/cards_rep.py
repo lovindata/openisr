@@ -1,6 +1,6 @@
 import json
 from dataclasses import dataclass
-from typing import Any, List, Tuple
+from typing import Any, List
 
 from sqlalchemy import JSON
 from sqlalchemy.orm import Mapped, Session, mapped_column
@@ -46,28 +46,6 @@ class CardsRep:
         mod = self._build_mod(image, process)
         row = session.query(CardRow).where(CardRow.image_id == image.id).one_or_none()
         row.update_with(mod) if row else CardRow.insert_with(session, mod)
-
-    def bulk_sync(
-        self,
-        session: Session,
-        image_process_couples: List[Tuple[ImageMod, ProcessMod | None]],
-    ) -> None:
-        mods_dict = {
-            image.id: self._build_mod(image, process)
-            for image, process in image_process_couples
-        }
-        rows_dict = {
-            row.image_id: row
-            for row in session.query(CardRow)
-            .where(CardRow.image_id.in_(mods_dict.keys()))
-            .all()
-        }
-        for mod_image_id in mods_dict:
-            row = rows_dict.get(mod_image_id, None)
-            if row:
-                row.update_with(mods_dict[mod_image_id])
-            else:
-                CardRow.insert_with(session, mods_dict[mod_image_id])
 
     def clean_sync(self, session: Session, image_id: int) -> None:
         row = session.query(CardRow).where(CardRow.image_id == image_id).one_or_none()

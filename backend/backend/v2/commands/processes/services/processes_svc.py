@@ -4,10 +4,9 @@ from dataclasses import dataclass
 from multiprocessing import Process
 from queue import Queue
 from threading import Thread
-from typing import List, Tuple
+from typing import Tuple
 
 from PIL.Image import Image
-from sqlalchemy.orm import Session
 
 from backend.v2.commands.images.models.image_mod import ImageMod
 from backend.v2.commands.images.repositories.images_rep import images_rep_impl
@@ -92,23 +91,6 @@ class ProcessesSvc:
             image = self.images_rep.get_or_raise(session, image_id)
             latest_process = self.processes_rep.get_latest(session, image_id)
             self.cards_rep.sync(session, image, latest_process)
-
-    def resolve_timeouts(self, session: Session, image_ids: List[int]) -> None:
-        process_latests = self.processes_rep.list(session, image_ids)
-        process_latests = [
-            process_latest.resolve_timeout(self.envs_conf.process_timeout)
-            for process_latest in process_latests
-            if not process_latest.status.ended
-        ]
-        images = {image.id: image for image in self.images_rep.list(session, image_ids)}
-        self.processes_rep.bulk_update(session, process_latests)
-        self.cards_rep.bulk_sync(
-            session,
-            [
-                (images[process_latest.image_id], process_latest)
-                for process_latest in process_latests
-            ],
-        )
 
     def _pickable_process(self, image: ImageMod, process: ProcessMod) -> None:
         def run_while_process_resumable(queue: Queue[Image | None]) -> None:

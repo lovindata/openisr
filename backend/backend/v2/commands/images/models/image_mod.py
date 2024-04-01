@@ -1,3 +1,4 @@
+from copy import deepcopy
 from dataclasses import dataclass
 
 from PIL.Image import Image
@@ -15,5 +16,6 @@ class ImageMod:
         return ExtensionVal(self.data.format)
 
     def update_data(self, data: Image) -> "ImageMod":
-        self.data = data
-        return self
+        output = deepcopy(self)
+        output.data = data
+        return output

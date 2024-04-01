@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Optional
 
-from sqlalchemy import ForeignKey, func
+from sqlalchemy import ForeignKey, and_
 from sqlalchemy.orm import Mapped, Session, mapped_column
 
 from backend.v2.commands.images.models.image_mod import ImageMod
@@ -14,10 +14,7 @@ from backend.v2.commands.processes.models.process_mod.process_mod import Process
 from backend.v2.commands.processes.models.process_mod.status_val import StatusVal
 from backend.v2.commands.shared.models.extension_val import ExtensionVal
 from backend.v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
-from backend.v2.helpers.exception_utils import (
-    BadRequestException,
-    ServerInternalErrorException,
-)
+from backend.v2.helpers.exception_utils import BadRequestException
 
 
 class ProcessRow(sqlalchemy_conf_impl.Base):
@@ -79,18 +76,10 @@ class ProcessRow(sqlalchemy_conf_impl.Base):
             else:
                 return None
 
-        def get_image_id_or_raise() -> int:
-            if self.image_id is None:
-                raise ServerInternalErrorException(
-                    "Unconvertible dangling process row."
-                )
-            return self.image_id
-
         ended = parse_status_ended_columns()
-        image_id = get_image_id_or_raise()
         return ProcessMod(
             self.id,
-            image_id,
+            self.image_id,
             self.extension,
             ImageSizeVal(self.source_width, self.source_height),
             ImageSizeVal(self.target_width, self.target_height),
@@ -138,18 +127,6 @@ class ProcessesRep:
     def update(self, session: Session, mod: ProcessMod) -> None:
         session.query(ProcessRow).where(ProcessRow.id == mod.id).one().update_with(mod)
 
-    def bulk_update(self, session: Session, mods: List[ProcessMod]) -> None:
-        mods_dict = {mod.id: mod for mod in mods}
-        rows = (
-            session.query(ProcessRow).where(ProcessRow.id.in_(mods_dict.keys())).all()
-        )
-        if (nb_rows := len(rows)) != (nb_mods := len(mods)):
-            raise ServerInternalErrorException(
-                f"Bulk update failed: detected {nb_rows} rows instead of {nb_mods}."
-            )
-        for row in rows:
-            row.update_with(mods_dict[row.id])
-
     def get_latest(self, session: Session, image_id: int) -> ProcessMod | None:
         row = (
             session.query(ProcessRow)
@@ -168,8 +145,17 @@ class ProcessesRep:
             )
         return process_latest
 
-    def list(self, session: Session, image_ids: List[int]) -> List[ProcessMod]:
-        rows = session.query(ProcessRow).where(ProcessRow.image_id.in_(image_ids)).all()
+    def list_running(self, session: Session) -> List[ProcessMod]:
+        rows = (
+            session.query(ProcessRow)
+            .where(
+                and_(
+                    ProcessRow.status_ended_successful_at == None,
+                    ProcessRow.status_ended_failed_at == None,
+                )
+            )
+            .all()
+        )
         mods = [row.to_mod() for row in rows]
         return mods
 

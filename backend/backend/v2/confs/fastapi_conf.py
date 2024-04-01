@@ -1,4 +1,6 @@
+from contextlib import asynccontextmanager
 from dataclasses import dataclass
+from typing import AsyncGenerator
 
 import uvicorn
 from fastapi import FastAPI, Request
@@ -8,6 +10,9 @@ from fastapi.responses import JSONResponse
 from backend.v2.commands.images.controllers.images_ctrl import images_ctrl_impl
 from backend.v2.commands.processes.controllers.processes_ctrl.processes_ctrl import (
     processes_ctrl_impl,
+)
+from backend.v2.commands.processes.services.timeout_resolver_svc import (
+    timeout_resolver_svc_impl,
 )
 from backend.v2.confs.envs_conf import envs_conf_impl
 from backend.v2.helpers.exception_utils import BadRequestException
@@ -20,9 +25,10 @@ class FastAPIConf:
     images_cmd = images_ctrl_impl
     processes_cmd = processes_ctrl_impl
     app_qry = app_ctrl_impl
+    timeout_resolver_svc = timeout_resolver_svc_impl
 
     def __post_init__(self) -> None:
-        self._app = FastAPI(title="OpenISR")
+        self._app = FastAPI(title="OpenISR", lifespan=self._lifespan)
         self._set_allow_cors_if_dev()
         self._set_exception_handler()
         self._app.include_router(self.app_qry.router())
@@ -48,6 +54,11 @@ class FastAPIConf:
                 reload=True,
                 reload_dirs="./backend",
             )
+
+    @asynccontextmanager
+    async def _lifespan(self, _: FastAPI) -> AsyncGenerator[None, None]:
+        self.timeout_resolver_svc.run_cron()  # Threaded execution, link to FastAPI lifespan necessary
+        yield
 
     def _set_allow_cors_if_dev(self) -> None:
         if not self.envs_conf.prod_mode:
