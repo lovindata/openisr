@@ -12,7 +12,6 @@ Please install VSCode extensions:
 - Highlight Matching Tag
 - Prettier - Code formatter
 - Tailwind CSS IntelliSense
-- XML
 
 To install dependencies, from `./frontend` folder run the command:
 

@@ -3,7 +3,6 @@
  * Do not make direct changes to the file.
  */
 
-
 export interface paths {
   "/query/v1/app/cards": {
     /** Get cards */
@@ -57,7 +56,11 @@ export interface components {
       source: components["schemas"]["Dimension"];
       target: components["schemas"]["Dimension"] | null;
       /** Status */
-      status: components["schemas"]["Runnable"] | components["schemas"]["Stoppable"] | components["schemas"]["Errored"] | components["schemas"]["Downloadable"];
+      status:
+        | components["schemas"]["Runnable"]
+        | components["schemas"]["Stoppable"]
+        | components["schemas"]["Errored"]
+        | components["schemas"]["Downloadable"];
       /**
        * Extension
        * @enum {string}
@@ -168,7 +171,6 @@ export type $defs = Record<string, never>;
 export type external = Record<string, never>;
 
 export interface operations {
-
   /** Get cards */
   __query_v1_app_cards_get: {
     responses: {

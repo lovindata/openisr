@@ -1,7 +1,7 @@
-import { ImagesSection } from "@/v2/features/images/components/organisms/ImagesSection";
-import { UploadersSection } from "@/v2/features/images/components/organisms/UploadersSection";
-import { HeroSection } from "@/v2/features/shared/components/organisms/HeroSection";
-import { AppLayout } from "@/v2/features/shared/components/templates/AppLayout";
+import { ImageSectionOrg } from "@/v2/features/images/components/organisms/ImageSectionOrg";
+import { UploaderSectionOrg } from "@/v2/features/images/components/organisms/UploaderSectionOrg";
+import { HeroSectionOrg } from "@/v2/features/shared/components/organisms/HeroSectionOrg";
+import { MainLayoutTpl } from "@/v2/features/shared/components/templates/MainLayoutTpl";
 import { useBackend } from "@/v2/services/backend";
 import { paths } from "@/v2/services/backend/endpoints";
 import { useQuery } from "@tanstack/react-query";
@@ -24,14 +24,14 @@ export function AppPg() {
   });
 
   return (
-    <AppLayout>
+    <MainLayoutTpl>
       <div className="flex flex-col items-center space-y-3 p-4">
         <div className="flex max-md:flex-col max-md:space-y-3 md:space-x-3">
-          <HeroSection />
-          <UploadersSection />
+          <HeroSectionOrg />
+          <UploaderSectionOrg />
         </div>
-        <ImagesSection cards={cards} />
+        <ImageSectionOrg cards={cards} />
       </div>
-    </AppLayout>
+    </MainLayoutTpl>
   );
 }
