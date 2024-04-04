@@ -15,10 +15,10 @@ export function ImageSectionCard({ card }: Props) {
   const { mutate: deleteImage } = useMutation({
     mutationFn: () =>
       backend
-        .delete(`/command/v1/images/${card.image_id}/delete`)
+        .delete(`/commands/v1/images/${card.image_id}/delete`)
         .then(() => {}),
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["/query/v1/app/cards"] }),
+      queryClient.invalidateQueries({ queryKey: ["/queries/v1/app/cards"] }),
   });
 
   return (

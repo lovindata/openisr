@@ -21,7 +21,7 @@ if config.config_file_name is not None:
 from backend.v2.commands.images.repositories.images_rep import *
 from backend.v2.commands.processes.repositories.processes_rep import *
 from backend.v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
-from backend.v2.queries.app.repositories.card_download_rep import *
+from backend.v2.queries.app.repositories.card_downloads_rep import *
 from backend.v2.queries.app.repositories.card_thumbnails_rep import *
 from backend.v2.queries.app.repositories.cards_rep import *
 

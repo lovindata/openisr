@@ -19,7 +19,7 @@ class ProcessesCtrl:
         @app.post(
             tags=[commands.__name__],
             summary="Run process",
-            path="/command/v1/images/{image_id}/process/run",
+            path="/commands/v1/images/{image_id}/process/run",
             status_code=204,
         )
         def _(image_id: int, dto: ProcessDto) -> None:
@@ -28,7 +28,7 @@ class ProcessesCtrl:
         @app.post(
             tags=[commands.__name__],
             summary="Retry latest process",
-            path="/command/v1/images/{image_id}/process/retry",
+            path="/commands/v1/images/{image_id}/process/retry",
             status_code=204,
         )
         def _(image_id: int) -> None:
@@ -37,7 +37,7 @@ class ProcessesCtrl:
         @app.delete(
             tags=[commands.__name__],
             summary="Stop latest process",
-            path="/command/v1/images/{image_id}/process/stop",
+            path="/commands/v1/images/{image_id}/process/stop",
             status_code=204,
         )
         def _(image_id: int) -> None:

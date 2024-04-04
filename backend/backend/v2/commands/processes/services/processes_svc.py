@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from multiprocessing import Process
 from queue import Empty, Queue
 from threading import Thread
-from typing import Tuple
 
 from PIL.Image import Image
 
@@ -13,15 +12,21 @@ from backend.v2.commands.images.repositories.images_rep import images_rep_impl
 from backend.v2.commands.processes.controllers.processes_ctrl.process_dto import (
     ProcessDto,
 )
+from backend.v2.commands.processes.models.process_mod.process_ai_val import ProcessAIVal
+from backend.v2.commands.processes.models.process_mod.process_bicubic_val import (
+    ProcessBicubicVal,
+)
 from backend.v2.commands.processes.models.process_mod.process_mod import ProcessMod
-from backend.v2.commands.processes.repositories.processes_rep import processes_rep_impl
+from backend.v2.commands.processes.repositories.processes_rep.processes_rep import (
+    processes_rep_impl,
+)
 from backend.v2.commands.processes.services.image_processing_svc import (
     image_processing_svc_impl,
 )
 from backend.v2.confs.envs_conf import envs_conf_impl
 from backend.v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
 from backend.v2.helpers.exception_utils import BadRequestException
-from backend.v2.queries.app.repositories.card_download_rep import (
+from backend.v2.queries.app.repositories.card_downloads_rep import (
     card_downloads_rep_impl,
 )
 from backend.v2.queries.app.repositories.card_thumbnails_rep import (
@@ -42,26 +47,28 @@ class ProcessesSvc:
     card_download_rep = card_downloads_rep_impl
 
     def run(self, image_id: int, dto: ProcessDto) -> None:
-        def raise_when_target_invalid() -> None:
-            if (
-                dto.target.width > 1920
-                or dto.target.width < 0
-                or dto.target.height > 1920
-                or dto.target.height < 0
-            ):
-                raise BadRequestException(
-                    f"Invalid target: ({dto.target.width}, {dto.target.height})."
-                )
+        def raise_when_target_invalid(image: ImageMod) -> None:
+            match dto.scaling:
+                case ProcessBicubicVal(
+                    target=target
+                ) if 0 > target.width or target.width > 1920 and 0 > target.height or target.height > 1920:
+                    raise BadRequestException(
+                        f"Target ({target.width}, {target.height}) too large (max 1920x1920)."
+                    )
+                case ProcessAIVal():
+                    source_width, source_height = image.data.size
+                    if source_width > 480 or source_height > 480:
+                        raise BadRequestException(
+                            f"Image ({source_width}, {source_height}) too large for AI upscaling (max 480x480)."
+                        )
+                case _:
+                    pass
 
-        def get_image_and_create_process() -> Tuple[ImageMod, ProcessMod]:
-            with self.sqlalchemy_conf.get_session() as session:
-                image = self.images_rep.get_or_raise(session, image_id)
-                process = self.processes_rep.create_run_with_dto(session, image, dto)
-                self.cards_rep.sync(session, image, process)
-                return image, process
-
-        raise_when_target_invalid()
-        image, process = get_image_and_create_process()
+        with self.sqlalchemy_conf.get_session() as session:
+            image = self.images_rep.get_or_raise(session, image_id)
+            raise_when_target_invalid(image)
+            process = self.processes_rep.create_run_with_dto(session, image, dto)
+            self.cards_rep.sync(session, image, process)
         Process(
             target=self._pickable_process,
             args=(image, process),
@@ -136,8 +143,8 @@ class ProcessesSvc:
                         updated_process = process.terminate_success()
                         self.processes_rep.update(session, updated_process)
                         self.cards_rep.sync(session, updated_image, updated_process)
-                        self.card_thumbnails_rep.sync(session, image)
-                        self.card_download_rep.sync(session, image)
+                        self.card_thumbnails_rep.sync(session, updated_image)
+                        self.card_download_rep.sync(session, updated_image)
             except Empty:
                 with self.sqlalchemy_conf.get_session() as session:
                     updated_process = process.terminate_failed_timed_out(

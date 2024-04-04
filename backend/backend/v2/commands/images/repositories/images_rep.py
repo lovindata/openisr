@@ -5,7 +5,9 @@ from PIL.Image import Image
 from sqlalchemy.orm import Mapped, Session, mapped_column, relationship
 
 from backend.v2.commands.images.models.image_mod import ImageMod
-from backend.v2.commands.processes.repositories.processes_rep import ProcessRow
+from backend.v2.commands.processes.repositories.processes_rep.processes_rep import (
+    ProcessRow,
+)
 from backend.v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
 from backend.v2.helpers.exception_utils import BadRequestException
 from backend.v2.helpers.pil_utils import extract_bytes, open_from_bytes

@@ -8,7 +8,9 @@ from sqlalchemy.orm import Session
 
 from backend.v2.commands.images.repositories.images_rep import images_rep_impl
 from backend.v2.commands.processes.models.process_mod.process_mod import ProcessMod
-from backend.v2.commands.processes.repositories.processes_rep import processes_rep_impl
+from backend.v2.commands.processes.repositories.processes_rep.processes_rep import (
+    processes_rep_impl,
+)
 from backend.v2.confs.envs_conf import envs_conf_impl
 from backend.v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
 from backend.v2.queries.app.repositories.cards_rep import cards_rep_impl

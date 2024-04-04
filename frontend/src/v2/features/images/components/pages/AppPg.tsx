@@ -9,12 +9,12 @@ import { useQuery } from "@tanstack/react-query";
 export function AppPg() {
   const { backend } = useBackend();
   const { data: cards } = useQuery({
-    queryKey: ["/query/v1/app/cards"],
+    queryKey: ["/queries/v1/app/cards"],
     queryFn: () =>
       backend
         .get<
-          paths["/query/v1/app/cards"]["get"]["responses"]["200"]["content"]["application/json"]
-        >("/query/v1/app/cards")
+          paths["/queries/v1/app/cards"]["get"]["responses"]["200"]["content"]["application/json"]
+        >("/queries/v1/app/cards")
         .then((_) => _.data),
     refetchInterval: (query) =>
       query.state.data &&

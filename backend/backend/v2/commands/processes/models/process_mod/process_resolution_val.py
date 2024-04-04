@@ -2,6 +2,6 @@ from dataclasses import dataclass
 
 
 @dataclass
-class ImageSizeVal:
+class ProcessResolutionVal:
     width: int
     height: int

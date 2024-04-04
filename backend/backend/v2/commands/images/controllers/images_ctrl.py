@@ -17,7 +17,7 @@ class ImagesCtrl:
         @app.post(
             tags=[commands.__name__],
             summary="Upload local images",
-            path="/command/v1/images/upload-local",
+            path="/commands/v1/images/upload-local",
             response_model=None,
             status_code=204,
         )
@@ -27,7 +27,7 @@ class ImagesCtrl:
         @app.delete(
             tags=[commands.__name__],
             summary="Delete image",
-            path="/command/v1/images/{image_id}/delete",
+            path="/commands/v1/images/{image_id}/delete",
             status_code=204,
         )
         def _(image_id: int) -> None:

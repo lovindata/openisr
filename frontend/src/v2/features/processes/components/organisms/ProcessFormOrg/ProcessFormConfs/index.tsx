@@ -19,18 +19,21 @@ export function ProcessFormConfs({ card, onSuccessSubmit }: Props) {
   const { mutate: runProcess, isPending } = useMutation({
     mutationFn: () =>
       backend
-        .post(`/command/v1/images/${card.image_id}/process/run`, configurations)
+        .post(
+          `/commands/v1/images/${card.image_id}/process/run`,
+          configurations
+        )
         .then(() => {}),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["/query/v1/app/cards"],
+        queryKey: ["/queries/v1/app/cards"],
       });
       onSuccessSubmit && onSuccessSubmit();
     },
   });
 
   const [configurations, setConfigurations] = useState<
-    paths["/command/v1/images/{image_id}/process/run"]["post"]["requestBody"]["content"]["application/json"]
+    paths["/commands/v1/images/{image_id}/process/run"]["post"]["requestBody"]["content"]["application/json"]
   >({
     extension: card.extension,
     target: card.target ? card.target : card.source,

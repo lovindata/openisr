@@ -10,7 +10,7 @@ from backend.v2.confs.envs_conf import envs_conf_impl
 from backend.v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
 from backend.v2.helpers.exception_utils import BadRequestException
 from backend.v2.helpers.pil_utils import open_from_bytes
-from backend.v2.queries.app.repositories.card_download_rep import (
+from backend.v2.queries.app.repositories.card_downloads_rep import (
     card_downloads_rep_impl,
 )
 from backend.v2.queries.app.repositories.card_thumbnails_rep import (

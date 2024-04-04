@@ -2,23 +2,28 @@ from dataclasses import dataclass
 from io import BytesIO
 
 from PIL.Image import BICUBIC, Image, open
-from PIL_DAT.dat_light import DATLight
+from PIL_DAT.Image import upscale
 
+from backend.v2.commands.processes.models.process_mod.process_ai_val import ProcessAIVal
+from backend.v2.commands.processes.models.process_mod.process_bicubic_val import (
+    ProcessBicubicVal,
+)
 from backend.v2.commands.processes.models.process_mod.process_mod import ProcessMod
 from backend.v2.commands.shared.models.extension_val import ExtensionVal
 
 
+@dataclass
 class ImageProcessingSvc:
     def process_image(self, data: Image, process: ProcessMod) -> Image:
-        def resize(data: Image) -> Image:
-            if process.enable_ai:
-                model = DATLight(4)
-                while (
-                    data.width < process.target.width
-                    or data.height < process.target.height
-                ):
-                    data = model.upscale(data)
-            return data.resize((process.target.width, process.target.height), BICUBIC)
+        def resize() -> Image:
+            match process.scaling:
+                case ProcessBicubicVal(target=target):
+                    return data.resize(
+                        (target.width, target.height),
+                        BICUBIC,
+                    )
+                case ProcessAIVal(scale=scale):
+                    return upscale(data, scale)
 
         def change_extension(data: Image) -> Image:
             out_bytes = BytesIO()
@@ -27,7 +32,7 @@ class ImageProcessingSvc:
             data.save(out_bytes, format=process.extension.value)
             return open(out_bytes)
 
-        data = resize(data)
+        data = resize()
         data = change_extension(data)
         return data
 

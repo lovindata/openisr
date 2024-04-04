@@ -3,15 +3,22 @@ from datetime import datetime
 from typing import List, Optional
 
 from sqlalchemy import ForeignKey, and_
-from sqlalchemy.orm import Mapped, Session, mapped_column
+from sqlalchemy.orm import Mapped, Session, composite, mapped_column
 
 from backend.v2.commands.images.models.image_mod import ImageMod
 from backend.v2.commands.processes.controllers.processes_ctrl.process_dto import (
     ProcessDto,
 )
-from backend.v2.commands.processes.models.process_mod.image_size_val import ImageSizeVal
 from backend.v2.commands.processes.models.process_mod.process_mod import ProcessMod
-from backend.v2.commands.processes.models.process_mod.status_val import StatusVal
+from backend.v2.commands.processes.repositories.processes_rep.composites.process_scaling_comp import (
+    ProcessScalingComp,
+)
+from backend.v2.commands.processes.repositories.processes_rep.composites.process_source_comp import (
+    ProcessSourceComp,
+)
+from backend.v2.commands.processes.repositories.processes_rep.composites.process_status_comp import (
+    ProcessStatusComp,
+)
 from backend.v2.commands.shared.models.extension_val import ExtensionVal
 from backend.v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
 from backend.v2.helpers.exception_utils import BadRequestException
@@ -23,68 +30,53 @@ class ProcessRow(sqlalchemy_conf_impl.Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, index=True)
     image_id: Mapped[Optional[int]] = mapped_column(ForeignKey("images.id"), index=True)
     extension: Mapped[ExtensionVal]
+
     source_width: Mapped[int]
     source_height: Mapped[int]
-    target_width: Mapped[int]
-    target_height: Mapped[int]
-    enable_ai: Mapped[bool]
+    source: Mapped[ProcessSourceComp] = composite(
+        ProcessSourceComp._generate, "source_width", "source_height"
+    )
+
+    scaling_bicubic_target_width: Mapped[Optional[int]]
+    scaling_bicubic_target_height: Mapped[Optional[int]]
+    scaling_ai_scale: Mapped[Optional[int]]
+    scaling: Mapped[ProcessScalingComp] = composite(
+        ProcessScalingComp._generate,
+        "scaling_bicubic_target_width",
+        "scaling_bicubic_target_height",
+        "scaling_ai_scale",
+    )
+
     status_started_at: Mapped[datetime]
     status_ended_successful_at: Mapped[Optional[datetime]]
     status_ended_failed_at: Mapped[Optional[datetime]]
     status_ended_failed_error: Mapped[Optional[str]]
     status_ended_failed_stacktrace: Mapped[Optional[str]]
+    status: Mapped[ProcessStatusComp] = composite(
+        ProcessStatusComp._generate,
+        "status_started_at",
+        "status_ended_successful_at",
+        "status_ended_failed_at",
+        "status_ended_failed_error",
+        "status_ended_failed_stacktrace",
+    )
 
-    def update_with(self, model: ProcessMod) -> "ProcessRow":
-        self.image_id = model.image_id
-        self.extension = model.extension
-        self.target_width = model.target.width
-        self.target_height = model.target.height
-        self.enable_ai = model.enable_ai
-        self.status_started_at = model.status.started_at
-        self.status_ended_successful_at = (
-            ended.at
-            if type(ended := model.status.ended) is StatusVal.Successful
-            else None
-        )
-        self.status_ended_failed_at = (
-            ended.at if type(ended := model.status.ended) is StatusVal.Failed else None
-        )
-        self.status_ended_failed_error = (
-            ended.error
-            if type(ended := model.status.ended) is StatusVal.Failed
-            else None
-        )
-        self.status_ended_failed_stacktrace = (
-            ended.stacktrace
-            if type(ended := model.status.ended) is StatusVal.Failed
-            else None
-        )
+    def update_with(self, mod: ProcessMod) -> "ProcessRow":
+        self.image_id = mod.image_id
+        self.extension = mod.extension
+        self.source = ProcessSourceComp(mod.source)
+        self.scaling = ProcessScalingComp(mod.scaling)
+        self.status = ProcessStatusComp(mod.status)
         return self
 
     def to_mod(self) -> ProcessMod:
-        def parse_status_ended_columns() -> (
-            StatusVal.Successful | StatusVal.Failed | None
-        ):
-            if self.status_ended_successful_at:
-                return StatusVal.Successful(self.status_ended_successful_at)
-            elif self.status_ended_failed_at and self.status_ended_failed_error:
-                return StatusVal.Failed(
-                    self.status_ended_failed_at,
-                    self.status_ended_failed_error,
-                    self.status_ended_failed_stacktrace,
-                )
-            else:
-                return None
-
-        ended = parse_status_ended_columns()
         return ProcessMod(
-            self.id,
-            self.image_id,
-            self.extension,
-            ImageSizeVal(self.source_width, self.source_height),
-            ImageSizeVal(self.target_width, self.target_height),
-            self.enable_ai,
-            StatusVal(self.status_started_at, ended),
+            id=self.id,
+            image_id=self.image_id,
+            extension=self.extension,
+            source=self.source.value,
+            scaling=self.scaling.value,
+            status=self.status.value,
         )
 
 
@@ -98,9 +90,7 @@ class ProcessesRep:
             extension=dto.extension,
             source_width=image.data.size[0],
             source_height=image.data.size[1],
-            target_width=dto.target.width,
-            target_height=dto.target.height,
-            enable_ai=dto.enable_ai,
+            scaling=ProcessScalingComp(dto.scaling),
             status_started_at=datetime.now(),
         )
         session.add(row)
@@ -115,9 +105,7 @@ class ProcessesRep:
             extension=mod.extension,
             source_width=image.data.size[0],
             source_height=image.data.size[1],
-            target_width=mod.target.width,
-            target_height=mod.target.height,
-            enable_ai=mod.enable_ai,
+            scaling=ProcessScalingComp(mod.scaling),
             status_started_at=datetime.now(),
         )
         session.add(row)

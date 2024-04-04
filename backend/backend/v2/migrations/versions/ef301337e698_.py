@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 88640fc1385b
+Revision ID: ef301337e698
 Revises: 
-Create Date: 2024-03-30 15:28:22.250561
+Create Date: 2024-04-05 07:24:10.330992
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '88640fc1385b'
+revision: str = 'ef301337e698'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -55,9 +55,9 @@ def upgrade() -> None:
     sa.Column('extension', sa.Enum('JPEG', 'PNG', 'WEBP', name='extensionval'), nullable=False),
     sa.Column('source_width', sa.Integer(), nullable=False),
     sa.Column('source_height', sa.Integer(), nullable=False),
-    sa.Column('target_width', sa.Integer(), nullable=False),
-    sa.Column('target_height', sa.Integer(), nullable=False),
-    sa.Column('enable_ai', sa.Boolean(), nullable=False),
+    sa.Column('scaling_bicubic_target_width', sa.Integer(), nullable=True),
+    sa.Column('scaling_bicubic_target_height', sa.Integer(), nullable=True),
+    sa.Column('scaling_ai_scale', sa.Integer(), nullable=True),
     sa.Column('status_started_at', sa.DateTime(), nullable=False),
     sa.Column('status_ended_successful_at', sa.DateTime(), nullable=True),
     sa.Column('status_ended_failed_at', sa.DateTime(), nullable=True),

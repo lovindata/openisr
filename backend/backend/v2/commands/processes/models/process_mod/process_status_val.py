@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 @dataclass
-class StatusVal:
+class ProcessStatusVal:
     started_at: datetime
     ended: "Successful | Failed | None"
 

@@ -1,13 +1,19 @@
 import json
 from dataclasses import dataclass
-from typing import Any, List
+from typing import Any, List, Literal
 
 from sqlalchemy import JSON
 from sqlalchemy.orm import Mapped, Session, mapped_column
 
 from backend.v2.commands.images.models.image_mod import ImageMod
+from backend.v2.commands.processes.models.process_mod.process_ai_val import ProcessAIVal
+from backend.v2.commands.processes.models.process_mod.process_bicubic_val import (
+    ProcessBicubicVal,
+)
 from backend.v2.commands.processes.models.process_mod.process_mod import ProcessMod
-from backend.v2.commands.processes.models.process_mod.status_val import StatusVal
+from backend.v2.commands.processes.models.process_mod.process_status_val import (
+    ProcessStatusVal,
+)
 from backend.v2.confs.envs_conf import envs_conf_impl
 from backend.v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
 from backend.v2.queries.app.models.card_mod import CardMod
@@ -54,71 +60,111 @@ class CardsRep:
 
     def _build_mod(self, image: ImageMod, process: ProcessMod | None) -> CardMod:
         def build_thumbnail_src() -> str:
-            src = f"/query/v1/app/cards/thumbnail/{image.id}.webp"
+            src = f"/queries/v1/app/cards/thumbnail/{image.id}.webp"
             if not self.envs_conf.prod_mode:
                 src = f"http://localhost:{self.envs_conf.api_port}" + src
             return src
 
-        def build_image_src() -> str:
-            src = f"/query/v1/app/cards/download?image_id={image.id}"
-            if not self.envs_conf.prod_mode:
-                src = f"http://localhost:{self.envs_conf.api_port}" + src
-            return src
+        def build_source() -> CardMod.Dimension:
+            if process:
+                return CardMod.Dimension(
+                    width=process.source.width, height=process.source.height
+                )
+            else:
+                return CardMod.Dimension(
+                    width=image.data.size[0], height=image.data.size[1]
+                )
 
-        def parse_process_status_ended(
-            process: ProcessMod,
-        ) -> CardMod.Stoppable | CardMod.Errored | CardMod.Downloadable:
-            match process.status.ended:
-                case StatusVal.Successful():
-                    image_src = build_image_src()
-                    return CardMod.Downloadable(
-                        type="Downloadable", image_src=image_src
-                    )
-                case StatusVal.Failed(error=error):
-                    return CardMod.Errored(
-                        type="Errored",
-                        duration=round(
-                            (
-                                process.status.ended.at - process.status.started_at
-                            ).total_seconds()
-                        ),
-                        error=error,
-                    )
-                case None:
-                    return CardMod.Stoppable(
-                        type="Stoppable", started_at=process.status.started_at
-                    )
+        def build_target() -> CardMod.Dimension | None:
+            if not process:
+                return None
+            else:
+                match process.scaling:
+                    case ProcessBicubicVal(target=target):
+                        return CardMod.Dimension(
+                            width=target.width, height=target.height
+                        )
+                    case ProcessAIVal(scale=scale):
+                        return CardMod.Dimension(
+                            width=process.source.width * scale,
+                            height=process.source.height * scale,
+                        )
 
-        thumbnail_src = build_thumbnail_src()
-        source = (
-            CardMod.Dimension(width=process.source.width, height=process.source.height)
-            if process
-            else CardMod.Dimension(width=image.data.size[0], height=image.data.size[1])
-        )
-        target = (
-            CardMod.Dimension(width=process.target.width, height=process.target.height)
-            if process
-            else None
-        )
-        status = (
-            parse_process_status_ended(process)
-            if process
-            else CardMod.Runnable(type="Runnable")
-        )
-        extension = (process.extension if process else image.extension()).value
-        enable_ai = process.enable_ai if process else False
-        mod = CardMod(
-            thumbnail_src=thumbnail_src,
+        def build_status() -> (
+            CardMod.Runnable
+            | CardMod.Stoppable
+            | CardMod.Errored
+            | CardMod.Downloadable
+        ):
+            if process is None:
+                return CardMod.Runnable(type="Runnable")
+            else:
+                match process.status.ended:
+                    case ProcessStatusVal.Successful():
+                        image_src = (
+                            f"/queries/v1/app/cards/download?image_id={image.id}"
+                        )
+                        if not self.envs_conf.prod_mode:
+                            image_src = (
+                                f"http://localhost:{self.envs_conf.api_port}"
+                                + image_src
+                            )
+                        return CardMod.Downloadable(
+                            type="Downloadable", image_src=image_src
+                        )
+                    case ProcessStatusVal.Failed(error=error):
+                        return CardMod.Errored(
+                            type="Errored",
+                            duration=round(
+                                (
+                                    process.status.ended.at - process.status.started_at
+                                ).total_seconds()
+                            ),
+                            error=error,
+                        )
+                    case None:
+                        return CardMod.Stoppable(
+                            type="Stoppable", started_at=process.status.started_at
+                        )
+
+        def build_extension() -> Literal["JPEG", "PNG", "WEBP"]:
+            if process:
+                return process.extension.value
+            else:
+                return image.extension().value
+
+        def build_scaling() -> CardMod.Bicubic | CardMod.AI:
+            if process is None:
+                return CardMod.Bicubic(
+                    type="Bicubic",
+                    preserve_ratio=True,
+                    target=CardMod.Dimension(
+                        width=image.data.size[0], height=image.data.size[1]
+                    ),
+                )
+            else:
+                match process.scaling:
+                    case ProcessBicubicVal(target=target):
+                        return CardMod.Bicubic(
+                            type="Bicubic",
+                            preserve_ratio=True,
+                            target=CardMod.Dimension(
+                                width=target.width, height=target.height
+                            ),
+                        )
+                    case ProcessAIVal(scale=scale):
+                        return CardMod.AI(type="AI", scale=scale)
+
+        return CardMod(
+            thumbnail_src=build_thumbnail_src(),
             name=image.name,
-            source=source,
-            target=target,
-            status=status,
+            source=build_source(),
+            target=build_target(),
+            status=build_status(),
+            extension=build_extension(),
+            scaling=build_scaling(),
             image_id=image.id,
-            extension=extension,
-            preserve_ratio=True,
-            enable_ai=enable_ai,
         )
-        return mod
 
 
 cards_rep_impl = CardsRep()

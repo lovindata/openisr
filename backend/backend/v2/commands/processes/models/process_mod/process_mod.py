@@ -1,10 +1,17 @@
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Tuple
 
-from backend.v2.commands.processes.models.process_mod.image_size_val import ImageSizeVal
-from backend.v2.commands.processes.models.process_mod.status_val import StatusVal
+from backend.v2.commands.processes.models.process_mod.process_ai_val import ProcessAIVal
+from backend.v2.commands.processes.models.process_mod.process_bicubic_val import (
+    ProcessBicubicVal,
+)
+from backend.v2.commands.processes.models.process_mod.process_resolution_val import (
+    ProcessResolutionVal,
+)
+from backend.v2.commands.processes.models.process_mod.process_status_val import (
+    ProcessStatusVal,
+)
 from backend.v2.commands.shared.models.extension_val import ExtensionVal
 from backend.v2.helpers.exception_utils import ServerInternalErrorException
 
@@ -14,15 +21,14 @@ class ProcessMod:
     id: int
     image_id: int | None
     extension: ExtensionVal
-    source: ImageSizeVal
-    target: ImageSizeVal
-    enable_ai: bool
-    status: StatusVal
+    source: ProcessResolutionVal
+    scaling: ProcessBicubicVal | ProcessAIVal
+    status: ProcessStatusVal
 
     def terminate_success(self) -> "ProcessMod":
         self._raise_when_terminating_already_ended()
         output = deepcopy(self)
-        output.status.ended = StatusVal.Successful(datetime.now())
+        output.status.ended = ProcessStatusVal.Successful(at=datetime.now())
         return output
 
     def terminate_failed(
@@ -30,15 +36,17 @@ class ProcessMod:
     ) -> "ProcessMod":
         self._raise_when_terminating_already_ended()
         output = deepcopy(self)
-        output.status.ended = StatusVal.Failed(datetime.now(), error, stacktrace)
+        output.status.ended = ProcessStatusVal.Failed(
+            at=datetime.now(), error=error, stacktrace=stacktrace
+        )
         return output
 
     def terminate_failed_timed_out(self, timeout_in_seconds: int) -> "ProcessMod":
         output = deepcopy(self)
-        output.status.ended = StatusVal.Failed(
-            output.status.started_at + timedelta(seconds=timeout_in_seconds),
-            "Process timeout.",
-            None,
+        output.status.ended = ProcessStatusVal.Failed(
+            at=output.status.started_at + timedelta(seconds=timeout_in_seconds),
+            error="Process timeout.",
+            stacktrace=None,
         )
         return output
 

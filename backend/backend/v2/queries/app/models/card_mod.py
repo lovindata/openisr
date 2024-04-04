@@ -13,8 +13,7 @@ class CardMod(BaseModel):
         discriminator="type"
     )
     extension: Literal["JPEG", "PNG", "WEBP"]
-    preserve_ratio: bool
-    enable_ai: bool
+    scaling: "Bicubic | AI" = Field(discriminator="type")
     image_id: int
 
     class Dimension(BaseModel):
@@ -42,3 +41,12 @@ class CardMod(BaseModel):
     class Downloadable(BaseModel):
         type: Literal["Downloadable"]
         image_src: str
+
+    class Bicubic(BaseModel):
+        type: Literal["Bicubic"]
+        preserve_ratio: bool
+        target: "CardMod.Dimension"
+
+    class AI(BaseModel):
+        type: Literal["AI"]
+        scale: Literal[2, 3, 4]

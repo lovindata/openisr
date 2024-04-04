@@ -14,10 +14,10 @@ export function ProcessFormError({ error, imageId, onSuccessSubmit }: Props) {
   const { mutate: retryLatestProcess, isPending } = useMutation({
     mutationFn: () =>
       backend
-        .post(`/command/v1/images/${imageId}/process/retry`)
+        .post(`/commands/v1/images/${imageId}/process/retry`)
         .then(() => {}),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/query/v1/app/cards`] });
+      queryClient.invalidateQueries({ queryKey: [`/queries/v1/app/cards`] });
       onSuccessSubmit && onSuccessSubmit();
     },
   });

@@ -9,7 +9,7 @@ from backend.v2 import queries
 from backend.v2.commands.processes.services.processes_svc import processes_svc_impl
 from backend.v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
 from backend.v2.queries.app.models.card_mod import CardMod
-from backend.v2.queries.app.repositories.card_download_rep import (
+from backend.v2.queries.app.repositories.card_downloads_rep import (
     card_downloads_rep_impl,
 )
 from backend.v2.queries.app.repositories.card_thumbnails_rep import (
@@ -32,7 +32,7 @@ class AppCtrl:
         @app.get(
             tags=[queries.__name__],
             summary="Get cards",
-            path="/query/v1/app/cards",
+            path="/queries/v1/app/cards",
             response_model=List[CardMod],
         )
         def _() -> List[CardMod]:
@@ -42,7 +42,7 @@ class AppCtrl:
         @app.get(
             tags=[queries.__name__],
             summary="Card thumbnail (144x144)",
-            path="/query/v1/app/cards/thumbnail/{image_id}.webp",
+            path="/queries/v1/app/cards/thumbnail/{image_id}.webp",
             response_class=StreamingResponse,
         )
         def _(image_id: int) -> StreamingResponse:
@@ -55,7 +55,7 @@ class AppCtrl:
         @app.get(
             tags=[queries.__name__],
             summary="Download image",
-            path="/query/v1/app/cards/download",
+            path="/queries/v1/app/cards/download",
             response_class=StreamingResponse,
         )
         def _(image_id: int) -> StreamingResponse:

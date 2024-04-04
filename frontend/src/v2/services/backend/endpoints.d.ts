@@ -4,37 +4,37 @@
  */
 
 export interface paths {
-  "/query/v1/app/cards": {
+  "/queries/v1/app/cards": {
     /** Get cards */
-    get: operations["__query_v1_app_cards_get"];
+    get: operations["__queries_v1_app_cards_get"];
   };
-  "/query/v1/app/cards/thumbnail/{image_id}.webp": {
+  "/queries/v1/app/cards/thumbnail/{image_id}.webp": {
     /** Card thumbnail (144x144) */
-    get: operations["__query_v1_app_cards_thumbnail__image_id__webp_get"];
+    get: operations["__queries_v1_app_cards_thumbnail__image_id__webp_get"];
   };
-  "/query/v1/app/cards/download": {
+  "/queries/v1/app/cards/download": {
     /** Download image */
-    get: operations["__query_v1_app_cards_download_get"];
+    get: operations["__queries_v1_app_cards_download_get"];
   };
-  "/command/v1/images/upload-local": {
+  "/commands/v1/images/upload-local": {
     /** Upload local images */
-    post: operations["__command_v1_images_upload_local_post"];
+    post: operations["__commands_v1_images_upload_local_post"];
   };
-  "/command/v1/images/{image_id}/delete": {
+  "/commands/v1/images/{image_id}/delete": {
     /** Delete image */
-    delete: operations["__command_v1_images__image_id__delete_delete"];
+    delete: operations["__commands_v1_images__image_id__delete_delete"];
   };
-  "/command/v1/images/{image_id}/process/run": {
+  "/commands/v1/images/{image_id}/process/run": {
     /** Run process */
-    post: operations["__command_v1_images__image_id__process_run_post"];
+    post: operations["__commands_v1_images__image_id__process_run_post"];
   };
-  "/command/v1/images/{image_id}/process/retry": {
+  "/commands/v1/images/{image_id}/process/retry": {
     /** Retry latest process */
-    post: operations["__command_v1_images__image_id__process_retry_post"];
+    post: operations["__commands_v1_images__image_id__process_retry_post"];
   };
-  "/command/v1/images/{image_id}/process/stop": {
+  "/commands/v1/images/{image_id}/process/stop": {
     /** Stop latest process */
-    delete: operations["__command_v1_images__image_id__process_stop_delete"];
+    delete: operations["__commands_v1_images__image_id__process_stop_delete"];
   };
 }
 
@@ -42,8 +42,32 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
-    /** Body___command_v1_images_upload_local_post */
-    Body___command_v1_images_upload_local_post: {
+    /** AI */
+    AI: {
+      /**
+       * Type
+       * @constant
+       */
+      type: "AI";
+      /**
+       * Scale
+       * @enum {integer}
+       */
+      scale: 2 | 3 | 4;
+    };
+    /** Bicubic */
+    Bicubic: {
+      /**
+       * Type
+       * @constant
+       */
+      type: "Bicubic";
+      /** Preserve Ratio */
+      preserve_ratio: boolean;
+      target: components["schemas"]["Dimension"];
+    };
+    /** Body___commands_v1_images_upload_local_post */
+    Body___commands_v1_images_upload_local_post: {
       /** Files */
       files: string[];
     };
@@ -66,10 +90,8 @@ export interface components {
        * @enum {string}
        */
       extension: "JPEG" | "PNG" | "WEBP";
-      /** Preserve Ratio */
-      preserve_ratio: boolean;
-      /** Enable Ai */
-      enable_ai: boolean;
+      /** Scaling */
+      scaling: components["schemas"]["Bicubic"] | components["schemas"]["AI"];
       /** Image Id */
       image_id: number;
     };
@@ -112,19 +134,32 @@ export interface components {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][];
     };
-    /** ImageSizeDto */
-    ImageSizeDto: {
-      /** Width */
-      width: number;
-      /** Height */
-      height: number;
+    /** ProcessAIVal */
+    ProcessAIVal: {
+      /**
+       * Scale
+       * @enum {integer}
+       */
+      scale: 2 | 3 | 4;
+    };
+    /** ProcessBicubicVal */
+    ProcessBicubicVal: {
+      target: components["schemas"]["ProcessResolutionVal"];
     };
     /** ProcessDto */
     ProcessDto: {
       extension: components["schemas"]["ExtensionVal"];
-      target: components["schemas"]["ImageSizeDto"];
-      /** Enable Ai */
-      enable_ai: boolean;
+      /** Scaling */
+      scaling:
+        | components["schemas"]["ProcessBicubicVal"]
+        | components["schemas"]["ProcessAIVal"];
+    };
+    /** ProcessResolutionVal */
+    ProcessResolutionVal: {
+      /** Width */
+      width: number;
+      /** Height */
+      height: number;
     };
     /** Runnable */
     Runnable: {
@@ -172,7 +207,7 @@ export type external = Record<string, never>;
 
 export interface operations {
   /** Get cards */
-  __query_v1_app_cards_get: {
+  __queries_v1_app_cards_get: {
     responses: {
       /** @description Successful Response */
       200: {
@@ -183,7 +218,7 @@ export interface operations {
     };
   };
   /** Card thumbnail (144x144) */
-  __query_v1_app_cards_thumbnail__image_id__webp_get: {
+  __queries_v1_app_cards_thumbnail__image_id__webp_get: {
     parameters: {
       path: {
         image_id: number;
@@ -203,7 +238,7 @@ export interface operations {
     };
   };
   /** Download image */
-  __query_v1_app_cards_download_get: {
+  __queries_v1_app_cards_download_get: {
     parameters: {
       query: {
         image_id: number;
@@ -223,10 +258,10 @@ export interface operations {
     };
   };
   /** Upload local images */
-  __command_v1_images_upload_local_post: {
+  __commands_v1_images_upload_local_post: {
     requestBody: {
       content: {
-        "multipart/form-data": components["schemas"]["Body___command_v1_images_upload_local_post"];
+        "multipart/form-data": components["schemas"]["Body___commands_v1_images_upload_local_post"];
       };
     };
     responses: {
@@ -243,7 +278,7 @@ export interface operations {
     };
   };
   /** Delete image */
-  __command_v1_images__image_id__delete_delete: {
+  __commands_v1_images__image_id__delete_delete: {
     parameters: {
       path: {
         image_id: number;
@@ -263,7 +298,7 @@ export interface operations {
     };
   };
   /** Run process */
-  __command_v1_images__image_id__process_run_post: {
+  __commands_v1_images__image_id__process_run_post: {
     parameters: {
       path: {
         image_id: number;
@@ -288,7 +323,7 @@ export interface operations {
     };
   };
   /** Retry latest process */
-  __command_v1_images__image_id__process_retry_post: {
+  __commands_v1_images__image_id__process_retry_post: {
     parameters: {
       path: {
         image_id: number;
@@ -308,7 +343,7 @@ export interface operations {
     };
   };
   /** Stop latest process */
-  __command_v1_images__image_id__process_stop_delete: {
+  __commands_v1_images__image_id__process_stop_delete: {
     parameters: {
       path: {
         image_id: number;

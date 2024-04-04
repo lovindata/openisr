@@ -12,11 +12,11 @@ export function UploaderSectionLocal() {
       const formData = new FormData();
       for (let i = 0; i < files.length; i++) formData.append("files", files[i]);
       return backend
-        .post("/command/v1/images/upload-local", formData)
+        .post("/commands/v1/images/upload-local", formData)
         .then(() => {});
     },
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["/query/v1/app/cards"] }),
+      queryClient.invalidateQueries({ queryKey: ["/queries/v1/app/cards"] }),
   });
 
   const { getRootProps, getInputProps } = useDropzone({

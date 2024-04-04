@@ -15,10 +15,10 @@ export function ProcessButtonOrg({ card }: Props) {
   const { mutate: stopProcess } = useMutation({
     mutationFn: () =>
       backend
-        .delete(`/command/v1/images/${card.image_id}/process/stop`)
+        .delete(`/commands/v1/images/${card.image_id}/process/stop`)
         .then(() => {}),
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["/query/v1/app/cards"] }),
+      queryClient.invalidateQueries({ queryKey: ["/queries/v1/app/cards"] }),
   });
 
   const { openModal, closeModal } = useModal();
