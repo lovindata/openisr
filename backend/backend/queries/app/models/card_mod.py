@@ -44,6 +44,7 @@ class CardMod(BaseModel):
 
     class Downloadable(BaseModel):
         type: Literal["Downloadable"]
+        duration: int
         image_src: str
 
     class Bicubic(BaseModel):

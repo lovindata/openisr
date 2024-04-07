@@ -120,7 +120,13 @@ class CardsRep:
                                 + image_src
                             )
                         return CardMod.Downloadable(
-                            type="Downloadable", image_src=image_src
+                            type="Downloadable",
+                            duration=round(
+                                (
+                                    process.status.ended.at - process.status.started_at
+                                ).total_seconds()
+                            ),
+                            image_src=image_src,
                         )
                     case ProcessStatusVal.Failed(error=error):
                         return CardMod.Errored(

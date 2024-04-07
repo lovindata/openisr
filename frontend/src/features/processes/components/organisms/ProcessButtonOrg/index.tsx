@@ -58,7 +58,7 @@ export function ProcessButtonOrg({ card }: Props) {
     case "Downloadable":
       return (
         <a href={card.status.image_src} download>
-          <ProcessButtonIcon type="download" />
+          <ProcessButtonIcon type="download" duration={card.status.duration} />
         </a>
       );
   }

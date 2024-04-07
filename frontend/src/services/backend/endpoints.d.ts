@@ -86,6 +86,8 @@ export interface components {
     };
     /** CardMod */
     CardMod: {
+      /** Image Id */
+      image_id: number;
       /** Thumbnail Src */
       thumbnail_src: string;
       /** Name */
@@ -102,8 +104,6 @@ export interface components {
       default_scaling_type: "Bicubic" | "AI";
       default_scaling_bicubic: components["schemas"]["Bicubic-Output"];
       default_scaling_ai: components["schemas"]["AI"];
-      /** Image Id */
-      image_id: number;
     };
     /** Dimension */
     Dimension: {
@@ -119,6 +119,8 @@ export interface components {
        * @constant
        */
       type: "Downloadable";
+      /** Duration */
+      duration: number;
       /** Image Src */
       image_src: string;
     };
