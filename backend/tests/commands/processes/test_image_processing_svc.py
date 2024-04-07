@@ -5,17 +5,17 @@ from unittest.mock import Mock
 import pytest
 from PIL.Image import Image, new, open
 
-from backend.v2.commands.processes.models.process_mod.process_ai_val import ProcessAIVal
-from backend.v2.commands.processes.models.process_mod.process_bicubic_val import (
+from backend.commands.processes.models.process_mod.process_ai_val import ProcessAIVal
+from backend.commands.processes.models.process_mod.process_bicubic_val import (
     ProcessBicubicVal,
 )
-from backend.v2.commands.processes.models.process_mod.process_resolution_val import (
+from backend.commands.processes.models.process_mod.process_resolution_val import (
     ProcessResolutionVal,
 )
-from backend.v2.commands.processes.services.image_processing_svc import (
+from backend.commands.processes.services.image_processing_svc import (
     image_processing_svc_impl,
 )
-from backend.v2.commands.shared.models.extension_val import ExtensionVal
+from backend.commands.shared.models.extension_val import ExtensionVal
 
 
 class TestImageProcessingSvc:
