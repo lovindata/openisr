@@ -22,11 +22,11 @@ class ProcessScalingComp:
         scaling_bicubic_target_height: Optional[int],
         scaling_ai_scale: Optional[int],
     ) -> "ProcessScalingComp":
-        if scaling_bicubic_target_height and scaling_bicubic_target_width:
+        if scaling_bicubic_target_width and scaling_bicubic_target_height:
             return ProcessScalingComp(
                 ProcessBicubicVal(
                     ProcessResolutionVal(
-                        scaling_bicubic_target_height, scaling_bicubic_target_width
+                        scaling_bicubic_target_width, scaling_bicubic_target_height
                     )
                 )
             )
