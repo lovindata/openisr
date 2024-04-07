@@ -129,7 +129,7 @@ class ProcessesSvc:
                 if out_image_data:
                     with self.sqlalchemy_conf.get_session() as session:
                         updated_image = image.update_data(out_image_data)
-                        self.images_rep.update(session, updated_image)
+                        updated_image = self.images_rep.update(session, updated_image)
                         updated_process = process.terminate_success()
                         self.processes_rep.update(session, updated_process)
                         self.cards_rep.sync(session, updated_image, updated_process)

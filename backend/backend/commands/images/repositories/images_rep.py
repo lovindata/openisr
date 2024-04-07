@@ -1,7 +1,9 @@
 from dataclasses import dataclass
+from datetime import datetime
 from typing import List
 
 from PIL.Image import Image
+from sqlalchemy import func
 from sqlalchemy.orm import Mapped, Session, mapped_column, relationship
 
 from backend.commands.images.models.image_mod import ImageMod
@@ -17,6 +19,9 @@ class ImageRow(sqlalchemy_conf_impl.Base):
     __tablename__ = "images"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, index=True)
+    updated_at: Mapped[datetime] = mapped_column(
+        insert_default=func.now(), onupdate=func.now()
+    )
     name: Mapped[str]
     data: Mapped[bytes]
 
@@ -30,7 +35,7 @@ class ImageRow(sqlalchemy_conf_impl.Base):
         return self
 
     def to_mod(self) -> ImageMod:
-        return ImageMod(self.id, self.name, open_from_bytes(self.data))
+        return ImageMod(self.id, self.updated_at, self.name, open_from_bytes(self.data))
 
 
 @dataclass
@@ -47,14 +52,10 @@ class ImagesRep:
             session.delete(row)
 
     def update(self, session: Session, mod: ImageMod) -> ImageMod:
-        mod = (
-            session.query(ImageRow)
-            .where(ImageRow.id == mod.id)
-            .one()
-            .update_with(mod)
-            .to_mod()
-        )
-        return mod
+        row = session.query(ImageRow).where(ImageRow.id == mod.id).one()
+        row = row.update_with(mod)
+        session.flush()
+        return row.to_mod()
 
     def get_or_raise(self, session: Session, image_id: int) -> ImageMod:
         row = session.query(ImageRow).where(ImageRow.id == image_id).one_or_none()

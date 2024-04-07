@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from io import BytesIO
 from typing import List
 
@@ -43,9 +44,11 @@ class AppCtrl:
             path="/queries/v1/app/cards/thumbnail/{image_id}.webp",
             response_class=StreamingResponse,
         )
-        def _(image_id: int) -> StreamingResponse:
+        def _(image_id: int, updated_at: datetime) -> StreamingResponse:
             with self.sqlalchemy_conf.get_session() as session:
-                bytes = self.card_thumbnail_rep.get(session, image_id).thumbnail_bytes
+                bytes = self.card_thumbnail_rep.get(
+                    session, image_id, updated_at
+                ).thumbnail_bytes
                 return StreamingResponse(
                     content=BytesIO(bytes), media_type="image/webp"
                 )

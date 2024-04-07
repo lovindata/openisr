@@ -2,10 +2,10 @@ import json
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, List, Literal
+from urllib.parse import quote
 
 from sqlalchemy import JSON
 from sqlalchemy.orm import Mapped, Session, mapped_column
-from sqlalchemy.sql import func
 
 from backend.commands.images.models.image_mod import ImageMod
 from backend.commands.processes.models.process_mod.process_ai_val import ProcessAIVal
@@ -26,21 +26,24 @@ class CardRow(sqlalchemy_conf_impl.Base):
     __tablename__ = "cards"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    image_id: Mapped[int] = mapped_column(unique=True, index=True)
-    updated_at: Mapped[datetime] = mapped_column(
-        insert_default=func.now(), onupdate=func.now()
-    )
     data: Mapped[dict[str, Any]] = mapped_column(type_=JSON)
+    image_id: Mapped[int] = mapped_column(unique=True, index=True)
+    updated_at: Mapped[datetime]
 
     @classmethod
     def insert_with(cls, session: Session, mod: CardMod) -> None:
-        row = CardRow(image_id=mod.image_id, data=json.loads(mod.model_dump_json()))
+        row = CardRow(
+            data=json.loads(mod.model_dump_json()),
+            image_id=mod.image_id,
+            updated_at=mod.updated_at,
+        )
         session.add(row)
         session.flush()
 
     def update_with(self, mod: CardMod) -> None:
         self.data = json.loads(mod.model_dump_json())
         self.image_id = mod.image_id
+        self.updated_at = mod.updated_at
 
     def to_mod(self) -> CardMod:
         return CardMod.model_validate_json(json.dumps(self.data))
@@ -70,7 +73,7 @@ class CardsRep:
 
     def _build_mod(self, image: ImageMod, process: ProcessMod | None) -> CardMod:
         def build_thumbnail_src() -> str:
-            src = f"/queries/v1/app/cards/thumbnail/{image.id}.webp"
+            src = f"/queries/v1/app/cards/thumbnail/{image.id}.webp?updated_at={quote(str(image.updated_at))}"  # 'quote' because spaces and colons are not URL-safe characters
             if not self.envs_conf.prod_mode:
                 src = f"http://localhost:{self.envs_conf.api_port}" + src
             return src
@@ -206,6 +209,7 @@ class CardsRep:
             default_scaling_bicubic=build_default_scaling_bicubic(),
             default_scaling_ai=build_default_scaling_ai(),
             image_id=image.id,
+            updated_at=image.updated_at,
         )
 
 

@@ -1,6 +1,9 @@
+from datetime import datetime
+
 from pydantic import BaseModel
 
 
 class CardThumbnailMod(BaseModel):
-    image_id: int
     thumbnail_bytes: bytes
+    image_id: int
+    updated_at: datetime

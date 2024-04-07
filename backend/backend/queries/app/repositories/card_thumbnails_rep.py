@@ -1,6 +1,8 @@
 from dataclasses import dataclass
+from datetime import datetime
 from io import BytesIO
 
+from sqlalchemy import and_
 from sqlalchemy.orm import Mapped, Session, mapped_column
 
 from backend.commands.images.models.image_mod import ImageMod
@@ -14,23 +16,29 @@ class CardThumbnailRow(sqlalchemy_conf_impl.Base):
     __tablename__ = "card_thumbnails"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    image_id: Mapped[int] = mapped_column(unique=True, index=True)
     thumbnail_bytes: Mapped[bytes]
+    image_id: Mapped[int] = mapped_column(unique=True, index=True)
+    updated_at: Mapped[datetime]
 
     @classmethod
     def insert_with(cls, session: Session, mod: CardThumbnailMod) -> None:
         row = CardThumbnailRow(
-            thumbnail_bytes=mod.thumbnail_bytes, image_id=mod.image_id
+            thumbnail_bytes=mod.thumbnail_bytes,
+            image_id=mod.image_id,
+            updated_at=mod.updated_at,
         )
         session.add(row)
 
     def update_with(self, mod: CardThumbnailMod) -> None:
         self.thumbnail_bytes = mod.thumbnail_bytes
         self.image_id = mod.image_id
+        self.updated_at = mod.updated_at
 
     def to_mod(self) -> CardThumbnailMod:
         return CardThumbnailMod(
-            thumbnail_bytes=self.thumbnail_bytes, image_id=self.image_id
+            thumbnail_bytes=self.thumbnail_bytes,
+            image_id=self.image_id,
+            updated_at=self.updated_at,
         )
 
 
@@ -38,10 +46,17 @@ class CardThumbnailRow(sqlalchemy_conf_impl.Base):
 class CardThumbnailsRep:
     envs_conf = envs_conf_impl
 
-    def get(self, session: Session, image_id: int) -> CardThumbnailMod:
+    def get(
+        self, session: Session, image_id: int, updated_at: datetime
+    ) -> CardThumbnailMod:
         return (
             session.query(CardThumbnailRow)
-            .where(CardThumbnailRow.image_id == image_id)
+            .where(
+                and_(
+                    CardThumbnailRow.image_id == image_id,
+                    CardThumbnailRow.updated_at == updated_at,
+                )
+            )
             .one()
             .to_mod()
         )
@@ -73,7 +88,11 @@ class CardThumbnailsRep:
             return bytesio.getvalue()
 
         thumbnail_bytes = build_thumbnail_bytes()
-        mod = CardThumbnailMod(thumbnail_bytes=thumbnail_bytes, image_id=image.id)
+        mod = CardThumbnailMod(
+            thumbnail_bytes=thumbnail_bytes,
+            image_id=image.id,
+            updated_at=image.updated_at,
+        )
         return mod
 
 

@@ -7,7 +7,6 @@ from backend.commands.shared.models.extension_val import ExtensionVal
 
 
 class CardMod(BaseModel):
-    image_id: int
     thumbnail_src: str
     name: str
     source: "Dimension"
@@ -19,6 +18,8 @@ class CardMod(BaseModel):
     default_scaling_type: Literal["Bicubic", "AI"]
     default_scaling_bicubic: "Bicubic"
     default_scaling_ai: "AI"
+    image_id: int
+    updated_at: datetime
 
     class Dimension(BaseModel):
         width: int

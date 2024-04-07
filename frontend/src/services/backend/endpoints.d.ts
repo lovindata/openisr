@@ -86,8 +86,6 @@ export interface components {
     };
     /** CardMod */
     CardMod: {
-      /** Image Id */
-      image_id: number;
       /** Thumbnail Src */
       thumbnail_src: string;
       /** Name */
@@ -104,6 +102,13 @@ export interface components {
       default_scaling_type: "Bicubic" | "AI";
       default_scaling_bicubic: components["schemas"]["Bicubic-Output"];
       default_scaling_ai: components["schemas"]["AI"];
+      /** Image Id */
+      image_id: number;
+      /**
+       * Updated At
+       * Format: date-time
+       */
+      updated_at: string;
     };
     /** Dimension */
     Dimension: {
@@ -212,6 +217,9 @@ export interface operations {
   /** Card thumbnail (144x144) */
   __queries_v1_app_cards_thumbnail__image_id__webp_get: {
     parameters: {
+      query: {
+        updated_at: string;
+      };
       path: {
         image_id: number;
       };
