@@ -1,4 +1,4 @@
-import { AppPg } from "@/v2/features/images/components/pages/AppPg";
+import { AppPg } from "@/features/images/components/pages/AppPg";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 

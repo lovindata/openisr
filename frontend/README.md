@@ -38,5 +38,5 @@ Open [http://localhost:5173](http://localhost:5173) with your browser to see the
 To generate TypeScript endpoint definition from the backend OpenAPI:
 
 ```bash
-npx openapi-typescript http://localhost:8000/openapi.json --output ./src/v2/services/backend/endpoints.d.ts
+npx openapi-typescript http://localhost:8000/openapi.json --output ./src/services/backend/endpoints.d.ts
 ```
