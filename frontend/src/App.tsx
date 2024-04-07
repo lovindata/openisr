@@ -1,6 +1,6 @@
-import { AppPg } from "@/features/images/components/pages/AppPg";
+import { ImagePg } from "@/features/images/components/pages/ImagePg";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { Routes, Route, BrowserRouter, Navigate } from "react-router-dom";
 
 function App() {
   return (
@@ -8,7 +8,8 @@ function App() {
       <BrowserRouter>
         <QueryClientProvider client={new QueryClient()}>
           <Routes>
-            <Route path="/app" element={<AppPg />} />
+            <Route path="/" element={<ImagePg />} />
+            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </QueryClientProvider>
       </BrowserRouter>

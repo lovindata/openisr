@@ -17,13 +17,13 @@ export default function NavBarOrg() {
           onClick={() => navigate("/app")}
         />
         <div className="flex flex-col items-center max-md:flex-row max-md:space-x-3 md:space-y-3">
-          <LinkAtm href="/app">
+          <LinkAtm href="/">
             <SvgIconAtm type="donation" className="h-5 w-5" />
           </LinkAtm>
-          <LinkAtm href="https://hub.docker.com/u/ilovedatajjia">
+          <LinkAtm href="https://hub.docker.com/repositories/lovindata/openisr">
             <SvgIconAtm type="docker" className="h-5 w-5" />
           </LinkAtm>
-          <LinkAtm href="https://github.com/iLoveDataJjia">
+          <LinkAtm href="https://github.com/lovindata/openisr">
             <SvgIconAtm type="github" className="h-5 w-5" />
           </LinkAtm>
         </div>

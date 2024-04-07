@@ -6,7 +6,7 @@ import { useBackend } from "@/services/backend";
 import { paths } from "@/services/backend/endpoints";
 import { useQuery } from "@tanstack/react-query";
 
-export function AppPg() {
+export function ImagePg() {
   const { backend } = useBackend();
   const { data: cards } = useQuery({
     queryKey: ["/queries/v1/app/cards"],

@@ -14,7 +14,7 @@ export function SearchBarMol({ value, onChange }: Props) {
         type="text"
         value={value}
         onChange={onChange}
-        className="w-full bg-transparent outline-none"
+        className="w-full bg-transparent text-xs outline-none"
       />
     </BorderBoxAtm>
   );

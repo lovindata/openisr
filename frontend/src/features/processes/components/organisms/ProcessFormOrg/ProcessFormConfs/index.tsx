@@ -77,12 +77,12 @@ export function ProcessFormConfs({ card, onSuccessSubmit }: Props) {
           </ProcessFormConfsItem>
         </div>
         <div className="space-y-4">
-          <ProcessFormConfsItem label="Extension">
+          <ProcessFormConfsItem label="Scale">
             <HorizontalRadioMol
               possibleValues={[2, 3, 4]}
               value={configurations.scalingAI.scale}
               setValue={setScalingAIScale}
-              className="w-40"
+              className="w-28"
             />
           </ProcessFormConfsItem>
           <ProcessFormConfsItem label="Target" disabled>
