@@ -3,6 +3,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, computed_field
 
+from backend.v2.commands.shared.models.extension_val import ExtensionVal
+
 
 class CardMod(BaseModel):
     thumbnail_src: str
@@ -12,8 +14,10 @@ class CardMod(BaseModel):
     status: "Runnable | Stoppable | Errored | Downloadable" = Field(
         discriminator="type"
     )
-    extension: Literal["JPEG", "PNG", "WEBP"]
-    scaling: "Bicubic | AI" = Field(discriminator="type")
+    default_extension: ExtensionVal
+    default_scaling_type: Literal["Bicubic", "AI"]
+    default_scaling_bicubic: "Bicubic"
+    default_scaling_ai: "AI"
     image_id: int
 
     class Dimension(BaseModel):

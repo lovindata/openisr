@@ -14,6 +14,7 @@ from backend.v2.commands.processes.models.process_mod.process_mod import Process
 from backend.v2.commands.processes.models.process_mod.process_status_val import (
     ProcessStatusVal,
 )
+from backend.v2.commands.shared.models.extension_val import ExtensionVal
 from backend.v2.confs.envs_conf import envs_conf_impl
 from backend.v2.confs.sqlalchemy_conf import sqlalchemy_conf_impl
 from backend.v2.queries.app.models.card_mod import CardMod
@@ -127,14 +128,23 @@ class CardsRep:
                             type="Stoppable", started_at=process.status.started_at
                         )
 
-        def build_extension() -> Literal["JPEG", "PNG", "WEBP"]:
+        def build_default_extension() -> ExtensionVal:
             if process:
-                return process.extension.value
+                return process.extension
             else:
-                return image.extension().value
+                return image.extension()
 
-        def build_scaling() -> CardMod.Bicubic | CardMod.AI:
-            if process is None:
+        def build_default_scaling_type() -> Literal["Bicubic", "AI"]:
+            if not process:
+                return "Bicubic"
+            match process.scaling:
+                case ProcessBicubicVal():
+                    return "Bicubic"
+                case ProcessAIVal():
+                    return "AI"
+
+        def build_default_scaling_bicubic() -> CardMod.Bicubic:
+            if not process:
                 return CardMod.Bicubic(
                     type="Bicubic",
                     preserve_ratio=True,
@@ -142,18 +152,33 @@ class CardsRep:
                         width=image.data.size[0], height=image.data.size[1]
                     ),
                 )
-            else:
-                match process.scaling:
-                    case ProcessBicubicVal(target=target):
-                        return CardMod.Bicubic(
-                            type="Bicubic",
-                            preserve_ratio=True,
-                            target=CardMod.Dimension(
-                                width=target.width, height=target.height
-                            ),
-                        )
-                    case ProcessAIVal(scale=scale):
-                        return CardMod.AI(type="AI", scale=scale)
+            match process.scaling:
+                case ProcessBicubicVal(target=target):
+                    return CardMod.Bicubic(
+                        type="Bicubic",
+                        preserve_ratio=True,
+                        target=CardMod.Dimension(
+                            width=target.width, height=target.height
+                        ),
+                    )
+                case ProcessAIVal(scale=scale):
+                    return CardMod.Bicubic(
+                        type="Bicubic",
+                        preserve_ratio=True,
+                        target=CardMod.Dimension(
+                            width=process.source.width * scale,
+                            height=process.source.height * scale,
+                        ),
+                    )
+
+        def build_default_scaling_ai() -> CardMod.AI:
+            if not process:
+                return CardMod.AI(type="AI", scale=2)
+            match process.scaling:
+                case ProcessBicubicVal():
+                    return CardMod.AI(type="AI", scale=2)
+                case ProcessAIVal():
+                    return CardMod.AI(type="AI", scale=process.scaling.scale)
 
         return CardMod(
             thumbnail_src=build_thumbnail_src(),
@@ -161,8 +186,10 @@ class CardsRep:
             source=build_source(),
             target=build_target(),
             status=build_status(),
-            extension=build_extension(),
-            scaling=build_scaling(),
+            default_extension=build_default_extension(),
+            default_scaling_type=build_default_scaling_type(),
+            default_scaling_bicubic=build_default_scaling_bicubic(),
+            default_scaling_ai=build_default_scaling_ai(),
             image_id=image.id,
         )
 

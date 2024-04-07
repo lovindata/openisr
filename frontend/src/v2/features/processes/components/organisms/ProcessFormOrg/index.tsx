@@ -12,7 +12,7 @@ interface Props {
 
 export function ProcessFormOrg({ card, onSuccessSubmit }: Props) {
   return (
-    <BorderBoxAtm className="w-72 space-y-3 bg-black p-4">
+    <BorderBoxAtm className="w-72 space-y-4 bg-black p-4">
       <Tab.Group>
         <Tab.List className="space-x-3">
           {card.status.type === "Errored" && (

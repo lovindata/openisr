@@ -1,44 +1,17 @@
 import { ImageSectionCard } from "@/v2/features/images/components/organisms/ImageSectionOrg/ImageSectionCard";
+import { useImageSection } from "@/v2/features/images/components/organisms/ImageSectionOrg/useImageSection";
 import { ProcessRadioOrg } from "@/v2/features/processes/components/organisms/ProcessRadioOrg";
-import { ProcessRadioOptions } from "@/v2/features/processes/components/organisms/ProcessRadioOrg/ProcessRadioOptions";
 import { HeaderAtm } from "@/v2/features/shared/components/atoms/HeaderAtm";
 import { SearchBarMol } from "@/v2/features/shared/components/molecules/SearchBarMol";
 import { components } from "@/v2/services/backend/endpoints";
-import Fuse from "fuse.js";
-import { useState } from "react";
 
 interface Props {
   cards: components["schemas"]["CardMod"][] | undefined;
 }
 
 export function ImageSectionOrg({ cards }: Props) {
-  const [search, setSearch] = useState("");
-  const [option, setOption] = useState<ProcessRadioOptions>(
-    ProcessRadioOptions.All
-  );
-
-  let cardsShown =
-    cards &&
-    (search === ""
-      ? cards
-      : new Fuse(cards, { keys: ["name"] }).search(search).map((_) => _.item));
-  cardsShown =
-    cardsShown &&
-    cardsShown.filter((card) => {
-      switch (option) {
-        case ProcessRadioOptions.All:
-          return true;
-        case ProcessRadioOptions.Waiting:
-          return card.status.type === "Runnable";
-        case ProcessRadioOptions.Running:
-          return card.status.type === "Stoppable";
-        case ProcessRadioOptions.Terminated:
-          return (
-            card.status.type === "Errored" ||
-            card.status.type === "Downloadable"
-          );
-      }
-    });
+  const { cardsShown, search, option, setSearch, setOption } =
+    useImageSection(cards);
 
   return (
     <section className="md:w-[588px] lg:w-[888px]">

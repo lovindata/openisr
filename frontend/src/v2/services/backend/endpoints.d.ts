@@ -3,6 +3,7 @@
  * Do not make direct changes to the file.
  */
 
+
 export interface paths {
   "/queries/v1/app/cards": {
     /** Get cards */
@@ -56,7 +57,19 @@ export interface components {
       scale: 2 | 3 | 4;
     };
     /** Bicubic */
-    Bicubic: {
+    "Bicubic-Input": {
+      /**
+       * Type
+       * @constant
+       */
+      type: "Bicubic";
+      /** Width */
+      width: number;
+      /** Height */
+      height: number;
+    };
+    /** Bicubic */
+    "Bicubic-Output": {
       /**
        * Type
        * @constant
@@ -80,18 +93,15 @@ export interface components {
       source: components["schemas"]["Dimension"];
       target: components["schemas"]["Dimension"] | null;
       /** Status */
-      status:
-        | components["schemas"]["Runnable"]
-        | components["schemas"]["Stoppable"]
-        | components["schemas"]["Errored"]
-        | components["schemas"]["Downloadable"];
+      status: components["schemas"]["Runnable"] | components["schemas"]["Stoppable"] | components["schemas"]["Errored"] | components["schemas"]["Downloadable"];
+      default_extension: components["schemas"]["ExtensionVal"];
       /**
-       * Extension
+       * Default Scaling Type
        * @enum {string}
        */
-      extension: "JPEG" | "PNG" | "WEBP";
-      /** Scaling */
-      scaling: components["schemas"]["Bicubic"] | components["schemas"]["AI"];
+      default_scaling_type: "Bicubic" | "AI";
+      default_scaling_bicubic: components["schemas"]["Bicubic-Output"];
+      default_scaling_ai: components["schemas"]["AI"];
       /** Image Id */
       image_id: number;
     };
@@ -134,32 +144,11 @@ export interface components {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][];
     };
-    /** ProcessAIVal */
-    ProcessAIVal: {
-      /**
-       * Scale
-       * @enum {integer}
-       */
-      scale: 2 | 3 | 4;
-    };
-    /** ProcessBicubicVal */
-    ProcessBicubicVal: {
-      target: components["schemas"]["ProcessResolutionVal"];
-    };
     /** ProcessDto */
     ProcessDto: {
       extension: components["schemas"]["ExtensionVal"];
       /** Scaling */
-      scaling:
-        | components["schemas"]["ProcessBicubicVal"]
-        | components["schemas"]["ProcessAIVal"];
-    };
-    /** ProcessResolutionVal */
-    ProcessResolutionVal: {
-      /** Width */
-      width: number;
-      /** Height */
-      height: number;
+      scaling: components["schemas"]["Bicubic-Input"] | components["schemas"]["AI"];
     };
     /** Runnable */
     Runnable: {
@@ -206,6 +195,7 @@ export type $defs = Record<string, never>;
 export type external = Record<string, never>;
 
 export interface operations {
+
   /** Get cards */
   __queries_v1_app_cards_get: {
     responses: {

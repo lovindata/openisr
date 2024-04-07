@@ -1,14 +1,14 @@
 import { BorderBoxAtm } from "@/v2/features/shared/components/atoms/BorderBoxAtm";
 import { RadioGroup } from "@headlessui/react";
 
-interface Props<T extends string> {
+interface Props<T extends string | number> {
   possibleValues: T[];
   value: T;
   setValue: (_: T) => void;
   className?: string;
 }
 
-export function HorizontalRadioMol<T extends string>({
+export function HorizontalRadioMol<T extends string | number>({
   possibleValues,
   value,
   setValue,

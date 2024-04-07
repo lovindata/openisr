@@ -12,10 +12,6 @@ from backend.v2.commands.images.repositories.images_rep import images_rep_impl
 from backend.v2.commands.processes.controllers.processes_ctrl.process_dto import (
     ProcessDto,
 )
-from backend.v2.commands.processes.models.process_mod.process_ai_val import ProcessAIVal
-from backend.v2.commands.processes.models.process_mod.process_bicubic_val import (
-    ProcessBicubicVal,
-)
 from backend.v2.commands.processes.models.process_mod.process_mod import ProcessMod
 from backend.v2.commands.processes.repositories.processes_rep.processes_rep import (
     processes_rep_impl,
@@ -49,20 +45,18 @@ class ProcessesSvc:
     def run(self, image_id: int, dto: ProcessDto) -> None:
         def raise_when_target_invalid(image: ImageMod) -> None:
             match dto.scaling:
-                case ProcessBicubicVal(
-                    target=target
-                ) if 0 > target.width or target.width > 1920 and 0 > target.height or target.height > 1920:
+                case ProcessDto.Bicubic(
+                    width=width, height=height
+                ) if 0 > width or width > 1920 and 0 > height or height > 1920:
                     raise BadRequestException(
-                        f"Target ({target.width}, {target.height}) too large (max 1920x1920)."
+                        f"Target ({width}, {height}) too large (max 1920x1920)."
                     )
-                case ProcessAIVal():
+                case ProcessDto.AI():
                     source_width, source_height = image.data.size
                     if source_width > 480 or source_height > 480:
                         raise BadRequestException(
                             f"Image ({source_width}, {source_height}) too large for AI upscaling (max 480x480)."
                         )
-                case _:
-                    pass
 
         with self.sqlalchemy_conf.get_session() as session:
             image = self.images_rep.get_or_raise(session, image_id)

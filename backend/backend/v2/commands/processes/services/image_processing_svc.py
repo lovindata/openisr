@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from io import BytesIO
 
-from PIL.Image import BICUBIC, Image, open
+from PIL.Image import Image, Resampling, open
 from PIL_DAT.Image import upscale
 
 from backend.v2.commands.processes.models.process_mod.process_ai_val import ProcessAIVal
@@ -20,7 +20,7 @@ class ImageProcessingSvc:
                 case ProcessBicubicVal(target=target):
                     return data.resize(
                         (target.width, target.height),
-                        BICUBIC,
+                        Resampling.BICUBIC,
                     )
                 case ProcessAIVal(scale=scale):
                     return upscale(data, scale)

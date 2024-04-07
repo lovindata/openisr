@@ -90,7 +90,7 @@ class ProcessesRep:
             extension=dto.extension,
             source_width=image.data.size[0],
             source_height=image.data.size[1],
-            scaling=ProcessScalingComp(dto.scaling),
+            scaling=ProcessScalingComp(dto.scaling.to_val()),
             status_started_at=datetime.now(),
         )
         session.add(row)

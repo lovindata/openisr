@@ -3,7 +3,7 @@ from io import BytesIO
 from entities.process_ent import ProcessEnt
 from entities.process_ent.image_size_val import ImageSizeVal
 from entities.shared.extension_val import ExtensionVal
-from PIL.Image import BICUBIC, Image, open
+from PIL.Image import Image, Resampling, open
 from PIL_DAT.dat_light import DATLight
 from usecases.drivers.image_processing_driver import ImageProcessingDriver
 
@@ -18,7 +18,7 @@ class PillowImageProcessingDriver(ImageProcessingDriver):
                     or data.height < process.target.height
                 ):
                     data = model.upscale(data)
-            return data.resize((target.width, target.height), BICUBIC)
+            return data.resize((target.width, target.height), Resampling.BICUBIC)
 
         def change_extension(data: Image, extension: ExtensionVal) -> Image:
             out_bytes = BytesIO()
