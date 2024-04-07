@@ -1,6 +1,6 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class CardThumbnailMod(BaseModel):
-    thumbnail_bytes: bytes
     image_id: int
+    thumbnail_bytes: bytes

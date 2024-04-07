@@ -15,9 +15,9 @@ class CardDownloadRow(sqlalchemy_conf_impl.Base):
     __tablename__ = "card_downloads"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    image_id: Mapped[int] = mapped_column(unique=True, index=True)
     data: Mapped[dict[str, Any]] = mapped_column(type_=JSON, nullable=False)
     image_bytes: Mapped[bytes]
-    image_id: Mapped[int] = mapped_column(unique=True, index=True)
 
     @classmethod
     def insert_with(cls, session: Session, mod: CardDownloadMod) -> None:

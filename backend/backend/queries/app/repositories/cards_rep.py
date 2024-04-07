@@ -1,9 +1,11 @@
 import json
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any, List, Literal
 
 from sqlalchemy import JSON
 from sqlalchemy.orm import Mapped, Session, mapped_column
+from sqlalchemy.sql import func
 
 from backend.commands.images.models.image_mod import ImageMod
 from backend.commands.processes.models.process_mod.process_ai_val import ProcessAIVal
@@ -24,13 +26,17 @@ class CardRow(sqlalchemy_conf_impl.Base):
     __tablename__ = "cards"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    data: Mapped[dict[str, Any]] = mapped_column(type_=JSON, nullable=False)
     image_id: Mapped[int] = mapped_column(unique=True, index=True)
+    updated_at: Mapped[datetime] = mapped_column(
+        insert_default=func.now(), onupdate=func.now()
+    )
+    data: Mapped[dict[str, Any]] = mapped_column(type_=JSON)
 
     @classmethod
     def insert_with(cls, session: Session, mod: CardMod) -> None:
-        row = CardRow(data=json.loads(mod.model_dump_json()), image_id=mod.image_id)
+        row = CardRow(image_id=mod.image_id, data=json.loads(mod.model_dump_json()))
         session.add(row)
+        session.flush()
 
     def update_with(self, mod: CardMod) -> None:
         self.data = json.loads(mod.model_dump_json())
@@ -45,7 +51,10 @@ class CardsRep:
     envs_conf = envs_conf_impl
 
     def list(self, session: Session) -> List[CardMod]:
-        return [card.to_mod() for card in session.query(CardRow).all()]
+        return [
+            card.to_mod()
+            for card in session.query(CardRow).order_by(CardRow.updated_at.desc()).all()
+        ]
 
     def sync(
         self, session: Session, image: ImageMod, process: ProcessMod | None

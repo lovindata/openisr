@@ -14,8 +14,8 @@ class CardThumbnailRow(sqlalchemy_conf_impl.Base):
     __tablename__ = "card_thumbnails"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    thumbnail_bytes: Mapped[bytes]
     image_id: Mapped[int] = mapped_column(unique=True, index=True)
+    thumbnail_bytes: Mapped[bytes]
 
     @classmethod
     def insert_with(cls, session: Session, mod: CardThumbnailMod) -> None:
