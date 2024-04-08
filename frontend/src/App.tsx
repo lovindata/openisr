@@ -9,7 +9,7 @@ function App() {
         <QueryClientProvider client={new QueryClient()}>
           <Routes>
             <Route path="/" element={<ImagePg />} />
-            <Route path="*" element={<Navigate to="/" />} />
+            {<Route path="*" element={<Navigate to="/" />} />}
           </Routes>
         </QueryClientProvider>
       </BrowserRouter>

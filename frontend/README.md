@@ -33,6 +33,14 @@ npm run dev
 
 Open [http://localhost:5173](http://localhost:5173) with your browser to see the result.
 
+To generate a distributable frontend for serving by the backend:
+
+```bash
+npm run build
+```
+
+Backend utilizes /queries, /commands, and /docs. Ensure frontend development does not impact these paths.
+
 ## Backend endpoints
 
 To generate TypeScript endpoint definition from the backend OpenAPI:

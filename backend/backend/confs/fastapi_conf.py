@@ -5,7 +5,8 @@ from typing import AsyncGenerator
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from backend.commands.images.controllers.images_ctrl import images_ctrl_impl
 from backend.commands.processes.controllers.processes_ctrl.processes_ctrl import (
@@ -34,6 +35,7 @@ class FastAPIConf:
         self._app.include_router(self.app_qry.router())
         self._app.include_router(self.images_cmd.router())
         self._app.include_router(self.processes_cmd.router())
+        self._set_frontend_distribuable()
 
     def run_server(self) -> None:
         if self.envs_conf.prod_mode:
@@ -106,6 +108,19 @@ class FastAPIConf:
                     },
                     headers=headers,
                 )
+
+    def _set_frontend_distribuable(self) -> None:
+
+        self._app.mount(
+            # Order matters! Must be executed after the actual routes!
+            # The order of route definitions determines the sequence of request handling.
+            "/",
+            StaticFiles(directory="../frontend/dist", html=True),
+        )
+
+        @self._app.exception_handler(404)
+        async def _(*_):
+            return FileResponse("../frontend/dist/index.html")
 
 
 fastapi_conf_impl = FastAPIConf()
