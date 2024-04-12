@@ -33,6 +33,12 @@ To update dependencies:
 poetry update
 ```
 
+To clear poetry cache:
+
+```bash
+poetry cache clear --all .
+```
+
 To run unit tests:
 
 ```bash
