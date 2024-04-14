@@ -2,6 +2,10 @@
   // General
   "editor.formatOnSave": true,
 
+  // Git
+  "git.autofetch": "all",
+  "git.autofetchPeriod": 180,
+
   // Json
   "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"

@@ -14,7 +14,9 @@ export function ProcessButtonIcon({ type, duration, onClick }: Props) {
         className="h-6 w-6 cursor-pointer"
         onClick={onClick}
       />
-      {duration && <span className="absolute top-full">{duration}s</span>}
+      {duration !== undefined && (
+        <span className="absolute top-full">{duration}s</span>
+      )}
     </div>
   );
 }
