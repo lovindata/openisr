@@ -1,8 +1,36 @@
 {
+  // General
+  "editor.formatOnSave": true,
+
+  // Json
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // TypeScript, JavaScript, HTML, CSS
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+
   // Python
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter",
-    "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
       "source.organizeImports": "explicit"
     }
@@ -13,14 +41,10 @@
   "python.analysis.diagnosticMode": "workspace",
   "python.analysis.ignore": ["**/.venv/**"],
   "python.analysis.autoSearchPaths": false,
-  "python.analysis.extraPaths": ["backend"],
-
-  // Typescript
-  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "python.analysis.extraPaths": ["backend"], // Add new Python sub-projects here! :)
 
   // Docker
   "[dockerfile]": {
-    "editor.defaultFormatter": "ms-azuretools.vscode-docker",
-    "editor.formatOnSave": true // Not working :(
+    "editor.defaultFormatter": "ms-azuretools.vscode-docker"
   }
 }

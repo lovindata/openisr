@@ -7,6 +7,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from loguru import logger
 
 from backend.commands.images.controllers.images_ctrl import images_ctrl_impl
 from backend.commands.processes.controllers.processes_ctrl.processes_ctrl import (
@@ -16,6 +17,7 @@ from backend.commands.processes.services.timeout_resolver_svc import (
     timeout_resolver_svc_impl,
 )
 from backend.confs.envs_conf import envs_conf_impl
+from backend.confs.sqlalchemy_conf import sqlalchemy_conf_impl
 from backend.helpers.exception_utils import BadRequestException
 from backend.queries.app.controllers.app_ctrl import app_ctrl_impl
 
@@ -26,6 +28,7 @@ class FastAPIConf:
     images_cmd = images_ctrl_impl
     processes_cmd = processes_ctrl_impl
     app_qry = app_ctrl_impl
+    sqlalchemy_conf = sqlalchemy_conf_impl
     timeout_resolver_svc = timeout_resolver_svc_impl
 
     def __post_init__(self) -> None:
@@ -35,7 +38,7 @@ class FastAPIConf:
         self._app.include_router(self.app_qry.router())
         self._app.include_router(self.images_cmd.router())
         self._app.include_router(self.processes_cmd.router())
-        self._set_frontend_distribuable()
+        self._set_frontend_distribuable_if_prod()
 
     def run_server(self) -> None:
         if self.envs_conf.prod_mode:
@@ -56,11 +59,6 @@ class FastAPIConf:
                 reload=True,
                 reload_dirs="./backend",
             )
-
-    @asynccontextmanager
-    async def _lifespan(self, _: FastAPI) -> AsyncGenerator[None, None]:
-        self.timeout_resolver_svc.run_cron()  # Threaded execution, link to FastAPI lifespan necessary
-        yield
 
     def _set_allow_cors_if_dev(self) -> None:
         if not self.envs_conf.prod_mode:
@@ -109,18 +107,26 @@ class FastAPIConf:
                     headers=headers,
                 )
 
-    def _set_frontend_distribuable(self) -> None:
+    def _set_frontend_distribuable_if_prod(self) -> None:
+        if self.envs_conf.prod_mode:
+            self._app.mount(
+                # Order matters! Must be executed after the actual routes!
+                # The order of route definitions determines the sequence of request handling.
+                "/",
+                StaticFiles(directory="../frontend/dist", html=True),
+            )
 
-        self._app.mount(
-            # Order matters! Must be executed after the actual routes!
-            # The order of route definitions determines the sequence of request handling.
-            "/",
-            StaticFiles(directory="../frontend/dist", html=True),
-        )
+            @self._app.exception_handler(404)
+            async def _(*_):
+                return FileResponse("../frontend/dist/index.html")
 
-        @self._app.exception_handler(404)
-        async def _(*_):
-            return FileResponse("../frontend/dist/index.html")
+    @asynccontextmanager
+    async def _lifespan(self, _: FastAPI) -> AsyncGenerator[None, None]:
+        logger.info("Starting database migration.")
+        self.sqlalchemy_conf.migrate()  # Auto-migrate on reloading
+        logger.info("Starting process timeout cron resolver.")
+        self.timeout_resolver_svc.run_cron()  # Threaded execution, link to FastAPI lifespan necessary
+        yield
 
 
 fastapi_conf_impl = FastAPIConf()

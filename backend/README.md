@@ -2,9 +2,11 @@
 
 ## Contribution
 
-Please install [Python](https://www.python.org/downloads/).
+Please install [DBeaver](https://dbeaver.io/download/).
 
-Please install [Poetry](https://python-poetry.org/docs/#installation) via [pipx](https://pipx.pypa.io/stable/installation/).
+Please install [Python 3.11](https://www.python.org/downloads/).
+
+Please install [Poetry](https://python-poetry.org/docs/#installing-with-the-official-installer) with the official installer.
 
 Please install [VSCode](https://code.visualstudio.com/) and its extensions:
 
@@ -14,6 +16,11 @@ Please install [VSCode](https://code.visualstudio.com/) and its extensions:
 - Pylance
 - Even Better TOML
 - Prettier
+
+If you need to switch between Python interpreters:
+
+- `CTRL + SHIFT + P`
+- `Python: Select Interpreter`
 
 To have your Python environment inside your project (optional):
 
@@ -59,7 +66,7 @@ To generate migration:
 alembic revision --autogenerate
 ```
 
-To migrate to head:
+To migrate to head (done on startup):
 
 ```bash
 alembic upgrade head
