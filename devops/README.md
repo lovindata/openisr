@@ -45,7 +45,7 @@ docker buildx rm multi-platform-builder
 To build and push multi-platform docker images:
 
 ```bash
-docker buildx build --platform linux/amd64,linux/arm64 -t lovindata/openisr:0.0.0 --push -f Dockerfile ..
+docker buildx build -t lovindata/openisr:0.0.0 -t lovindata/openisr:latest --platform linux/amd64,linux/arm64 --push -f Dockerfile ..
 ```
 
 To clean docker cache:
