@@ -1,90 +1,103 @@
-# OpenISR - Upscale your images without losing quality with CNN & GAN neural networks
+<p align="center">
+  <a href="https://github.com/lovindata/openisr" target="_blank">
+    <img alt="OpenISR" src=".github/logo.svg" width="150" style="max-width: 100%;" />
+  </a>
+</p>
 
-[![Generic badge](https://img.shields.io/badge/Python-3.7.11-blue.svg?style=plastic)](https://www.python.org/)
+<p align="center">
+  OpenISR - Scale your images with AI
+</p>
 
-![](docs/stack_used.jpg)
+<p align="center">
+    <a href="https://github.com/lovindata/openisr/blob/main/LICENSE">
+      <img src="https://img.shields.io/github/license/lovindata/openisr" alt="License">
+    </a>
+</p>
 
-🚀🔥 OpenISR is an **image super resolution** lightweight SaaS web application. It is powered by [OpenCV](https://opencv.org/) & [PyTorch](https://pytorch.org/) and has the purpose to upscale your images without losing quality! It is also optimized for scalability and easily deployable thanks to [Celery](https://docs.celeryproject.org/en/stable/) & [Docker](https://www.docker.com/)!
+---
 
+## Installation
 
-# Results
+For Docker:
 
-How the application looks like 😍.
+```bash
+docker pull lovindata/openisr:latest
+```
 
-![](docs/res_webpages/main.png)
+_Note: The image supports Windows, Linux, and MacOS, specifically amd64 and arm64._
 
+## Get started
 
-Results below on different kind of images 🤯.
+For Docker:
 
-Input | Forced Enlargement | OpenISR Enlargement
-:-:|:-:|:-:
-![](docs/res_images/lumine2.png) | ![](docs/res_images/lumine2_lr.png) | ![](docs/res_images/lumine2_merged.png)
+```bash
+docker run -p 8000:8000 lovindata/openisr:latest
+```
 
-Input | Forced Enlargement | OpenISR Enlargement
-:-:|:-:|:-:
-![](docs/res_images/pika.png) | ![](docs/res_images/pika_lr.png) | ![](docs/res_images/pika_merged.png)
+For Docker Compose:
 
-Input | Forced Enlargement | OpenISR Enlargement
-:-:|:-:|:-:
-![](docs/res_images/yiren.png) | ![](docs/res_images/yiren_lr.png) | ![](docs/res_images/yiren_merged.png)
+```yml
+version: "3.8"
+services:
+  openisr:
+    image: lovindata/openisr:latest
+    ports:
+      - "8000:8000"
+```
 
+Then go to http://localhost:8000.
 
-# Want to contribute ?
+## Looks
 
-- Comming soon! 😣
+You can list, upload, and delete images from the main page.
 
-- Drafts commands:
-    - `set PYTHONPATH=%PYTHONPATH%;.`
-    - `uvicorn tasksapp.fastapiapp:app --reload`
-    - `celery worker --app=worker.celery --loglevel=info --logfile=tasksapp/resources/logs/celery.log`
-    - `celery multi start w1 -A tasksapp.app -l INFO`
-    - `docker-compose up -d --build`
-    - `D:`
-    - `cd D:\prog\proj\openisr\openisr`
+<p align="center">
+  <img alt="OpenISR - Images" src=".github/images.png" width="100%" style="max-width: 100%; border-radius: 8px;" />
+  <sub>OpenISR - Images</sub>
+</p>
 
+You can process your images and download them afterward.
 
-# References
+<p align="center">
+  <img alt="OpenISR - Process" src=".github/process.png" width="100%" style="max-width: 100%; border-radius: 8px;" />
+  <sub>OpenISR - Process</sub>
+</p>
 
-The links used to understand the theory and implementation.
+## Advanced
 
-**EDSR**
-- [Enhanced Deep Residual Networks for Single Image Super-Resolution](https://arxiv.org/pdf/1707.02921.pdf)
-- [Single image super-resolution with deep neural networks](https://krasserm.github.io/2019/09/04/super-resolution/)
-- [Super Resolution, Going from 3x to 8x Resolution in OpenCV](https://bleedai.com/super-resolution-going-from-3x-to-8x-resolution-in-opencv/)
+Environment variables:
 
-**nESRGAN+**
-- [Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network](https://arxiv.org/pdf/1609.04802.pdf)
-- [SRGAN Paper Explained](https://medium.com/@ramyahrgowda/srgan-paper-explained-3d2d575d09ff#:~:text=SRGAN%20which%20is%20a%20GAN,to%20changes%20in%20pixel%20space.)
-- [Super Resolution GAN (SRGAN)](https://www.geeksforgeeks.org/super-resolution-gan-srgan/)
-- [ESRGAN: Enhanced Super-Resolution Generative Adversarial Networks](https://arxiv.org/pdf/1809.00219.pdf)
-- [ESRGAN+ : FURTHER IMPROVING ENHANCED SUPER-RESOLUTION GENERATIVE ADVERSARIAL NETWORK](https://arxiv.org/pdf/2001.08073.pdf)
+| Variable                           | Default | Description                                     |
+| ---------------------------------- | :-----: | ----------------------------------------------- |
+| OPENISR_PROD_MODE                  |  True   | Set at docker level, must never be overwritten. |
+| OPENISR_API_PORT                   |  8000   | Application port.                               |
+| OPENISR_PROCESS_TIMEOUT_IN_SECONDS |   60    | Image maximum processing time in seconds.       |
 
-**CNN Layers**
-- [Deep Residual Learning for Image Recognition](https://arxiv.org/pdf/1512.03385v1.pdf)
-- [Conv2d: Finally Understand What Happens in the Forward Pass](https://towardsdatascience.com/conv2d-to-finally-understand-what-happens-in-the-forward-pass-1bbaafb0b148)
-- [Keras Conv2D and Convolutional Layers](https://www.pyimagesearch.com/2018/12/31/keras-conv2d-and-convolutional-layers/)
-- [Pixel Shuffle Layer](https://nico-curti.github.io/NumPyNet/NumPyNet/layers/pixelshuffle_layer.html#:~:text=Pixel%20Shuffle%20layer%20is%20one,a%20single%20low%2Dresolution%20one.)
-- [Understanding 2D Dilated Convolution Operation with Examples in Numpy and Tensorflow with Interactive Code](https://towardsdatascience.com/understanding-2d-dilated-convolution-operation-with-examples-in-numpy-and-tensorflow-with-d376b3972b25)
+Data:
 
-**FastAPI**
-- [Request Files - FastAPI](https://fastapi.tiangolo.com/tutorial/request-files/)
-- [How to Save Uploaded Files in FastAPI](https://levelup.gitconnected.com/how-to-save-uploaded-files-in-fastapi-90786851f1d3)
-- [[QUESTION] Is this the correct way to save an uploaded file](https://github.com/tiangolo/fastapi/issues/426)
-- [Templates](https://fastapi.tiangolo.com/advanced/templates/)
-- [How to send a progress of operation in a FastAPI app?](https://www.py4u.net/discuss/186220)
-- [Asynchronous Tasks with FastAPI and Celery](https://testdriven.io/blog/fastapi-and-celery/)
+The persistent data is located at: `/app/backend/data/openisr.db`.
 
-**Ops**
-- [How to change the location of docker images & containers when using Docker Desktop on WSL2 with Windows 10 Home?](https://stackoverflow.com/questions/62441307/how-can-i-change-the-location-of-docker-images-when-using-docker-desktop-on-wsl2)
+Example:
 
+```yml
+version: "3.8"
+services:
+  openisr-advanced:
+    image: lovindata/openisr:latest
+    ports:
+      - "5000:5000"
+    environment:
+      - OPENISR_API_PORT=5000
+      - OPENISR_PROCESS_TIMEOUT_IN_SECONDS=30
+    volumes:
+      - ./data:/app/backend/data
+```
 
-# Other References
+## Contribution
 
-**Installation**
-- [Build and Install OpenCV With CUDA (GPU) Support on Windows 10](https://haroonshakeel.medium.com/build-opencv-4-4-0-with-cuda-gpu-support-on-windows-10-without-tears-aa85d470bcd0)
-- [How to Fix ModuleNotFoundError and ImportError](https://towardsdatascience.com/how-to-fix-modulenotfounderror-and-importerror-248ce5b69b1c)
+This repository includes UI/UX design, Frontend, Backend, and DevOps components. Please check each README.md file for more details.
 
-**Docstring & Project structure**
-- [The Sphinx docstring format](https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html)
-- [Python Application Layouts: A Reference](https://realpython.com/python-application-layouts/)
-- [Appendix B: A Template Project Structure](https://www.cosmicpython.com/book/appendix_project_structure.html)
+- [Design](https://github.com/lovindata/openisr/tree/main/design)
+- [Frontend](https://github.com/lovindata/openisr/tree/main/frontend)
+- [Backend](https://github.com/lovindata/openisr/tree/main/backend)
+- [DevOps](https://github.com/lovindata/openisr/tree/main/devops)

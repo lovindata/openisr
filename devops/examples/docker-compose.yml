@@ -1,0 +1,6 @@
+version: "3.8"
+services:
+  openisr:
+    image: lovindata/openisr:latest
+    ports:
+      - "8000:8000"

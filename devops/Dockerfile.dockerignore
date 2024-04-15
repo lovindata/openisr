@@ -1,0 +1,15 @@
+# Frontend
+/frontend/dist/
+/frontend/node_modules/
+/frontend/.gitignore
+/frontend/README.md
+
+# Backend
+/backend/.pytest_cache/
+/backend/.venv/
+/backend/**/__pycache__/
+/backend/data/**
+/backend/dist/
+/backend/tests/
+/backend/.gitignore
+/backend/README.md
