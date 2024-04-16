@@ -5,6 +5,7 @@
   // Git
   "git.autofetch": "all",
   "git.autofetchPeriod": 180,
+  "git.pruneOnFetch": true,
 
   // Json
   "[json]": {
