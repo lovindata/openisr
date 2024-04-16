@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/lovindata/openisr" target="_blank">
-    <img alt="OpenISR" src=".github/logo.svg" width="150" style="max-width: 100%;" />
+    <img alt="OpenISR" src="https://raw.githubusercontent.com/lovindata/openisr/main/.github/logo.svg" width="150" style="max-width: 100%;" />
   </a>
 </p>
 
@@ -15,6 +15,22 @@
 </p>
 
 ---
+
+## Looks
+
+You can list, upload, and delete images from the main page.
+
+<p align="center">
+  <img alt="OpenISR - Images" src="https://raw.githubusercontent.com/lovindata/openisr/main/.github/images.png" width="100%" style="max-width: 100%; border-radius: 8px;" />
+  <sub>OpenISR - Images</sub>
+</p>
+
+You can process your images and download them afterward.
+
+<p align="center">
+  <img alt="OpenISR - Process" src="https://raw.githubusercontent.com/lovindata/openisr/main/.github/process.png" width="100%" style="max-width: 100%; border-radius: 8px;" />
+  <sub>OpenISR - Process</sub>
+</p>
 
 ## Installation
 
@@ -46,22 +62,6 @@ services:
 ```
 
 Then go to http://localhost:8000.
-
-## Looks
-
-You can list, upload, and delete images from the main page.
-
-<p align="center">
-  <img alt="OpenISR - Images" src=".github/images.png" width="100%" style="max-width: 100%; border-radius: 8px;" />
-  <sub>OpenISR - Images</sub>
-</p>
-
-You can process your images and download them afterward.
-
-<p align="center">
-  <img alt="OpenISR - Process" src=".github/process.png" width="100%" style="max-width: 100%; border-radius: 8px;" />
-  <sub>OpenISR - Process</sub>
-</p>
 
 ## Advanced
 
